@@ -1,10 +1,7 @@
 from .theory import calculate_chi, calculate_rc, get_gl_params, potential_energy
 from .sde_solver import SDEConfig, euler_maruyama_step, run_sde_simulation, theoretical_pdf
-from .network_sim import (
-    NetworkAgentModel,
-    NetworkConfig,
-    generate_network,
-)
+from .network_sim import NetworkAgentModel, NetworkConfig, generate_network
+from .utils import calculate_autocorrelation
 
 __all__ = [
     "calculate_chi",
@@ -18,4 +15,5 @@ __all__ = [
     "NetworkConfig",
     "NetworkAgentModel",
     "generate_network",
+    "calculate_autocorrelation",
 ]
