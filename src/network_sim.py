@@ -31,6 +31,11 @@ class NetworkConfig:
     model: Literal["ba", "er"] = "ba"
     beta: float = 0.0  # 邻居高唤醒影响系数
     update_rate: float = 0.1  # 异步更新比例，降低同步震荡
+    init_state: Literal["random", "medium"] = "random"  # 初始状态配置
+    sample_mode: Literal["degree", "fixed"] = "degree"  # 采样模式：按度或固定样本数
+    sample_n: int = 50  # 当 sample_mode="fixed" 时使用
+    # 对称模式：True 用于理论验证（p_env 在 q=0 时固定 0.5），False 为现实非对称（p_we 依赖 a）
+    symmetric_mode: bool = False
     r: float = 0.5  # 移除比例
     n_m: float = 10.0
     n_w: float = 5.0
@@ -73,11 +78,16 @@ class NetworkAgentModel:
         # 阈值可扩展为个体异质：此处简单用全局常数
         self.phi = np.full(self.n, cfg.phi, dtype=float)
         self.theta = np.full(self.n, cfg.theta, dtype=float)
-        # 初始状态随机分布在 H/M/L
-        probs = np.array([1 / 3, 1 / 3, 1 / 3])
-        self.state = self.rng.choice(
-            [STATE_LOW, STATE_MEDIUM, STATE_HIGH], size=self.n, p=probs
-        )
+        # 初始状态：支持随机三分或全员中立，便于线性稳定性验证
+        if cfg.init_state == "random":
+            probs = np.array([1 / 3, 1 / 3, 1 / 3])
+            self.state = self.rng.choice(
+                [STATE_LOW, STATE_MEDIUM, STATE_HIGH], size=self.n, p=probs
+            )
+        elif cfg.init_state == "medium":
+            self.state = np.full(self.n, STATE_MEDIUM, dtype=int)
+        else:
+            raise ValueError("init_state 仅支持 'random' 或 'medium'")
 
     def _macro_stats(self) -> Tuple[float, float, int, int]:
         n_high = int(np.sum(self.state == STATE_HIGH))
@@ -89,7 +99,12 @@ class NetworkAgentModel:
     def _global_env(self, q: float, a: float) -> float:
         # 按 Methods Eq. (1)(2)(3)
         p_main = (1 - q) / 2.0
-        p_we = (a + q) / 2.0
+        if self.cfg.symmetric_mode:
+            # 理想对称：q=0 时 p_we=0.5，完全镜像 mainstream，用于验证理论 rc
+            p_we = 0.5 + q / 2.0
+        else:
+            # 现实非对称：p_we 随活动度与极化走，初始 a<1 时 p_we<0.5，体现冷却偏置
+            p_we = (a + q) / 2.0
         num = (1 - self.cfg.r) * self.cfg.n_m * p_main + self.cfg.r * self.cfg.n_w * p_we
         denom = (1 - self.cfg.r) * self.cfg.n_m + self.cfg.r * self.cfg.n_w
         return num / denom
@@ -119,8 +134,14 @@ class NetworkAgentModel:
         return np.clip(p_i, 0.0, 1.0)
 
     def _update_states(self, p_i: np.ndarray) -> None:
-        # 方案 B：按节点实际度数设置信号采样次数，孤立点至少采样 1 次
-        N_SAMPLES = np.maximum(self.degrees, 1)
+        # 方案 A：按度采样；方案 B：固定采样数（用于均匀混合对照）
+        if self.cfg.sample_mode == "degree":
+            N_SAMPLES = np.maximum(self.degrees, 1)
+        elif self.cfg.sample_mode == "fixed":
+            N_SAMPLES = np.full(self.n, max(1, int(self.cfg.sample_n)), dtype=int)
+        else:
+            raise ValueError("sample_mode 仅支持 'degree' 或 'fixed'")
+
         signal_counts = self.rng.binomial(n=N_SAMPLES, p=p_i)
         perceived_risk = signal_counts / N_SAMPLES
         new_state = np.where(
