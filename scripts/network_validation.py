@@ -76,10 +76,13 @@ def main() -> None:
     parser.add_argument("--output-dir", type=str, default="outputs")
     args = parser.parse_args()
     out_dir = Path(args.output_dir)
+    data_dir = out_dir / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     if args.mode in ("sym", "all"):
-        validation_symmetry(out_dir / "network_symmetry.csv")
+        validation_symmetry(data_dir / "network_symmetry.csv")
     if args.mode in ("asym", "all"):
-        validation_asymmetry(out_dir / "network_asymmetry.csv")
+        validation_asymmetry(data_dir / "network_asymmetry.csv")
 
 
 if __name__ == "__main__":

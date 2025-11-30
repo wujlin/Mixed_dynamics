@@ -2,15 +2,13 @@ Project Development Guide: Mixed-Feedback Model of Collective Emotion
 
 1. 项目概述 (Project Overview)
 
-本项目旨在实现一个基于统计物理的混合反馈模型（Mixed-Feedback Model），用于研究集体情绪中的相变、极化及临界慢化现象。项目分为理论计算（Mean-Field Theory）与网络模拟（Agent-Based Simulation）两大部分。
+本项目旨在实现一个基于统计物理的混合反馈模型（Mixed-Feedback Model），用于研究集体情绪中的相变、极化及临界慢化现象。项目分为理论计算（Mean-Field Theory）、SDE 数值模拟与网络主体模拟（Agent-Based Simulation）三部分。
 
 核心目标：
 
 理论求解：基于 Ginzburg-Landau (GL) 方程，解析计算相变临界点 $r_c$ 及稳态势能。
-
-数值模拟：利用 Euler-Maruyama 方法求解随机微分方程 (SDE)，验证概率分布。
-
-网络仿真：在复杂网络（BA/ER）上运行主体模型，验证拓扑结构下的理论预测。
+数值模拟：利用 Euler-Maruyama 方法求解随机微分方程 (SDE)，验证概率分布与分岔。
+网络仿真：在复杂网络（BA/ER/全连接）上运行主体模型，验证拓扑结构下的理论预测与稀疏性/Hub 效应。
 
 2. 技术栈与目录结构 (Tech Stack & Structure)
 
@@ -27,9 +25,10 @@ project_root/
 │   ├── network_sim.py  # 网络 ABM 模拟 (Algorithm 2)
 │   └── utils.py        # 绘图与辅助工具
 ├── notebooks/          # 探索性分析与论文绘图
-│   ├── 01_potential_landscape.ipynb  # 势能阱演化
-│   ├── 02_bifurcation_diagram.ipynb  # 分岔图 (理论 vs 模拟)
-│   └── 03_critical_slowing_down.ipynb # 临界慢化验证
+│   ├── 01_Theory_and_Potential.ipynb         # 分岔（KDE密度）+ 势能，输出 figs/fig1、fig2
+│   ├── 02_Network_Topology.ipynb             # 网络密度/拓扑对比，输出 figs/fig3*，数据缓存 outputs/data/*.csv
+│   ├── 03_Critical_Slowing_Down.ipynb        # 临界慢化验证
+│   └── 04_Sensitivity_Chi_Landscape.ipynb    # 阈值敏感度/chi 景观与分岔
 ├── tests/              # 单元测试
 └── DEVELOPMENT.md      # 本文档
 
@@ -94,29 +93,31 @@ Phase 3: 网络主体模拟 (Network Simulation)
 
 任务清单 (Tasks):
 
-[ ] 网络初始化：集成 networkx 生成 BA 或 ER 网络。
+[x] 网络初始化：集成 networkx 生成 BA 或 ER 网络，支持全连接 (k=N-1)。
 
-[ ] 实现局部感知逻辑 (Local Perception)。
+[x] 实现局部感知逻辑 (Local Perception)。
 
 输入：全局 $r$, 邻居状态, 个人阈值 $(\phi_i, \theta_i)$。
 
 输出：局部风险 $p_i$。
 
-[ ] 实现状态更新逻辑 (Stochastic Decision)。
+[x] 实现状态更新逻辑 (Stochastic Decision)。
 
-基于二项分布规则或阈值规则更新 $S_i \in \{H, M, L\}$。
+基于二项分布规则或阈值规则更新 $S_i \in \{H, M, L\}$；当前实现：对感知概率做二项抽样（N=50）后再与阈值比较。
 
-[ ] 实现宏观统计器。
+[x] 实现宏观统计器。
 
 每个时间步计算 $Q(t)$ 和 $A(t)$。
 
-[ ] 封装模拟器类 NetworkAgentModel。
+[x] 封装模拟器类 NetworkAgentModel；ER 取最大连通子图并重标节点。
 
 验收标准 (Review Criteria):
 
 自洽性检查：在 $\beta=0$ (无邻居耦合) 且参数对称时，网络模拟的相变点应与 Phase 1 计算的 $r_c$ 高度吻合。
 
 不对称性检查：当设置不对称阈值时，模拟应能自发演化出偏离 0.5 的 $p^*$，这是理论推导无法直接给出的。
+
+拓扑效应检查：BA/ER/全连接对比，k 稀疏时相变提前，全连接逼近理论 rc；数据/图缓存于 outputs/data, outputs/figs。
 
 Phase 4: 临界慢化与高级分析 (Critical Phenomena)
 
@@ -142,7 +143,7 @@ Phase 4: 临界慢化与高级分析 (Critical Phenomena)
 
 随机数种子：所有模拟函数必须接受 seed 参数，保证结果可复现 (Reproducibility)。
 
-文档字符串：关键函数（特别是 calculate_chi 和 step）必须包含 Physics Docstring，说明对应论文中的哪个公式。
+文档字符串：关键函数（特别是 calculate_chi、step、_update_states）应包含 Physics Docstring，说明对应论文中的公式/假设；网络更新已引入二项采样以模拟有限信息采样。
 
 5. 快速启动 (Quick Start for Agent)
 

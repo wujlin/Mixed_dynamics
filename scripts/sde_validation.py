@@ -30,7 +30,7 @@ def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def run_hist_pdf(output_dir: Path) -> None:
+def run_hist_pdf(output_dir: Path, data_dir: Path, fig_dir: Path) -> None:
     phi, theta, k_avg = 0.6, 0.4, 50
     n_m, n_w = 10, 5
     chi = calculate_chi(phi=phi, theta=theta, k_avg=k_avg)
@@ -52,7 +52,8 @@ def run_hist_pdf(output_dir: Path) -> None:
 
     print(f"[Phase2] chi={chi:.3f}, rc={rc:.3f}, r={r:.3f}, alpha={alpha:.3f}, L1(hist, pdf)={l1:.4f}")
 
-    ensure_dir(output_dir)
+    ensure_dir(data_dir)
+    ensure_dir(fig_dir)
     fig, ax = plt.subplots()
     ax.bar(centers, hist, width=centers[1]-centers[0], alpha=0.5, label="SDE histogram")
     ax.plot(centers, pdf, "r-", lw=2, label="theoretical pdf")
@@ -60,11 +61,11 @@ def run_hist_pdf(output_dir: Path) -> None:
     ax.set_ylabel("density")
     ax.legend()
     fig.tight_layout()
-    fig.savefig(output_dir / "sde_hist_pdf.png", dpi=200)
+    fig.savefig(fig_dir / "fig_sde_hist_pdf.png", dpi=200)
     plt.close(fig)
 
 
-def run_bifurcation_scan(output_dir: Path) -> None:
+def run_bifurcation_scan(output_dir: Path, data_dir: Path) -> None:
     phi, theta, k_avg = 0.6, 0.4, 50
     n_m, n_w = 10, 5
     chi = calculate_chi(phi=phi, theta=theta, k_avg=k_avg)
@@ -78,8 +79,8 @@ def run_bifurcation_scan(output_dir: Path) -> None:
         steady = traj[-200:].mean(axis=(0, 1))  # 末尾平均
         results.append((r, steady))
 
-    ensure_dir(output_dir)
-    csv_path = output_dir / "sde_bifurcation.csv"
+    ensure_dir(data_dir)
+    csv_path = data_dir / "sde_bifurcation.csv"
     with open(csv_path, "w", encoding="utf-8") as f:
         f.write("r,steady_q\n")
         for r, q_val in results:
@@ -93,10 +94,12 @@ def main() -> None:
     parser.add_argument("--output", type=str, default="outputs")
     args = parser.parse_args()
     out_dir = Path(args.output)
+    data_dir = out_dir / "data"
+    fig_dir = out_dir / "figs"
     if args.mode in ("hist", "all"):
-        run_hist_pdf(out_dir)
+        run_hist_pdf(out_dir, data_dir, fig_dir)
     if args.mode in ("bifurcation", "all"):
-        run_bifurcation_scan(out_dir)
+        run_bifurcation_scan(out_dir, data_dir)
 
 
 if __name__ == "__main__":

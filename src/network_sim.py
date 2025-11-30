@@ -30,6 +30,7 @@ class NetworkConfig:
     avg_degree: float
     model: Literal["ba", "er"] = "ba"
     beta: float = 0.0  # 邻居高唤醒影响系数
+    update_rate: float = 0.1  # 异步更新比例，降低同步震荡
     r: float = 0.5  # 移除比例
     n_m: float = 10.0
     n_w: float = 5.0
@@ -47,9 +48,12 @@ def generate_network(cfg: NetworkConfig) -> nx.Graph:
         p = cfg.avg_degree / max(cfg.n - 1, 1)
         g = nx.erdos_renyi_graph(cfg.n, p, seed=cfg.seed)
         if not nx.is_connected(g):
-            # 保证连通性：若不连通则取最大连通子图
+            # 保证连通性：若不连通则取最大连通子图，并重标节点为 0..n-1
             largest = max(nx.connected_components(g), key=len)
             g = g.subgraph(largest).copy()
+            g = nx.convert_node_labels_to_integers(g, first_label=0)
+        else:
+            g = nx.convert_node_labels_to_integers(g, first_label=0)
     else:
         raise ValueError("Unsupported model, choose 'ba' or 'er'")
 
@@ -64,6 +68,8 @@ class NetworkAgentModel:
         self.rng = np.random.default_rng(cfg.seed)
         self.g = generate_network(cfg)
         self.n = self.g.number_of_nodes()
+        # 预存每个节点的度数，便于方案 B 按实际度数设置信号采样次数
+        self.degrees = np.array([deg for _, deg in self.g.degree()], dtype=int)
         # 阈值可扩展为个体异质：此处简单用全局常数
         self.phi = np.full(self.n, cfg.phi, dtype=float)
         self.theta = np.full(self.n, cfg.theta, dtype=float)
@@ -91,13 +97,10 @@ class NetworkAgentModel:
     def _local_perception(self, p_env: float) -> np.ndarray:
         # 邻居高唤醒数量
         neighbor_high = np.zeros(self.n, dtype=float)
-        degrees = np.zeros(self.n, dtype=float)
         for node in self.g.nodes:
             nbrs = self.g.nodes[node]["neighbors"]
             if not nbrs:
                 continue
-            deg = len(nbrs)
-            degrees[node] = deg
             neighbor_high[node] = np.sum(self.state[nbrs] == STATE_HIGH)
 
         # p_i = (global_num + beta * k_high) / (global_den + beta * k_i)
@@ -106,7 +109,7 @@ class NetworkAgentModel:
         base_den = (1 - self.cfg.r) * self.cfg.n_m + self.cfg.r * self.cfg.n_w
 
         local_num = self.cfg.beta * neighbor_high
-        local_den = self.cfg.beta * degrees
+        local_den = self.cfg.beta * self.degrees
 
         denom = base_den + local_den
         # 避免除零：孤立点只受全局影响
@@ -116,11 +119,18 @@ class NetworkAgentModel:
         return np.clip(p_i, 0.0, 1.0)
 
     def _update_states(self, p_i: np.ndarray) -> None:
-        # 阈值规则
+        # 方案 B：按节点实际度数设置信号采样次数，孤立点至少采样 1 次
+        N_SAMPLES = np.maximum(self.degrees, 1)
+        signal_counts = self.rng.binomial(n=N_SAMPLES, p=p_i)
+        perceived_risk = signal_counts / N_SAMPLES
         new_state = np.where(
-            p_i >= self.phi, STATE_HIGH, np.where(p_i <= self.theta, STATE_LOW, STATE_MEDIUM)
+            perceived_risk >= self.phi,
+            STATE_HIGH,
+            np.where(perceived_risk <= self.theta, STATE_LOW, STATE_MEDIUM),
         )
-        self.state = new_state
+        # 引入异步/惰性更新，避免全局同步导致的周期震荡
+        update_mask = self.rng.random(self.n) < self.cfg.update_rate
+        self.state = np.where(update_mask, new_state, self.state)
 
     def step(self) -> Tuple[float, float]:
         q, a, _, _ = self._macro_stats()
