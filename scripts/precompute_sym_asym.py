@@ -37,8 +37,12 @@ from src.network_sim import NetworkAgentModel, NetworkConfig
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Precompute network simulations (symmetric/asymmetric).")
-    parser.add_argument("--phi-list", type=float, nargs="+", default=[0.54], help="列表形式的 phi 值")
-    parser.add_argument("--theta-list", type=float, nargs="+", default=[0.46], help="列表形式的 theta 值")
+    parser.add_argument("--phi-list", type=float, nargs="+", default=None, help="列表形式的 phi 值（优先级高于范围生成）")
+    parser.add_argument("--theta-list", type=float, nargs="+", default=None, help="列表形式的 theta 值（优先级高于范围生成）")
+    parser.add_argument("--phi-min", type=float, default=None, help="phi 最小值（与 phi-max/phi-step 搭配生成列表）")
+    parser.add_argument("--phi-max", type=float, default=None, help="phi 最大值")
+    parser.add_argument("--phi-step", type=float, default=None, help="phi 步长（包含端点）")
+    parser.add_argument("--theta-symmetric", action="store_true", help="若指定，则自动设置 theta=1-phi（生成列表时使用）")
     parser.add_argument("--sample-n-list", type=int, nargs="+", default=[50], help="sample_n 列表，对应固定采样次数/理论 k_avg")
     parser.add_argument("--N-list", type=int, nargs="+", default=[500], help="节点数列表")
     parser.add_argument("--model", type=str, default="er", choices=["er", "ba"], help="网络模型")
@@ -156,11 +160,28 @@ def main() -> None:
     symmetric_flag = args.mode == "symmetric"
     r_values = np.linspace(args.r_start, args.r_end, args.r_num)
 
-    if len(args.phi_list) != len(args.theta_list):
+    # 构造 phi/theta 列表
+    if args.phi_list is not None:
+        phi_list = args.phi_list
+    elif None not in (args.phi_min, args.phi_max, args.phi_step):
+        phi_list = list(np.arange(args.phi_min, args.phi_max + 1e-12, args.phi_step))
+    else:
+        phi_list = [0.54]
+
+    if args.theta_list is not None:
+        theta_list = args.theta_list
+    elif args.theta_symmetric:
+        theta_list = [1.0 - phi for phi in phi_list]
+    else:
+        if args.phi_list is not None:
+            raise ValueError("未提供 theta-list，且未启用 theta-symmetric")
+        theta_list = [0.46]
+
+    if len(phi_list) != len(theta_list):
         raise ValueError("phi_list 和 theta_list 长度必须一致")
 
     combos = list(itertools.product(
-        zip(args.phi_list, args.theta_list),
+        zip(phi_list, theta_list),
         args.sample_n_list,
         args.N_list,
     ))
