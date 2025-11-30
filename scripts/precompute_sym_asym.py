@@ -19,8 +19,6 @@ from pathlib import Path
 from typing import Iterable, List, Tuple
 
 import numpy as np
-from joblib import Parallel, delayed
-
 import sys
 
 # 将项目根目录加入 sys.path，便于直接 python scripts/xxx.py 运行
@@ -28,6 +26,11 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from joblib import Parallel, delayed
+try:
+    from tqdm.auto import tqdm
+except Exception:  # pragma: no cover - 如果缺少 tqdm 则退化为无进度条
+    tqdm = None
 from src import calculate_chi, calculate_rc
 from src.network_sim import NetworkAgentModel, NetworkConfig
 
@@ -53,6 +56,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/data"), help="输出目录")
     parser.add_argument("--overwrite", action="store_true", help="覆盖已有缓存")
     parser.add_argument("--n-jobs", type=int, default=-1, help="并行 worker 数，joblib Parallel")
+    parser.add_argument("--progress", action="store_true", help="显示进度（n_jobs=1 时 tqdm，n_jobs!=1 时 joblib verbose）")
     return parser.parse_args()
 
 
@@ -215,9 +219,16 @@ def main() -> None:
         )
         return f"[saved] {fpath} (rc={rc:.4f}, chi={chi:.4f})"
 
-    messages = Parallel(n_jobs=args.n_jobs)(delayed(worker)(c) for c in combos)
-    for msg in messages:
-        print(msg)
+    if args.n_jobs == 1:
+        iterator = combos
+        if args.progress and tqdm:
+            iterator = tqdm(combos, desc=f"sim ({args.mode})", total=len(combos))
+        for combo in iterator:
+            print(worker(combo))
+    else:
+        messages = Parallel(n_jobs=args.n_jobs, verbose=10 if args.progress else 0)(delayed(worker)(c) for c in combos)
+        for msg in messages:
+            print(msg)
 
 
 if __name__ == "__main__":
