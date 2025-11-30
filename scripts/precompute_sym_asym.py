@@ -21,6 +21,13 @@ from typing import Iterable, List, Tuple
 import numpy as np
 from joblib import Parallel, delayed
 
+import sys
+
+# 将项目根目录加入 sys.path，便于直接 python scripts/xxx.py 运行
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from src import calculate_chi, calculate_rc
 from src.network_sim import NetworkAgentModel, NetworkConfig
 
