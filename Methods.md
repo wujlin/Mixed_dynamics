@@ -58,6 +58,11 @@ where $n_m$ and $n_w$ represent the baseline counts of mainstream and We-media s
     $$
     Crucially, this term couples the system activity $a$ into the polarization dynamics. As the moderate buffer disappears ($a \to 1$), the amplification effect of We-media intensifies, driving the system away from equilibrium.
 
+**对称 vs 非对称实现（实验区分）**
+
+* 理论推导使用 $q \\to -q$ 对称假设，要求在 $q=0$ 时 $p_{env}=0.5$。对应实现：$p_{we}=0.5+q/2$（对称模式，用于验证 $r_c$ 与 GL 分岔）。
+* 现实模拟保留活跃度耦合：$p_{we}=(a+q)/2$。在 $q=0$ 时若 $a<1$ 则 $p_{env}<0.5$，会产生渐进漂移而非理想 Pitchfork。两种模式需要在实验与图注中明确标注（sym/asym），用以区分“理论验证”与“现实机制”。
+
 Equation (1), combined with the feedback rules (2) and (3), establishes the macroscopic governing equation for the environmental risk, setting the stage for the stability analysis.
 
 ---
@@ -117,15 +122,20 @@ $$
 $$
 where $\Gamma(r) = \left. \frac{\partial p_{env}}{\partial q} \right|_{q=0}$ is the **Feedback Gradient**, measuring how the media environment reacts to emerging polarization.
 
-By differentiating Eq. (1) with respect to $q$ (treating the activity $a$ as a slow variable), we derive the explicit form of the gradient:
+By differentiating Eq. (1) with respect to $q$ under the symmetric assumption ($p^{main} = (1-q)/2$, $p^{we} = 0.5 + q/2$), and treating the activity $a$ as a slow variable, we derive the explicit form of the gradient:
 $$
-\Gamma(r) = \frac{n_w - (1-r)n_m}{2 [ (1-r)n_m + n_w ]} \quad (7)
+\Gamma(r) = \frac{r n_w - (1-r)n_m}{2 [ (1-r)n_m + r n_w ]} \quad (7)
 $$
-Substituting Eq. (7) into Eq. (6) yields the analytical expression for the **Critical Removal Ratio $r_c$**:
+Note: The factor $r$ multiplies $n_w$ in both the numerator and denominator, reflecting that only the *remaining* We-media sources (after removal ratio $r$ is applied to mainstream) contribute to the positive feedback.
+
+Substituting Eq. (7) into Eq. (6) and solving for $r$ yields the analytical expression for the **Critical Removal Ratio $r_c$**:
 $$
-r_c = 1 + \frac{n_w}{n_m} \frac{2 - \chi}{2 + \chi} \quad (8)
+r_c = \frac{n_m (\chi + 2)}{n_m (\chi + 2) + n_w (\chi - 2)} \quad (8)
 $$
-Equation (8) reveals that the system's stability is determined by the ratio of media sources ($n_w/n_m$) and the population sensitivity ($\chi$). Notably, a phase transition is only possible when the population is sufficiently sensitive ($\chi > 2$).
+Equation (8) reveals several key insights:
+- **Threshold condition**: A phase transition ($0 < r_c < 1$) requires $\chi > 2$. When $\chi \leq 2$, the system remains stable for all $r \in [0,1]$.
+- **Sensitivity dependence**: As $\chi$ increases, $r_c$ decreases, meaning more sensitive populations polarize at lower mainstream removal ratios.
+- **Media ratio effect**: Larger $n_w/n_m$ ratios lower $r_c$, indicating that We-media-dominated ecosystems are more prone to polarization.
 
 **2.2.3 Macroscopic Ginzburg-Landau Dynamics**
 

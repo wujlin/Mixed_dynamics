@@ -47,7 +47,7 @@ Phase 1: 理论核心模块 (Theoretical Core)
 
 [ ] 实现临界点计算 calculate_rc(n_m, n_w, chi)。
 
-公式：$r_c = 1 + \frac{n_w}{n_m} \frac{2 - \chi}{2 + \chi}$。
+公式：$r_c = \frac{n_m (\chi + 2)}{n_m (\chi + 2) + n_w (\chi - 2)}$。
 
 [ ] 实现宏观系数映射 get_gl_params(r, rc)。
 
@@ -144,6 +144,43 @@ Phase 4: 临界慢化与高级分析 (Critical Phenomena)
 随机数种子：所有模拟函数必须接受 seed 参数，保证结果可复现 (Reproducibility)。
 
 文档字符串：关键函数（特别是 calculate_chi、step、_update_states）应包含 Physics Docstring，说明对应论文中的公式/假设；网络更新已引入二项采样以模拟有限信息采样。
+
+5. 参数对应关系 (Parameter Correspondence)
+
+**理论 vs 模拟的关键参数对应**：
+
+| 理论参数 | 模拟参数 | 说明 |
+|----------|----------|------|
+| `k_avg` in `calculate_chi()` | `sample_n` in `NetworkConfig` | 信息采样次数，决定 χ 和 rc |
+| `n_m`, `n_w` | `n_m`, `n_w` | 媒体基数，直接对应 |
+| `phi`, `theta` | `phi`, `theta` | 阈值参数，直接对应 |
+
+**验证理论 rc 的正确配置**：
+```python
+# 理论计算
+k_avg = 50
+chi = calculate_chi(phi, theta, k_avg)
+rc = calculate_rc(n_m, n_w, chi)
+
+# ABM 配置（必须一致）
+cfg = NetworkConfig(
+    sample_mode="fixed",
+    sample_n=k_avg,  # 与理论一致！
+    symmetric_mode=True,  # 对称模式
+    beta=0.0,  # 无邻居耦合
+    ...
+)
+```
+
+6. 对称 / 非对称模式 (Symmetric vs Asymmetric)
+
+理论假设：均场推导 (Eq.8/Eq.10) 依赖 $q\\to -q$ 对称与 $p_{env}(q=0)=0.5$。若自媒体项直接用 $p_{we}=(a+q)/2$，在 $q=0$ 时会生成外场偏置，产生"渐变"而非经典分岔。
+
+工程开关：`NetworkConfig.symmetric_mode`。
+- `True`：理想对称，强制 $p_{we}=0.5+q/2$，用于验证 rc/GL（Pitchfork 分岔清晰）。
+- `False`：现实非对称，$p_{we}=(a+q)/2$，用于刻画实际媒体/活跃度耦合下的提前漂移与渐变。
+
+要求：在实验、输出文件名、图注中明确标注 sym/asym，避免混淆；相图与结论需区分"对称验证"与"现实机制"两条线。
 
 5. 快速启动 (Quick Start for Agent)
 

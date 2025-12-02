@@ -29,10 +29,17 @@ def calculate_chi(phi: float, theta: float, k_avg: int) -> float:
     参数：
     - phi: 高阈值（推荐 0.5-1 区间，且满足 phi ≈ 1 - theta）。
     - theta: 低阈值。
-    - k_avg: 平均接触次数/平均度，决定二项分布试验数。
+    - k_avg: 信息采样次数（每个个体每步采样的信号数量）。
+              **重要**：此参数必须与 ABM 中的 NetworkConfig.sample_n 一致！
+              - 当 ABM 使用 sample_mode="fixed" 时，k_avg = sample_n
+              - 当 ABM 使用 sample_mode="degree" 时，k_avg ≈ avg_degree
 
     返回：
     - chi: 响应斜率近似值（标量）。
+
+    示例：
+        >>> chi = calculate_chi(phi=0.54, theta=0.46, k_avg=50)
+        >>> print(f"chi = {chi:.3f}")  # 约 9.6
     """
     if k_avg <= 0:
         raise ValueError("k_avg 必须为正整数")
@@ -52,7 +59,12 @@ def calculate_chi(phi: float, theta: float, k_avg: int) -> float:
 
 def calculate_rc(n_m: float, n_w: float, chi: ArrayLike) -> np.ndarray:
     """
-    计算临界移除比例 r_c，公式来源：Eq. (8) r_c = 1 + (n_w/n_m) * (2 - chi) / (2 + chi)。
+    计算临界移除比例 r_c。
+
+    推导过程（对称假设 p_main=(1-q)/2, p_we=0.5+q/2）：
+    1. 反馈梯度 Γ = ∂p_env/∂q|_{q=0} = [r·n_w - (1-r)·n_m] / {2·[(1-r)·n_m + r·n_w]}
+    2. 稳定性条件 χ·Γ = 1 解出 r_c
+    3. 正确公式：r_c = n_m(χ+2) / [n_m(χ+2) + n_w(χ-2)]
 
     参数：
     - n_m: 主流媒体基数 n_m > 0
@@ -61,14 +73,25 @@ def calculate_rc(n_m: float, n_w: float, chi: ArrayLike) -> np.ndarray:
 
     返回：
     - r_c 与 chi 同形状的 ndarray
+
+    注意：
+    - 当 χ < 2 时，分母中 (χ-2) < 0，可能导致 r_c > 1（无相变）或 r_c < 0
+    - 当 χ = 2 时，r_c = 1（临界边界）
+    - 当 χ > 2 时，0 < r_c < 1（存在相变）
     """
     if n_m <= 0 or n_w <= 0:
         raise ValueError("n_m 与 n_w 必须为正数")
 
     chi_arr = np.asarray(chi, dtype=float)
-    if np.any(np.isclose(chi_arr, -2.0)):
-        raise ValueError("chi 不能等于 -2，会导致分母为零")
-    rc = 1.0 + (n_w / n_m) * (2.0 - chi_arr) / (2.0 + chi_arr)
+    numerator = n_m * (chi_arr + 2.0)
+    denominator = n_m * (chi_arr + 2.0) + n_w * (chi_arr - 2.0)
+
+    # 处理分母为零的情况（当 n_m(χ+2) = -n_w(χ-2) 时）
+    with np.errstate(divide='ignore', invalid='ignore'):
+        rc = numerator / denominator
+        # 分母为零时设为 inf（无相变）
+        rc = np.where(np.isclose(denominator, 0.0), np.inf, rc)
+
     return rc
 
 

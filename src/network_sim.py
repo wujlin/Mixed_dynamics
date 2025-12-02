@@ -26,22 +26,35 @@ STATE_LOW = -1
 
 @dataclass
 class NetworkConfig:
-    n: int
-    avg_degree: float
-    model: Literal["ba", "er"] = "ba"
-    beta: float = 0.0  # 邻居高唤醒影响系数
-    update_rate: float = 0.1  # 异步更新比例，降低同步震荡
-    init_state: Literal["random", "medium"] = "random"  # 初始状态配置
-    sample_mode: Literal["degree", "fixed"] = "degree"  # 采样模式：按度或固定样本数
-    sample_n: int = 50  # 当 sample_mode="fixed" 时使用
-    # 对称模式：True 用于理论验证（p_env 在 q=0 时固定 0.5），False 为现实非对称（p_we 依赖 a）
-    symmetric_mode: bool = False
-    r: float = 0.5  # 移除比例
-    n_m: float = 10.0
-    n_w: float = 5.0
-    phi: float = 0.6
-    theta: float = 0.4
-    seed: Optional[int] = None
+    """
+    网络主体模型配置。
+
+    参数对应关系（理论 vs 模拟）：
+    - theory.calculate_chi(k_avg) 中的 k_avg 对应：
+      - sample_mode="fixed" 时：sample_n
+      - sample_mode="degree" 时：avg_degree（近似）
+    - 验证理论 rc 时，建议使用 sample_mode="fixed" 并设置 sample_n = 理论计算中的 k_avg
+    """
+    n: int  # 节点数量
+    avg_degree: float  # 平均度（用于网络生成）
+    model: Literal["ba", "er"] = "ba"  # 网络模型：BA 无标度或 ER 随机
+    beta: float = 0.0  # 邻居高唤醒影响系数（0 = 无局部耦合）
+    update_rate: float = 0.1  # 异步更新比例（0.1 = 每步 10% 节点更新）
+    # **时间尺度说明**：
+    # - update_rate=0.1 时，有效时间 t_eff = t_step * update_rate
+    # - 与 SDE 比较时，ABM 的 lag-k 自相关应与 SDE 的 lag-(k/update_rate) 对比
+    # - 理论验证建议使用 update_rate=1.0（同步更新）以消除时间尺度差异
+    init_state: Literal["random", "medium"] = "random"  # 初始状态：随机或全中立
+    sample_mode: Literal["degree", "fixed"] = "degree"  # 采样模式
+    sample_n: int = 50  # 固定采样数（仅 sample_mode="fixed" 时生效）
+    # **重要**：验证理论时应设置 sample_n = theory.calculate_chi() 中的 k_avg
+    symmetric_mode: bool = False  # True: 理想对称（p_we=0.5+q/2），False: 现实非对称（p_we=(a+q)/2）
+    r: float = 0.5  # 主流媒体移除比例
+    n_m: float = 10.0  # 主流媒体基数
+    n_w: float = 5.0  # 自媒体基数
+    phi: float = 0.6  # 高唤醒阈值
+    theta: float = 0.4  # 低唤醒阈值
+    seed: Optional[int] = None  # 随机种子
 
 
 def generate_network(cfg: NetworkConfig) -> nx.Graph:
