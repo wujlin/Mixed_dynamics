@@ -135,6 +135,355 @@ Phase 4: 临界慢化与高级分析 (Critical Phenomena)
 
 随着 $r \to r_c$，自相关系数（Lag-1 Autocorrelation）应显著上升并趋近于 1。
 
+Phase 5: 经验数据验证 (Empirical Validation)
+
+目标：用 Weibo Long-COVID 话题数据验证理论预测的核心机制。
+
+---
+
+### 核心理论洞察 (Core Theoretical Insight)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  现象：为什么集体情绪有时渐变、有时突变？                      │
+├─────────────────────────────────────────────────────────────┤
+│  洞察：中立者（温和派）是系统稳定的关键                        │
+│                                                             │
+│  • 中立者存在（a < 1）→ 正反馈被稀释 → 渐变                   │
+│  • 中立者消失（a → 1）→ 正负反馈完全对峙 → 相变/突变           │
+│                                                             │
+│  理论机制：                                                   │
+│  - 对称模式下：p_we = 0.5 + q/2（正负反馈对称）               │
+│  - 非对称模式下：p_we = (a + q)/2（正反馈被 a 稀释）          │
+│  - 当 a < 1 时，相变条件被破坏，系统呈渐变                    │
+├─────────────────────────────────────────────────────────────┤
+│  核心结论：                                                   │
+│  情绪相变的本质是"温和派的消亡"——当中立者减少到临界点以下，    │
+│  正负反馈失去缓冲，系统就会从稳定态突变为极化态。               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 模型参数与经验代理的映射 (Parameter-Proxy Mapping)
+
+| 模型参数 | 物理含义 | 经验代理变量 | 计算方法 |
+|----------|----------|--------------|----------|
+| **r** | 主流媒体移除比例 | **r_proxy** | n_wemedia / (n_mainstream + n_wemedia) |
+| **a** | Activity (1 - X_M) | **a** | (n_H + n_L) / n_total（公众情绪） |
+| **φ, θ** | 心理阈值 | 无法直接观测 | **a 是其综合效应的体现** |
+| **Q** | 极化方向 | **Q** | (n_H - n_L) / n_total |
+
+**关键说明**：
+- φ 和 θ 是个体内部状态，无法直接观测
+- 但 φ - θ 小（敏感性高）→ X_M 小 → a 大
+- 因此 **a 的效应验证 = φ, θ 效应的间接验证**
+
+---
+
+### 可验证的核心假设 (Testable Hypotheses)
+
+| 假设 | 理论预测 | 经验检验 | 预期结果 |
+|------|----------|----------|----------|
+| **H1** | a 高 → 突变 | corr(a, jump_score) | r > 0.3, p < 0.05 |
+| **H2** | r_proxy 高 → 波动大 | corr(r_proxy, volatility) | r > 0, p < 0.05 |
+| **H3** | r × a 交互效应 | 分组比较：高r高a vs 低r低a | 高r高a 波动显著更大 |
+| **H4** | 突变前有 CSD | AC1↑, Var↑ 趋势 | 峰值前 6-12 窗口可检测 |
+
+**核心验证逻辑**：
+```
+高 r_proxy（自媒体主导）+ 高 a（中立者少）→ 最脆弱 → 最可能突变
+```
+
+---
+
+### 验证策略 (Validation Strategy)
+
+**策略1：时间分段验证**
+- 将时间序列分成若干段
+- 每段计算 r_proxy 和 a
+- 检验它们与该段波动性/突变指标的关系
+
+**策略2：跨话题比较**
+- 不同话题的媒体生态不同（r_proxy 不同）
+- 比较高 a 话题 vs 低 a 话题的情绪动态
+
+**策略3：关键事件/自然实验**
+- 政策调整（如2022年12月）前后对比
+- 辟谣事件前后的 r_proxy 变化
+- 观察这些外生冲击对情绪动态的影响
+
+---
+
+### 数据概况 (Data Overview)
+
+- 话题: #新冠后遗症# 等 Long-COVID 相关话题
+- 数据量: ~7,500 条/话题
+- 时间范围: 2020-02 ~ 2024-02
+- 认证分布: 蓝V(媒体) ~16%, 黄V(大V) ~6%, 红V ~7%, 无认证 ~70%
+- 时间精度: 分钟级
+
+---
+
+### Phase 5.1: 文本分析流水线 (Text Classification Pipeline)
+
+目标：建立高质量的情绪/风险分类器，替代粗糙的词典方法。
+
+技术方案: LLM辅助标注 + 监督学习
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Step 1: LLM 标注 (500-1000 样本)                        │
+│  - 使用 GPT-4 / Claude API 对样本进行分类                 │
+│  - 输出: emotion_class (H/M/L), risk_class (risk/norisk) │
+├─────────────────────────────────────────────────────────┤
+│  Step 2: 人工校验 (20% 抽样)                              │
+│  - 计算 LLM-Human Cohen's Kappa                          │
+│  - 要求: Kappa > 0.7                                     │
+├─────────────────────────────────────────────────────────┤
+│  Step 3: 训练轻量分类器                                   │
+│  - 模型: DistilBERT / BERT-base-chinese                  │
+│  - 训练集: LLM 标注 + 人工校验样本                         │
+│  - 验证: 5-fold CV, Accuracy > 85%                       │
+├─────────────────────────────────────────────────────────┤
+│  Step 4: 全量推理                                        │
+│  - 对所有帖子进行情绪/风险分类                             │
+│  - 输出: 带标签的完整数据集                               │
+└─────────────────────────────────────────────────────────┘
+```
+
+任务清单 (Tasks):
+
+[ ] 5.1.1 设计 LLM Prompt 模板
+    - 情绪分类: 区分 高唤醒(愤怒/恐惧/讽刺) / 中性(理性/平和) / 低唤醒(焦虑/困惑/无奈)
+    - 风险分类: 区分 风险信息(强调后遗症严重性) / 无风险信息(淡化/安抚)
+    - 输出: JSON 格式，含置信度
+
+[ ] 5.1.2 实现 LLM 标注脚本 `src/empirical/llm_annotator.py`
+    - 支持 OpenAI / Anthropic API
+    - 批量处理，断点续传
+    - 成本控制（token 统计）
+
+[ ] 5.1.3 实现人工校验工具 `src/empirical/annotation_tool.py`
+    - 简单的命令行或 Streamlit UI
+    - 记录 Human label，计算一致性
+
+[ ] 5.1.4 训练分类器 `src/empirical/classifier.py`
+    - 基于 HuggingFace Transformers
+    - 支持 DistilBERT / BERT-base-chinese
+    - 输出: 训练好的模型 checkpoint
+
+[ ] 5.1.5 全量推理脚本 `src/empirical/batch_inference.py`
+
+验收标准:
+- LLM-Human Kappa > 0.7
+- 分类器 5-fold CV Accuracy > 85%
+- 输出数据格式规范，含所有必要字段
+
+---
+
+### Phase 5.2: 用户类型映射与数据预处理 (Data Preprocessing)
+
+目标：将 Weibo 认证类型映射到模型概念，生成时间序列特征。
+
+用户类型映射:
+| Weibo verify_typ | 模型角色 | 说明 |
+|------------------|----------|------|
+| 蓝V (媒体类) | mainstream | 主流媒体，负反馈来源 |
+| 蓝V (企业/学校) | exclude/other | 非信息源，排除或标记 |
+| 黄V | wemedia | 自媒体/大V，正反馈来源 |
+| 红V + 无认证 | public | 公众，情绪被影响者 |
+
+任务清单 (Tasks):
+
+[ ] 5.2.1 实现用户类型识别逻辑 `src/empirical/user_mapper.py`
+    - 蓝V 需进一步判断是否为"媒体类"（可通过用户名关键词或手动名单）
+
+[ ] 5.2.2 实现时间序列聚合 `src/empirical/time_series.py`
+    - 时间窗口: 1小时 / 4小时 / 1天（可配置）
+    - 输出特征:
+      * X_H, X_M, X_L: 公众情绪分布
+      * a = X_H + X_L = 1 - X_M (核心变量!)
+      * Q = X_H - X_L
+      * p_risk_mainstream, p_risk_wemedia: 媒体风险报道比例
+      * n_posts, engagement_sum
+
+[ ] 5.2.3 数据清洗与质量控制
+    - 去重、去空、去过短文本
+    - 时间异常检测
+
+验收标准:
+- 时间序列连续，无缺失窗口（或标记缺失）
+- 用户类型覆盖率 > 95%
+
+---
+
+### Phase 5.3: 核心假设验证 (Hypothesis Testing)
+
+目标：检验四个核心假设（H1-H4）。
+
+任务清单 (Tasks):
+
+[ ] 5.3.1 计算突变/渐变指标
+    - dP/dt 峰值: 极化指数变化率的最大值
+    - Changepoint 检测: 使用 ruptures 库检测断点
+    - jump_score: 综合突变得分（dP/dt + changepoints）
+
+[ ] 5.3.2 计算 r_proxy（控制参数代理）
+    ```python
+    r_proxy = n_wemedia / (n_mainstream + n_wemedia)
+    ```
+    - r_proxy 高 → 自媒体主导（正反馈占优）
+    - r_proxy 低 → 主流媒体主导（负反馈占优）
+
+[ ] 5.3.3 H1 验证：a 与突变的关系
+    ```
+    corr(a_mean, jump_score)
+    ```
+    - 预期: r > 0.3, p < 0.05
+
+[ ] 5.3.4 H2 验证：r_proxy 与波动性的关系
+    ```
+    corr(r_proxy, volatility)
+    ```
+    - 预期: 正相关
+
+[ ] 5.3.5 H3 验证：r × a 交互效应
+    ```python
+    # 分组比较
+    high_r_high_a = data[(r_proxy > median) & (a > median)]
+    low_r_low_a = data[(r_proxy <= median) & (a <= median)]
+    t_test(high_r_high_a.volatility, low_r_low_a.volatility)
+    ```
+    - 预期: 高r高a组波动显著更大
+
+[ ] 5.3.6 H4 验证：临界慢化信号检测
+    - 滚动窗口计算 AC1 (Lag-1 自相关)
+    - 滚动窗口计算 Variance
+    - 检验突变前是否有 AC1↑, Var↑ 趋势
+
+[ ] 5.3.7 综合回归分析
+    ```
+    jump_score ~ r_proxy * a + controls
+    ```
+    - 预期: 交互项 r_proxy:a 显著为正
+
+验收标准:
+- H1: a 与 jump_score 相关系数 r > 0.3，p < 0.05
+- H2: r_proxy 与 volatility 正相关
+- H3: 高r高a组 vs 低r低a组差异显著 (p < 0.05)
+- H4: 临界慢化信号在突变前 6-12 窗口可检测
+- 结果可视化清晰，支持论文图表
+
+---
+
+### Phase 5.4: 结果可视化与论文图表 (Visualization)
+
+目标：生成论文级别的验证图表。
+
+任务清单 (Tasks):
+
+[ ] 5.4.1 时间序列可视化
+    - 多面板图: 上-情绪分布(X_H, X_M, X_L)，中-Activity(a)，下-媒体风险(p_risk)
+    - 标注关键事件/突变点
+
+[ ] 5.4.2 突变特征图
+    - dP/dt 时间序列 + 峰值标注
+    - Changepoint 位置标注
+
+[ ] 5.4.3 临界慢化信号图
+    - AC1, Variance 的滚动曲线
+    - 与突变点的时间对应关系
+
+[ ] 5.4.4 散点图/回归图
+    - a vs 突变指标 的散点图
+    - 回归线 + 置信区间
+
+验收标准:
+- 图表风格统一，论文可用
+- 支持导出 PNG (300dpi) 和 PDF
+
+---
+
+### Phase 5 目录结构 (Directory Structure)
+
+```
+project_root/
+├── src/
+│   ├── empirical/                    # Phase 5 新增
+│   │   ├── __init__.py
+│   │   ├── llm_annotator.py          # 5.1.2 LLM 标注
+│   │   ├── annotation_tool.py        # 5.1.3 人工校验
+│   │   ├── classifier.py             # 5.1.4 分类器训练
+│   │   ├── batch_inference.py        # 5.1.5 全量推理
+│   │   ├── user_mapper.py            # 5.2.1 用户类型映射
+│   │   ├── time_series.py            # 5.2.2 时间序列聚合
+│   │   └── hypothesis_test.py        # 5.3 假设检验
+│   └── ...
+├── dataset/
+│   ├── Lexicon/                      # 词典（备用）
+│   ├── Topic_data/                   # 原始数据
+│   │   └── #新冠后遗症#.csv
+│   ├── annotations/                  # LLM + 人工标注
+│   │   ├── llm_labels.jsonl
+│   │   └── human_verified.jsonl
+│   └── processed/                    # 处理后数据
+│       ├── classified_posts.parquet
+│       └── time_series_1h.parquet
+├── notebooks/
+│   ├── 05_Empirical_Text_Analysis.ipynb    # 文本分析探索
+│   ├── 06_Empirical_TimeSeries.ipynb       # 时间序列分析
+│   └── 07_Empirical_Hypothesis.ipynb       # 假设检验
+└── outputs/
+    └── figs/
+        ├── fig_emp_timeseries.png
+        ├── fig_emp_csd_signals.png
+        └── fig_emp_scatter_a_vs_jump.png
+```
+
+---
+
+### Phase 5 开发顺序建议 (Recommended Order)
+
+```
+Week 1: 文本分析流水线
+├── Day 1-2: 设计 Prompt，测试 LLM 标注效果
+├── Day 3-4: 批量 LLM 标注 (500-1000 样本)
+├── Day 5: 人工校验 (100-200 样本)
+└── Day 6-7: 训练分类器，全量推理
+
+Week 2: 数据处理与假设检验
+├── Day 1-2: 用户类型映射，时间序列聚合
+├── Day 3-4: 计算 r_proxy, a, jump_score
+├── Day 5-6: H1-H4 假设检验
+└── Day 7: 可视化，图表生成
+```
+
+---
+
+### Phase 5 预期论文叙事 (Expected Paper Narrative)
+
+**理论部分（已完成）**：
+> 我们建立了一个混合反馈模型，发现**对称条件**（正负反馈完全对峙）是产生二阶相变的充分条件。
+> 在非对称情况下（中立者存在，a < 1），正反馈被"稀释"，系统呈现渐变而非相变。
+
+**经验验证部分（Phase 5）**：
+> 我们将理论参数映射到可观测的经验代理：
+> - 控制参数 r → **r_proxy**（自媒体占比）
+> - 心理敏感性 φ, θ → **a**（中立者缺失度，其综合效应的体现）
+>
+> 使用 Weibo Long-COVID 数据验证，结果表明：
+> 1. **a 越高，情绪变化越陡峭**（H1，r = X.XX, p < 0.05）
+> 2. **r_proxy 与波动性正相关**（H2，验证正反馈主导导致不稳定）
+> 3. **高r高a条件下波动最大**（H3，验证交互效应）
+> 4. **突变前检测到临界慢化信号**（H4，AC1 和 Var 上升）
+>
+> 这些结果支持了核心理论洞察：**中立者的消失是情绪相变的前兆和驱动力**。
+
+**政策启示**：
+> 保护信息生态系统中的"温和派"（中立信息/理性讨论）是维护社会情绪稳定的关键。
+> 当中立者占比下降、自媒体主导上升时，系统脆弱性增加，应提前预警。
+
 4. 编码规范 (Coding Standards)
 
 参数解耦：所有物理参数（$n_m, n_w, \theta, \phi$）必须在 config 字典或类属性中定义，严禁在计算逻辑中写死硬编码（Hard-coding）。
