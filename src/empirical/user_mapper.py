@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 from typing import Literal, Optional, Set
 from dataclasses import dataclass
+from pathlib import Path
 
 
 # 主流媒体关键词（用于识别蓝V中的媒体账号）
@@ -41,6 +42,26 @@ GOVERNMENT_KEYWORDS = {
     "发布", "政府", "公安", "卫健委", "疾控中心", "CDC", "卫生健康",
     "市场监管", "应急管理", "外交部", "国务院", "人大", "政协",
 }
+
+
+def _load_official_list() -> Set[str]:
+    """
+    读取 dataset/官媒清单.txt，返回精确匹配的主流媒体名单。
+    若文件不存在则返回空集合。
+    """
+    names: Set[str] = set()
+    try:
+        base = Path(__file__).resolve().parents[2]  # project root
+        path = base / "dataset/官媒清单.txt"
+        if path.exists():
+            for line in path.read_text(encoding="utf-8").splitlines():
+                name = line.strip()
+                if name:
+                    names.add(name)
+    except Exception:
+        # 静默失败，避免因路径/编码问题中断
+        return set()
+    return names
 
 
 @dataclass
@@ -70,7 +91,8 @@ class UserTypeMapper:
         custom_mainstream: Optional[Set[str]] = None,
         custom_wemedia: Optional[Set[str]] = None,
     ):
-        self.custom_mainstream = custom_mainstream or set()
+        official_list = _load_official_list()
+        self.custom_mainstream = (custom_mainstream or set()) | official_list
         self.custom_wemedia = custom_wemedia or set()
         
         # 编译正则

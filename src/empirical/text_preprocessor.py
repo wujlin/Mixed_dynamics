@@ -172,3 +172,6 @@ def preprocess_batch(texts: list[str], **kwargs) -> list[str]:
     """批量预处理文本"""
     return [preprocess_weibo_text(t, **kwargs) for t in texts]
 
+
+
+
