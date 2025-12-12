@@ -1,0 +1,65 @@
+{
+  "topic_name": "Long-COVID (Merged)",
+  "summary": {
+    "topic_name": "Long-COVID (Merged)",
+    "n_windows": 4426,
+    "n_valid_windows": 36,
+    "total_posts": "6195",
+    "duration_hours": 34167.333333333336,
+    "a_mean": 0.5149715182982022,
+    "a_max": 1.0,
+    "a_min": 0.1428571428571428,
+    "a_std": 0.1521229652448005,
+    "r_proxy_mean": 0.9187458225390364,
+    "r_proxy_max": 1.0,
+    "r_proxy_std": 0.26559094830764396,
+    "Q_mean": 0.09332277058694466,
+    "Q_abs_max": 0.6000000000000001,
+    "Q_std": 0.23674162546622723,
+    "X_H_mean": 0.30414714444257346,
+    "X_M_mean": 0.48502848170179763,
+    "X_L_mean": 0.21082437385562872,
+    "n_mainstream_total": "98",
+    "n_wemedia_total": "982",
+    "n_public_total": "4773"
+  },
+  "jump_metrics": {
+    "dP_dt_max": 0.4571428571428572,
+    "dP_dt_max_time": "2022-03-14 17:40:00",
+    "da_dt_max": 0.4571428571428572,
+    "n_changepoints": 0,
+    "jump_score": 0.5485714285714286
+  },
+  "csd_signals": {
+    "ac1_trend": -0.013673079939669597,
+    "var_trend": 0.0021512175664926254,
+    "csd_detected": "False"
+  },
+  "parameter_effects": {
+    "n_samples": 33,
+    "r_proxy_vs_volatility": {
+      "correlation": 0.28056036398662004,
+      "p_value": 0.11376285813814607,
+      "significant": "False"
+    },
+    "a_vs_volatility": {
+      "correlation": 0.2100137602049339,
+      "p_value": 0.24077271350708704,
+      "significant": "False"
+    },
+    "interaction_effect": {
+      "high_r_high_a_volatility": 0.2400688850797697,
+      "low_r_low_a_volatility": 0.18551192065603953,
+      "t_statistic": 1.56522506181386,
+      "p_value": 0.1398480062264807,
+      "significant": "False",
+      "theory_supported": "True"
+    }
+  },
+  "hypothesis_support": {
+    "H1_high_a_high_jump": "True",
+    "H2_high_r_high_volatility": "True",
+    "H3_interaction_effect": "True",
+    "H4_csd_before_jump": "False"
+  }
+}

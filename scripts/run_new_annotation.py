@@ -65,14 +65,33 @@ def main() -> None:
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Resume logic: Read existing MIDs
+    existing_mids = set()
+    if output_path.exists():
+        import json
+        with output_path.open("r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    data = json.loads(line)
+                    if "mid" in data:
+                        existing_mids.add(str(data["mid"]))
+                except:
+                    pass
+        print(f"Found {len(existing_mids)} existing annotations. Resuming...")
 
-    with output_path.open("w", encoding="utf-8") as f_out:
+    mode = "a" if output_path.exists() else "w"
+    with output_path.open(mode, encoding="utf-8") as f_out:
         for idx, (mid, text) in enumerate(zip(mids, df["content"].fillna("")), start=1):
+            if str(mid) in existing_mids:
+                continue
+                
             res = ann.annotate(str(text), max_tokens=args.max_tokens)
             rec = res.to_dict()
             rec["mid"] = mid
             rec["original_text"] = text
             f_out.write(__import__("json").dumps(rec, ensure_ascii=False) + "\n")
+            f_out.flush()  # Ensure write to disk
             if idx % 50 == 0:
                 print(f"[Progress] {idx}/{len(df)}")
 
