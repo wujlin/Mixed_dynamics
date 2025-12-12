@@ -431,9 +431,9 @@ project_root/
 │       ├── classified_posts.parquet
 │       └── time_series_1h.parquet
 ├── notebooks/
-│   ├── 05_Empirical_Text_Analysis.ipynb    # 文本分析探索
-│   ├── 06_Empirical_TimeSeries.ipynb       # 时间序列分析
-│   └── 07_Empirical_Hypothesis.ipynb       # 假设检验
+│   ├── 05_Annotation_Pipeline.ipynb    # LLM 标注流水线
+│   ├── 06_Active_Period_Analysis.py   # 活跃期/时间序列经验分析
+│   └── 99_Paper_Figures.ipynb         # 论文最终出图
 └── outputs/
     └── figs/
         ├── fig_emp_timeseries.png
