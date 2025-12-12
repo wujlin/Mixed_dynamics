@@ -6,4 +6,5 @@ pandas>=2.0
 seaborn>=0.12
 pytest>=7.4
 nbformat>=5.9
-tqdm>=4.66
+tqdm
+openai>=4.66

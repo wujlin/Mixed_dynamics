@@ -10,10 +10,10 @@ Phase 5.2 预处理脚本
 
 用法示例：
     python scripts/run_phase5_preprocessing.py \\
-        --dataset dataset/Topic_data/#新冠后遗症#_filtered.csv \\
-        --annotations outputs/annotations/v3/annotated_intent_rule_v3.jsonl \\
+        --dataset dataset/Topic_data/merged_topic_official.csv \\
+        --annotations outputs/annotations/master/long_covid_annotations_master.jsonl \\
         --freq 1H \\
-        --output outputs/annotations/v3/time_series_1h.csv
+        --output outputs/annotations/derived/time_series_1h.csv
 
 注意：
 - 需要 pandas 依赖。

@@ -3,9 +3,9 @@
 
 用法示例：
 python scripts/merge_new_annotations.py \
-    --base outputs/annotations/v3/annotated_intent_rule_v3.jsonl \
-    --new outputs/annotations/new_official_ann.jsonl \
-    --output outputs/annotations/v3/annotated_intent_rule_v3_plus.jsonl
+    --base outputs/annotations/master/long_covid_annotations_master.jsonl \
+    --new outputs/annotations/batches/batch_xx/new_batch.jsonl \
+    --output outputs/annotations/master/long_covid_annotations_master_new.jsonl
 
 去重逻辑：
 - 优先使用 mid 去重；若缺少 mid，则使用 content（或 original_text/text）去重。

@@ -37,20 +37,26 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--api-key", required=True, help="服务 api_key")
     p.add_argument("--model", required=True, help="模型名称，例如 Qwen/Qwen3-8B")
     p.add_argument("--max-tokens", type=int, default=512, help="生成最大 token 数")
+    p.add_argument("--proxy", help="代理地址，如 socks5://127.0.0.1:1080")
     return p.parse_args()
 
 
 def main() -> None:
-    # 在脚本内设置代理并清除 no_proxy（如需可修改端口）
-    os.environ.pop("no_proxy", None)
-    os.environ.pop("NO_PROXY", None)
-    proxy_url = os.environ.get("http_proxy") or "socks5://127.0.0.1:1080"
-    os.environ["http_proxy"] = proxy_url
-    os.environ["https_proxy"] = proxy_url
-    os.environ["ALL_PROXY"] = proxy_url
-    print(f"已配置代理: {proxy_url}")
-
     args = parse_args()
+    
+    # Proxy settings
+    if args.proxy:
+        os.environ["http_proxy"] = args.proxy
+        os.environ["https_proxy"] = args.proxy
+        os.environ["ALL_PROXY"] = args.proxy
+        print(f"已配置代理: {args.proxy}")
+    else:
+        # Clear proxy if not specified
+        os.environ.pop("http_proxy", None)
+        os.environ.pop("https_proxy", None)
+        os.environ.pop("ALL_PROXY", None)
+        print("未配置代理")
+        
     df = pd.read_csv(args.input)
     if "content" not in df.columns:
         raise ValueError("输入 CSV 需要包含 content 列")

@@ -9,8 +9,8 @@
 用法示例：
 python scripts/extract_new_samples.py \
     --merged dataset/Topic_data/merged_topic_official.csv \
-    --annotated outputs/annotations/v3/annotated_intent_rule_v3.jsonl \
-    --output outputs/annotations/v3/to_annotate.csv
+    --annotated outputs/annotations/master/long_covid_annotations_master.jsonl \
+    --output outputs/annotations/intermediate/to_annotate.csv
 """
 
 from __future__ import annotations
