@@ -8,13 +8,13 @@
   - `empirical/`（Phase 5）
     - `llm_annotator.py`：LLM 标注器（OpenAI/兼容端点）。
     - `user_mapper.py`：用户类型映射（蓝V媒体/黄V自媒体/红V+无认证公众/政府/其他，自动加载官媒清单）。
-    - `time_series.py`：时间序列聚合与指标（X_H/X_M/X_L, a, Q, p_risk_mainstream/wemedia, r_proxy 等）。
+    - `time_series.py`：时间序列聚合与指标（X_H/X_M/X_L, a, Q, p_risk_mainstream/wemedia；r_proxy 等可由计数派生）。
     - `data_loader.py`：话题 CSV 加载与用户映射。
     - `hypothesis_test.py`：突变/交互效应/临界慢化工具函数。
     - `classifier.py`：情绪/风险分类器骨架（Transformers）。
     - `text_preprocessor.py`：微博文本清洗。
 - `scripts/`
-  - `run_phase5_preprocessing.py`：合并标注+聚合时间序列（支持 mid 或 content 对齐）。
+  - `run_phase5_preprocessing.py`：合并标注+聚合时间序列（默认以 mid 对齐；content 对齐仅用于遗留标注）。
   - 数据合并与标注辅助：`flatten_official_media.py`（扁平官媒 JSON）、`merge_datasets.py`（主数据+官媒 CSV 合并）、`extract_new_samples.py`（筛未标注样本）、`run_new_annotation.py`（批量标注）、`merge_new_annotations.py`（合并新旧标注）、`test_llm_connection.py`（连通性测试）。
   - 分析脚本：`analyze_time_series.py`、`analyze_active_periods.py`（如需扩展）、`verify_hypotheses.py`（假设验证）。
 - `notebooks/`
@@ -34,7 +34,7 @@
 ### 标注与分析数据 (`outputs/annotations/`)
 **新结构 (2025.12)**:
 - `master/`: **主版本数据区**。唯一事实来源。
-  - `long_covid_annotations_master.jsonl`: 全量标注文件。
+  - `long_covid_annotations_master.jsonl`: 与 `merged_topic_official.csv` 对齐的主标注（17,604 条，含 mid）。
 - `batches/`: **原始批次归档**。
   - `batch_01_filtered_rules/`: 第一轮规则标注。
   - `batch_02_official_llm/`: 第二轮 LLM 标注。
@@ -43,6 +43,9 @@
   - `time_series_10m.csv`: 10分钟聚合。
 - `intermediate/`: **中间过程文件**。
   - `to_annotate_batch2.csv`: 中间产生的待标注名单。
+ - `legacy/`: **遗留归档**（只读，不用于主分析）。
+   - `long_covid_annotations_master_full_23545.jsonl`: 清理前 master 备份。
+   - `long_covid_annotations_no_mid_5941.jsonl`: 无 mid 的遗留记录。
 
 ### 配置与代理
 - LLM 服务：远程 vLLM（示例 `http://10.13.12.164:7890/v1`，api_key=abc123），脚本内已内置代理设置并清除 no_proxy。

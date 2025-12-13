@@ -3,7 +3,7 @@ Phase 5.2 预处理脚本
 
 功能：
 - 读取话题数据 csv（含 publish_time、content、verify_typ 等）
-- 读取已标注的情绪/风险 jsonl（需包含 mid, emotion_class, risk_class）
+- 读取已标注的情绪/风险 jsonl（需包含 emotion_class, risk_class；推荐包含 mid）
 - 映射用户类型（mainstream/wemedia/public/other）
 - 合并标注，按时间窗口聚合生成时间序列特征
 - 输出聚合结果与覆盖率摘要
@@ -17,7 +17,8 @@ Phase 5.2 预处理脚本
 
 注意：
 - 需要 pandas 依赖。
-- 注释文件必须包含 mid 与 publish_time 对应的标注；若无 mid，将无法对齐。
+- 推荐使用包含 `mid` 的主标注（`outputs/annotations/master/long_covid_annotations_master.jsonl`）做对齐。
+- 若标注缺少 `mid`，脚本会回退用 `original_text`/`text` 对齐到数据集的 `content`（仅用于 legacy 场景，可能存在歧义）。
 """
 
 from __future__ import annotations
@@ -44,7 +45,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--annotations",
         required=True,
-        help="情绪/风险标注 jsonl 路径（需包含 mid, emotion_class, risk_class）",
+        help="情绪/风险标注 jsonl 路径（需包含 emotion_class, risk_class；推荐包含 mid）",
     )
     parser.add_argument("--freq", default="1H", help="时间窗口频率，默认 1H，可选 4H/1D 等")
     parser.add_argument("--output", required=True, help="聚合结果输出 csv 路径")
@@ -55,7 +56,7 @@ def parse_args() -> argparse.Namespace:
 def load_annotations(path: Path) -> pd.DataFrame:
     """
     读取标注 jsonl。
-    优先使用 mid 对齐；若缺失 mid，则尝试使用 content 对齐（使用原文 original_text 或 text）。
+    优先使用 mid 对齐；若缺失 mid，则回退使用 content 对齐（使用原文 original_text 或 text）。
     """
     records = []
     with path.open("r", encoding="utf-8") as f:

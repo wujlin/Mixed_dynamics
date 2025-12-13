@@ -12,6 +12,7 @@
   - ✅ LLM 标注流水线已跑通 (`src/empirical/llm_annotator.py`)。
   - ✅ 完成数 17,604 条全量标注 (覆盖率 100%)。
   - 产出: `outputs/annotations/master/long_covid_annotations_master.jsonl`。
+  - ✅ master 已清理为“可对齐主数据”：仅保留含 `mid` 的 17,604 条；清理前备份与无 `mid` 遗留已归档到 `outputs/annotations/legacy/`。
 
 - **5.2 数据预处理**:
   - ✅ 用户类型映射 (`user_mapper.py`) 覆盖率 100%。

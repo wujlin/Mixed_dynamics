@@ -71,14 +71,14 @@ Equation (1), combined with the feedback rules (2) and (3), establishes the macr
 
 1.  **从 $\rho$ 到 $(q, a)$ 的必要性**：
     * 我在 2.1.1 中明确解释了为什么要引入 $q$ 和 $a$：是为了 **"Decouple the physical degrees of freedom"（解耦物理自由度）**。
-    * $q$ 负责对称性破缺（方向），$a$ 负责缓冲层厚度（强度）。这为后面 Part 2 推导 GL 方程时，把 $a$ 处理为慢变量提供了法理依据。
+    * $q$ 负责对称性破缺（方向），$a$ 负责缓冲层厚度（强度）。这为后面在更一般（非对称）情形下，将 $a$ 作为准静态参数（或显式建模其动力学）提供了直觉依据。
 
 2.  **反馈机制的物理直觉**：
     * 在定义 $p^{\text{main}}$ 时，我特意强调了它是 **Negative Feedback**，并解释了它在 $q>0$ 和 $q<0$ 时的不同行为（Cool down vs Amplify）。
     * 在定义 $p^{\text{we}}$ 时，我特意写成了 $\frac{a+q}{2}$，并强调了 **Coupling（耦合）**。这为后面解释为什么 $a$ 的增大会导致“气泡（一阶相变）”埋下了伏笔。
 
 3.  **控制参数 $r$ 的定义**：
-    * 公式 (1) 采用了加权平均的严谨形式（包含 $n_m, n_w$）。这是为了让 Part 2 推导 $r_c$ 时，分母项 $(1-r)n_m + n_w$ 有明确的出处。
+    * 公式 (1) 采用了加权平均的严谨形式（包含 $n_m, n_w$）。这是为了让 Part 2 推导 $r_c$ 时，分母项 $(1-r)n_m + r n_w$ 有明确的出处。
 
 **Checklist:**
 * [x] 定义了 H, M, L。
@@ -122,7 +122,7 @@ $$
 $$
 where $\Gamma(r) = \left. \frac{\partial p_{env}}{\partial q} \right|_{q=0}$ is the **Feedback Gradient**, measuring how the media environment reacts to emerging polarization.
 
-By differentiating Eq. (1) with respect to $q$ under the symmetric assumption ($p^{main} = (1-q)/2$, $p^{we} = 0.5 + q/2$), and treating the activity $a$ as a slow variable, we derive the explicit form of the gradient:
+By differentiating Eq. (1) with respect to $q$ under the symmetric assumption ($p^{main} = (1-q)/2$, $p^{we} = 0.5 + q/2$)—in which the activity $a$ decouples—we derive the explicit form of the gradient:
 $$
 \Gamma(r) = \frac{r n_w - (1-r)n_m}{2 [ (1-r)n_m + r n_w ]} \quad (7)
 $$

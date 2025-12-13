@@ -15,7 +15,7 @@
 ```
 outputs/annotations/
 ├── master/                  <-- 【主数据区】分析请认准这里
-│   └── long_covid_annotations_master.jsonl  (最新全量标注结果)
+│   └── long_covid_annotations_master.jsonl  (与 merged_topic_official.csv 完全对齐，17,604 条，含 mid)
 │
 ├── batches/                 <-- 【原始批次区】历史归档，只读
 │   ├── batch_01_filtered_rules/  (第一轮: 规则标注, 无mid, ~6k)
@@ -28,7 +28,9 @@ outputs/annotations/
 ├── intermediate/            <-- 【中间文件区】
 │   └── to_annotate_batch2.csv   (批次2产生的待标注清单)
 │
-└── legacy/                  <-- 【遗留文件区】旧版残留，勿用
+└── legacy/                  <-- 【遗留文件区】历史/中间文件归档，只读
+    ├── long_covid_annotations_master_full_23545.jsonl  (清理前 master 备份，含无 mid 记录)
+    └── long_covid_annotations_no_mid_5941.jsonl        (仅无 mid 的遗留记录)
 ```
 
 ## 3. 关键文件说明
@@ -37,28 +39,33 @@ outputs/annotations/
 **格式**: JSONL (每行一个 JSON 对象)
 **字段说明**:
 - `mid`: 微博唯一ID (字符串)
-- `content`: 微博正文 (清洗后)
-- `original_text`: 微博原文
-- `publish_time`: 发布时间
-- `user_name`: 用户昵称
-- `verify_typ`: 认证类型 (e.g., "蓝V认证", "没有认证")
+- `text`: 微博正文（清洗后，建议用于文本分析/对齐回退）
+- `original_text`: 微博原文（用于追溯）
 - `emotion_class`: 情绪分类 (`H`: 高唤醒, `M`: 中性, `L`: 低唤醒)
 - `risk_class`: 风险分类 (`risk`: 风险信息, `norisk`: 非风险)
-- `reasoning`: LLM 标注理由 (仅批次2包含)
+- `reasoning`: LLM 标注理由（部分批次包含）
+
+**说明**：
+- `publish_time` / `user_name` / `verify_typ` 等用户与时间信息来自原始合并数据 `dataset/Topic_data/merged_topic_official.csv`，不在 master 标注文件中重复存储。
 
 ### 3.2 衍生时间序列 (`derived/*.csv`)
 用于假设检验和绘图的聚合数据。
 **关键字段**:
 - `time_window`: 时间窗口起始点
 - `n_posts`: 该窗口内帖子总数
+- `n_public`: 公众帖子数
 - `X_H`, `X_M`, `X_L`: 三种情绪类别的占比 (0~1)
 - `a`: Activity (活跃度/非中立度) = $1 - X_M = X_H + X_L$
 - `Q`: Order Parameter (极化度) = $X_H - X_L$
 - `n_mainstream`: 主流媒体(蓝V)发帖数
 - `n_wemedia`: 自媒体(黄V)发帖数
-- `r_proxy`: 媒体控制代理变量 = $n_{wemedia} / (n_{mainstream} + n_{wemedia})$
 - `p_risk_mainstream`: 主流媒体的风险报道比例
-- `volatility`: (后续计算) $Q$ 的波动率
+- `p_risk_wemedia`: 自媒体的风险报道比例
+- `n_government`: 政府/机构账号发帖数
+
+可进一步派生（默认不落盘）：
+- `r_proxy` = $n_{wemedia} / (n_{mainstream} + n_{wemedia})$
+- `volatility`: $Q$ 的滚动波动率等
 
 ## 4. 数据处理流水线
 本数据由 `dataset/Topic_data` 下的原始 CSV 经过以下步骤生成：

@@ -422,23 +422,28 @@ project_root/
 │   └── ...
 ├── dataset/
 │   ├── Lexicon/                      # 词典（备用）
-│   ├── Topic_data/                   # 原始数据
-│   │   └── #新冠后遗症#.csv
-│   ├── annotations/                  # LLM + 人工标注
-│   │   ├── llm_labels.jsonl
-│   │   └── human_verified.jsonl
-│   └── processed/                    # 处理后数据
-│       ├── classified_posts.parquet
-│       └── time_series_1h.parquet
+│   └── Topic_data/                   # 原始/合并数据
+│       ├── #新冠后遗症#_filtered.csv
+│       ├── 官媒补充_flat.csv
+│       ├── merged_topic_official.csv
+│       └── 新增官媒数据/
 ├── notebooks/
 │   ├── 05_Annotation_Pipeline.ipynb    # LLM 标注流水线
 │   ├── 06_Active_Period_Analysis.py   # 活跃期/时间序列经验分析
 │   └── 99_Paper_Figures.ipynb         # 论文最终出图
 └── outputs/
+    ├── annotations/                  # 标注与聚合产物（主分析请认准这里）
+    │   ├── master/
+    │   │   └── long_covid_annotations_master.jsonl
+    │   ├── derived/
+    │   │   ├── time_series_1h.csv
+    │   │   └── time_series_10m.csv
+    │   ├── batches/
+    │   ├── intermediate/
+    │   └── legacy/
     └── figs/
-        ├── fig_emp_timeseries.png
-        ├── fig_emp_csd_signals.png
-        └── fig_emp_scatter_a_vs_jump.png
+        └── empirical/
+            └── active_period_p2_dist.png
 ```
 
 ---
@@ -473,12 +478,12 @@ Week 2: 数据处理与假设检验
 > - 心理敏感性 φ, θ → **a**（中立者缺失度，其综合效应的体现）
 >
 > 使用 Weibo Long-COVID 数据验证，结果表明：
-> 1. **a 越高，情绪变化越陡峭**（H1，r = X.XX, p < 0.05）
-> 2. **r_proxy 与波动性正相关**（H2，验证正反馈主导导致不稳定）
-> 3. **高r高a条件下波动最大**（H3，验证交互效应）
-> 4. **突变前检测到临界慢化信号**（H4，AC1 和 Var 上升）
+> 1. **a 越高，情绪变化越陡峭**（H1，Jump Score=0.6）
+> 2. **r_proxy 与波动性正相关**（H2，r=0.32, p=0.04）
+> 3. **交互效应未显现**（H3，统计不显著）
+> 4. **临界慢化未显现**（H4，AC1 无上升趋势）
 >
-> 这些结果支持了核心理论洞察：**中立者的消失是情绪相变的前兆和驱动力**。
+> 这些结果在经验层面支持了核心洞察的关键一段：**中立者缺失度（a）越高，系统越可能出现突变式变化**；同时也提示真实平台数据中，交互效应与临界慢化可能被外生冲击与平台机制所掩盖，需要更精细的识别策略。
 
 **政策启示**：
 > 保护信息生态系统中的"温和派"（中立信息/理性讨论）是维护社会情绪稳定的关键。
