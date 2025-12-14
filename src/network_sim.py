@@ -40,10 +40,11 @@ class NetworkConfig:
     model: Literal["ba", "er"] = "ba"  # 网络模型：BA 无标度或 ER 随机
     beta: float = 0.0  # 邻居高唤醒影响系数（0 = 无局部耦合）
     update_rate: float = 0.1  # 异步更新比例（0.1 = 每步 10% 节点更新）
-    # **时间尺度说明**：
-    # - update_rate=0.1 时，有效时间 t_eff = t_step * update_rate
-    # - 与 SDE 比较时，ABM 的 lag-k 自相关应与 SDE 的 lag-(k/update_rate) 对比
-    # - 理论验证建议使用 update_rate=1.0（同步更新）以消除时间尺度差异
+    # **时间尺度说明（建议按 sweep 统一口径）**：
+    # - 每个 ABM step 只更新 update_rate 比例的节点，可将“1 sweep”理解为全体平均更新一次。
+    # - sweep 时间：t_sweep = t_step * update_rate（例如 update_rate=0.1 时，10 steps ≈ 1 sweep）。
+    # - 若自相关用 lag（步数）表示：ABM lag-k steps 对应的 sweep-lag 约为 k * update_rate。
+    # - 注意：update_rate=1.0 的同步更新可能引入周期振荡/伪相关；推荐用较小 update_rate 并显式做时间尺度换算。
     init_state: Literal["random", "medium"] = "random"  # 初始状态：随机或全中立
     sample_mode: Literal["degree", "fixed"] = "degree"  # 采样模式
     sample_n: int = 50  # 固定采样数（仅 sample_mode="fixed" 时生效）

@@ -107,7 +107,11 @@ def bootstrap_from_seed_crossings(
     for b in range(int(n_boot)):
         idx = rng.integers(0, nSeeds, size=nSeeds)
         sample = rc_seed[:, idx]
-        rc_boot[:, b] = np.nanmedian(sample, axis=1)
+        med = np.full(sample.shape[0], np.nan, dtype=float)
+        valid_row = np.any(np.isfinite(sample), axis=1)
+        if np.any(valid_row):
+            med[valid_row] = np.nanmedian(sample[valid_row], axis=1)
+        rc_boot[:, b] = med
     rc_ci = np.nanquantile(rc_boot, [0.025, 0.5, 0.975], axis=1).astype(float)
     return rc_boot, rc_ci
 

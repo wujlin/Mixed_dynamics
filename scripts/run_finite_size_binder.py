@@ -562,7 +562,15 @@ def main() -> None:
             idx = rng.integers(0, len(seeds), size=len(seeds))
             sample = rc_seed[:, idx]  # (nPairs, nSeeds)
             # 使用 median 抑制少量离群（更适合写进论文）
-            rc_cross_bootstrap[:, b] = np.nanmedian(sample, axis=1)
+            #
+            # 注意：当某个 pair 的 seed-level crossing 本身包含 NaN（例如被 u4_band 过滤掉），
+            # bootstrap 重采样有极小概率抽到 “全是 NaN” 的样本；直接 np.nanmedian 会抛出 warning。
+            # 这里显式避开 all-NaN 行，保持输出一致且日志更干净。
+            med = np.full(sample.shape[0], np.nan, dtype=float)
+            valid_row = np.any(np.isfinite(sample), axis=1)
+            if np.any(valid_row):
+                med[valid_row] = np.nanmedian(sample[valid_row], axis=1)
+            rc_cross_bootstrap[:, b] = med
         # 2.5/50/97.5 分位数
         q = np.nanquantile(rc_cross_bootstrap, [0.025, 0.5, 0.975], axis=1)
         rc_cross_ci = q.astype(float)  # shape: (3, nPairs)
