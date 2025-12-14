@@ -12,6 +12,12 @@
 
 输出：
 - outputs/data/finite_size_binder_cross_*.npz（包含 binder 曲线、按 seed 的交点统计等）
+
+交点选择（避免 “cross-window 依赖理论 rc” 的质疑）：
+- window：在 rc_theory±cross_window 内选择交点（保留作对照/调试）。
+- max-slope：在 “过渡区” 内选择局部斜率最大的交点（默认）。
+  过渡区用 U4 的取值范围限定：u4_low <= U4_cross <= u4_high，
+  以排除低 r 平台噪声交点与高 r 饱和平台“退化交点”。
 """
 
 from __future__ import annotations
@@ -82,10 +88,30 @@ def binder_u4_from_q(q_window: np.ndarray) -> float:
     return 1.0 - q4 / (3.0 * (q2**2))
 
 
-def crossing_position(x: np.ndarray, y1: np.ndarray, y2: np.ndarray, target: float) -> float:
+def _smooth_1d(y: np.ndarray, window: int) -> np.ndarray:
+    if int(window) <= 1:
+        return y.astype(float, copy=False)
+    window = int(window)
+    if window % 2 == 0:
+        raise ValueError("smooth_window 必须为奇数（或 1 代表不平滑）")
+    if window > y.size:
+        raise ValueError("smooth_window 不能超过序列长度")
+    pad = window // 2
+    kernel = np.ones(window, dtype=float) / float(window)
+    y_pad = np.pad(y.astype(float, copy=False), (pad, pad), mode="edge")
+    return np.convolve(y_pad, kernel, mode="valid")
+
+
+def crossing_position_in_window(
+    x: np.ndarray,
+    y1: np.ndarray,
+    y2: np.ndarray,
+    center: float,
+    window: float,
+) -> float:
     """
-    线性插值求交点；若存在多个交点，返回最接近 target 的那个。
-    若无交点，返回 NaN。
+    线性插值求交点，并限制在 [center-window, center+window] 内。
+    若窗口内无交点，返回 NaN。
     """
     diff = y1 - y2
     crossings: List[float] = []
@@ -98,7 +124,68 @@ def crossing_position(x: np.ndarray, y1: np.ndarray, y2: np.ndarray, target: flo
             crossings.append(float(x[i] + t * (x[i + 1] - x[i])))
     if not crossings:
         return float("nan")
-    return float(min(crossings, key=lambda r: abs(r - target)))
+    lo, hi = center - window, center + window
+    in_window = [v for v in crossings if lo <= v <= hi]
+    if not in_window:
+        return float("nan")
+    return float(min(in_window, key=lambda r: abs(r - center)))
+
+
+def crossing_position_max_slope(
+    x: np.ndarray,
+    y1: np.ndarray,
+    y2: np.ndarray,
+    *,
+    u4_low: float,
+    u4_high: float,
+    smooth_window: int = 1,
+    slope_eps: float = 1e-12,
+) -> float:
+    """
+    最大斜率交点：
+    - 枚举 y1-y2 的所有交点（线性插值）。
+    - 仅保留 U4_cross 位于 [u4_low, u4_high] 的候选（排除平台噪声/饱和退化交点）。
+    - 选择 |dU1/dr|+|dU2/dr| 最大的交点（局部段斜率）。
+    - 若无候选，返回 NaN。
+    """
+    x = x.astype(float, copy=False)
+    y1s = _smooth_1d(y1, int(smooth_window))
+    y2s = _smooth_1d(y2, int(smooth_window))
+
+    diff = y1s - y2s
+    best = None  # (score, tie_break, rc)
+    x_mid = 0.5 * (float(x[0]) + float(x[-1]))
+    for i in range(len(x) - 1):
+        d0, d1 = float(diff[i]), float(diff[i + 1])
+        if not (math.isfinite(d0) and math.isfinite(d1)):
+            continue
+        if d0 == 0.0:
+            t = 0.0
+        elif d0 * d1 < 0.0:
+            t = d0 / (d0 - d1)
+        else:
+            continue
+
+        dx = float(x[i + 1] - x[i])
+        if dx <= 0:
+            continue
+
+        rc = float(x[i] + t * dx)
+        u_cross = float(y1s[i] + t * float(y1s[i + 1] - y1s[i]))
+        if (u_cross < float(u4_low)) or (u_cross > float(u4_high)):
+            continue
+
+        s1 = abs(float(y1s[i + 1] - y1s[i]) / dx)
+        s2 = abs(float(y2s[i + 1] - y2s[i]) / dx)
+        score = float(s1 + s2)
+        if score <= float(slope_eps):
+            continue
+
+        # tie_break：优先靠近扫描区间中点，减少平台边界的退化选择
+        cand = (score, -abs(rc - x_mid), rc)
+        if best is None or cand > best:
+            best = cand
+    return float("nan") if best is None else float(best[2])
 
 
 @dataclass(frozen=True)
@@ -211,6 +298,7 @@ def default_output_path(
     burn_in_frac: float,
     seeds: Sequence[int],
     r_points: int,
+    cross_method: str,
     version: str = "v3",
 ) -> Path:
     data_dir = output_dir / "data"
@@ -218,13 +306,14 @@ def default_output_path(
     burn_tag = int(round(burn_in_frac * 100))
     phi_tag = int(round(phi * 100))
     theta_tag = int(round(theta * 100))
+    method_tag = str(cross_method).replace("-", "").replace("_", "")
     name = (
         f"finite_size_binder_cross_sym_phi{phi_tag}_theta{theta_tag}_"
         f"nm{int(n_m)}_nw{int(n_w)}_k{k_avg}_"
         f"N{min(N_list)}-{max(N_list)}_"
         f"init{init_state}_u{int(round(update_rate*100))}_"
         f"ri{record_interval}_steps{steps}_burn{burn_tag}_"
-        f"seeds{len(seeds)}_r{r_points}_{version}.npz"
+        f"seeds{len(seeds)}_r{r_points}_{version}_cm{method_tag}.npz"
     )
     return data_dir / name
 
@@ -245,6 +334,44 @@ def main() -> None:
     parser.add_argument("--init-state", choices=["random", "medium"], default="random")
     parser.add_argument("--r-span", type=float, default=0.15)
     parser.add_argument("--r-points", type=int, default=41)
+    parser.add_argument(
+        "--cross-method",
+        choices=["max-slope", "window"],
+        default="max-slope",
+        help="交点选择策略：max-slope（默认，不依赖理论 rc）或 window（依赖 rc_theory±cross_window）。",
+    )
+    parser.add_argument(
+        "--cross-window",
+        type=float,
+        default=0.05,
+        help="（仅 window 法）交点搜索窗口：仅统计落在 rc_theory±window 内的交点。",
+    )
+    parser.add_argument("--u4-low", type=float, default=0.2, help="（max-slope）交点 U4 下界（过滤低 r 平台噪声交点）")
+    parser.add_argument(
+        "--u4-high",
+        type=float,
+        default=(2.0 / 3.0 - 1e-3),
+        help="（max-slope）交点 U4 上界（过滤高 r 饱和平台退化交点）",
+    )
+    parser.add_argument(
+        "--smooth-window",
+        type=int,
+        default=1,
+        help="（max-slope）对 U4 曲线做简单滑动平均平滑的窗口长度（奇数；1=不平滑）",
+    )
+    parser.add_argument(
+        "--slope-eps",
+        type=float,
+        default=1e-12,
+        help="（max-slope）斜率阈值（过滤退化交点；一般不用改）",
+    )
+    parser.add_argument(
+        "--bootstrap",
+        type=int,
+        default=0,
+        help="对 seeds 进行 bootstrap 次数（>0 时额外输出 rc_cross_bootstrap 及其置信区间）。",
+    )
+    parser.add_argument("--bootstrap-seed", type=int, default=0)
     parser.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 1) - 1))
     parser.add_argument("--output-dir", type=str, default="outputs")
     parser.add_argument("--out", type=str, default="")
@@ -264,6 +391,12 @@ def main() -> None:
     chi = theory.calculate_chi(args.phi, args.theta, k_avg=args.k_avg)
     rc_theory = float(theory.calculate_rc(args.n_m, args.n_w, chi))
     print(f"理论 rc = {rc_theory:.4f} (phi={args.phi}, theta={args.theta}, k_avg={args.k_avg})")
+    print(
+        f"cross_method = {args.cross_method} "
+        f"(u4_low={args.u4_low:.3f}, u4_high={args.u4_high:.3f}, smooth_window={args.smooth_window})"
+        if args.cross_method == "max-slope"
+        else f"cross_method = {args.cross_method} (cross_window=±{args.cross_window})"
+    )
 
     r_min = max(0.0, rc_theory - args.r_span)
     r_max = min(1.0, rc_theory + args.r_span)
@@ -290,7 +423,8 @@ def main() -> None:
             burn_in_frac=args.burn_in_frac,
             seeds=seeds,
             r_points=len(r_scan),
-            version="v3",
+            cross_method=str(args.cross_method),
+            version="v4",
         )
 
     if out_path.exists() and not args.force:
@@ -336,16 +470,33 @@ def main() -> None:
     idx_N = {int(N): i for i, N in enumerate(N_list)}
     idx_seed = {int(s): i for i, s in enumerate(seeds)}
 
-    with ProcessPoolExecutor(max_workers=int(args.jobs)) as ex:
-        futures = {ex.submit(simulate_u4_curve, cfg): cfg for cfg in tasks}
+    def run_sequential() -> None:
         done = 0
-        for fut in as_completed(futures):
-            cfg = futures[fut]
-            N, seed, u4_vals = fut.result()
+        for cfg in tasks:
+            N, seed, u4_vals = simulate_u4_curve(cfg)
             u4_seeds_by_N[idx_N[int(N)], idx_seed[int(seed)], :] = u4_vals
             done += 1
             if done % max(1, len(tasks) // 20) == 0 or done == len(tasks):
                 print(f"[progress] {done}/{len(tasks)} tasks finished")
+
+    if int(args.jobs) <= 1:
+        run_sequential()
+    else:
+        try:
+            with ProcessPoolExecutor(max_workers=int(args.jobs)) as ex:
+                futures = {ex.submit(simulate_u4_curve, cfg): cfg for cfg in tasks}
+                done = 0
+                for fut in as_completed(futures):
+                    cfg = futures[fut]
+                    N, seed, u4_vals = fut.result()
+                    u4_seeds_by_N[idx_N[int(N)], idx_seed[int(seed)], :] = u4_vals
+                    done += 1
+                    if done % max(1, len(tasks) // 20) == 0 or done == len(tasks):
+                        print(f"[progress] {done}/{len(tasks)} tasks finished")
+        except PermissionError as e:
+            # 部分环境（例如某些 WSL/容器配置）可能无法创建 SemLock，自动降级到串行。
+            print(f"[warn] 多进程不可用（{e}），已自动降级为串行；如需并行请在工作站运行或设置 --jobs 1。")
+            run_sequential()
 
     binder_mean_by_N = np.nanmean(u4_seeds_by_N, axis=1)
     binder_std_by_N = np.nanstd(u4_seeds_by_N, axis=1, ddof=1)
@@ -354,6 +505,8 @@ def main() -> None:
     # 相邻 N 的交点：按 seed 先算交点，再汇总 mean/std
     rc_cross_mean: List[float] = []
     rc_cross_std: List[float] = []
+    rc_cross_median: List[float] = []
+    rc_cross_valid: List[int] = []
     pair_N_mid: List[float] = []
     pair_labels: List[str] = []
     rc_cross_seeds_by_pair: List[np.ndarray] = []
@@ -362,15 +515,66 @@ def main() -> None:
         N1, N2 = int(N_list[i]), int(N_list[i + 1])
         rc_seeds = np.zeros(len(seeds), dtype=float)
         for si in range(len(seeds)):
-            rc_seeds[si] = crossing_position(r_scan, u4_seeds_by_N[i, si], u4_seeds_by_N[i + 1, si], rc_theory)
+            if args.cross_method == "window":
+                rc_seeds[si] = crossing_position_in_window(
+                    r_scan,
+                    u4_seeds_by_N[i, si],
+                    u4_seeds_by_N[i + 1, si],
+                    center=rc_theory,
+                    window=float(args.cross_window),
+                )
+            else:
+                rc_seeds[si] = crossing_position_max_slope(
+                    r_scan,
+                    u4_seeds_by_N[i, si],
+                    u4_seeds_by_N[i + 1, si],
+                    u4_low=float(args.u4_low),
+                    u4_high=float(args.u4_high),
+                    smooth_window=int(args.smooth_window),
+                    slope_eps=float(args.slope_eps),
+                )
         rc_cross_seeds_by_pair.append(rc_seeds)
-        rc_mean = float(np.nanmean(rc_seeds))
-        rc_std = float(np.nanstd(rc_seeds, ddof=1))
+        valid = np.isfinite(rc_seeds)
+        valid_cnt = int(np.sum(valid))
+        rc_mean = float(np.nanmean(rc_seeds)) if valid_cnt > 0 else float("nan")
+        rc_std = float(np.nanstd(rc_seeds, ddof=1)) if valid_cnt > 1 else float("nan")
+        rc_med = float(np.nanmedian(rc_seeds)) if valid_cnt > 0 else float("nan")
         rc_cross_mean.append(rc_mean)
         rc_cross_std.append(rc_std)
+        rc_cross_median.append(rc_med)
+        rc_cross_valid.append(valid_cnt)
         pair_N_mid.append(float(math.sqrt(N1 * N2)))
         pair_labels.append(f"{N1}-{N2}")
-        print(f"[cross] N={N1} vs {N2}: rc_cross ≈ {rc_mean:.4f} ± {rc_std:.4f} (seed-to-seed)")
+        print(
+            f"[cross] N={N1} vs {N2}: rc_cross ≈ {rc_mean:.4f} ± {rc_std:.4f} "
+            f"(seed-to-seed, median={rc_med:.4f}, valid={valid_cnt}/{len(seeds)})"
+        )
+
+    # Bootstrap（从 mean 曲线交点获取更稳的区间估计）
+    rc_cross_bootstrap = None
+    rc_cross_ci = None
+    if int(args.bootstrap) > 0:
+        rng = np.random.default_rng(int(args.bootstrap_seed))
+        B = int(args.bootstrap)
+        rc_seed = np.asarray(rc_cross_seeds_by_pair, dtype=float)  # (nPairs, nSeeds)
+        rc_cross_bootstrap = np.full((len(N_list) - 1, B), np.nan, dtype=float)
+        for b in range(B):
+            idx = rng.integers(0, len(seeds), size=len(seeds))
+            sample = rc_seed[:, idx]  # (nPairs, nSeeds)
+            # 使用 median 抑制少量离群（更适合写进论文）
+            rc_cross_bootstrap[:, b] = np.nanmedian(sample, axis=1)
+        # 2.5/50/97.5 分位数
+        q = np.nanquantile(rc_cross_bootstrap, [0.025, 0.5, 0.975], axis=1)
+        rc_cross_ci = q.astype(float)  # shape: (3, nPairs)
+        for i in range(len(N_list) - 1):
+            med = float(rc_cross_ci[1, i])
+            lo = float(rc_cross_ci[0, i])
+            hi = float(rc_cross_ci[2, i])
+            valid_b = int(np.sum(np.isfinite(rc_cross_bootstrap[i])))
+            print(
+                f"[bootstrap] {N_list[i]}-{N_list[i+1]}: median={med:.4f}, "
+                f"95%CI=[{lo:.4f}, {hi:.4f}] (valid_boot={valid_b}/{B})"
+            )
 
     np.savez(
         out_path,
@@ -391,6 +595,12 @@ def main() -> None:
         init_state=str(args.init_state),
         r_span=float(args.r_span),
         rc_theory=float(rc_theory),
+        cross_method=str(args.cross_method),
+        cross_window=(float(args.cross_window) if args.cross_method == "window" else float("nan")),
+        u4_low=float(args.u4_low),
+        u4_high=float(args.u4_high),
+        smooth_window=int(args.smooth_window),
+        slope_eps=float(args.slope_eps),
         # curves
         binder_seeds_by_N=u4_seeds_by_N,
         binder_mean_by_N=binder_mean_by_N,
@@ -400,11 +610,16 @@ def main() -> None:
         pair_labels=np.asarray(pair_labels, dtype=str),
         rc_cross_mean=np.asarray(rc_cross_mean, dtype=float),
         rc_cross_std=np.asarray(rc_cross_std, dtype=float),
+        rc_cross_median=np.asarray(rc_cross_median, dtype=float),
+        rc_cross_valid=np.asarray(rc_cross_valid, dtype=int),
         rc_cross_seeds_by_pair=np.asarray(rc_cross_seeds_by_pair, dtype=float),
+        bootstrap=int(args.bootstrap),
+        bootstrap_seed=int(args.bootstrap_seed),
+        rc_cross_bootstrap=(rc_cross_bootstrap if rc_cross_bootstrap is not None else np.asarray([], dtype=float)),
+        rc_cross_ci=(rc_cross_ci if rc_cross_ci is not None else np.asarray([], dtype=float)),
     )
     print(f"[done] Saved: {out_path}")
 
 
 if __name__ == "__main__":
     main()
-
