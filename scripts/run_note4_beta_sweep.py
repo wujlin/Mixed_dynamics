@@ -249,9 +249,10 @@ def main() -> None:
     parser.add_argument("--init-state", choices=["random", "medium"], default="medium")
     parser.add_argument("--sample-mode", choices=["fixed", "degree"], default="fixed")
     parser.add_argument("--betas", type=str, default="0,0.02,0.05,0.1")
-    parser.add_argument("--r-min", type=float, default=0.60)
-    parser.add_argument("--r-max", type=float, default=0.90)
-    parser.add_argument("--r-num", type=int, default=41)
+    # 为了避免高 beta 下曲线在局部窗口内“已饱和”导致 rc=NaN，默认扫描全区间 [0, 1]
+    parser.add_argument("--r-min", type=float, default=0.0)
+    parser.add_argument("--r-max", type=float, default=1.0)
+    parser.add_argument("--r-num", type=int, default=201)
     parser.add_argument("--seeds", type=str, default="0-31")
     parser.add_argument("--bootstrap", type=int, default=3000)
     parser.add_argument(
@@ -260,6 +261,8 @@ def main() -> None:
         default=0.25,
         help="最大斜率法判定所需的最小幅度：max(y)-min(y) < min_delta 则认为无清晰转变",
     )
+    parser.add_argument("--q-low", type=float, default=0.1, help="|Q| 接近 0 的判定阈值（用于“无转变”分类）")
+    parser.add_argument("--q-high", type=float, default=0.9, help="|Q| 接近 1 的判定阈值（用于“无转变”分类）")
     parser.add_argument("--jobs", type=int, default=max(1, (os.cpu_count() or 1) - 1))
     parser.add_argument("--output-dir", type=str, default="outputs")
     parser.add_argument("--out", type=str, default="")
@@ -388,14 +391,70 @@ def main() -> None:
             print(f"[warn] 多进程不可用（{e}），已降级串行；可设置 --jobs 1 或在工作站运行。")
             run_sequential()
 
+    # 汇总诊断量
+    q_abs_med = np.nanmedian(q_abs, axis=2)  # (nB, nR)
+    q_abs_min = np.nanmin(q_abs_med, axis=1)  # (nB,)
+    q_abs_max = np.nanmax(q_abs_med, axis=1)  # (nB,)
+
+    # 分支偏置（以最大 r 点作为参考）：正分支占比
+    sign_ref = np.sign(q_mean[:, -1, :])  # (nB, nS)
+    sign_ref[sign_ref == 0] = 1
+    pos_branch_frac = (sign_ref > 0).mean(axis=1).astype(float)
+
     # 估计 rc(beta)：对 seed 聚合曲线做最大斜率，并给出 bootstrap CI
     rc_est = np.full(nB, np.nan, dtype=float)
     rc_ci_low = np.full(nB, np.nan, dtype=float)
     rc_ci_high = np.full(nB, np.nan, dtype=float)
     rc_valid_boot = np.zeros(nB, dtype=int)
     rc_seed = np.full((nB, nS), np.nan, dtype=float)
+    regimes: List[str] = []
 
     for bi, beta in enumerate(betas):
+        curve_min = float(q_abs_min[bi])
+        curve_max = float(q_abs_max[bi])
+        curve_delta = float(curve_max - curve_min)
+
+        scan_min = float(r_vals[0])
+        scan_max = float(r_vals[-1])
+        scan_covers_0 = scan_min <= 1e-12
+        scan_covers_1 = scan_max >= 1.0 - 1e-12
+
+        # 若窗口内几乎无变化：将其作为“无可辨识转变”而非强行给出 rc
+        if curve_delta < float(args.min_delta):
+            if curve_min >= float(args.q_high):
+                regime = "polarized_all_r" if scan_covers_0 else "polarized_in_scan"
+                rc_est[bi] = 0.0 if scan_covers_0 else scan_min
+                rc_ci_low[bi] = rc_est[bi]
+                rc_ci_high[bi] = rc_est[bi]
+                rc_valid_boot[bi] = 0
+                regimes.append(regime)
+                print(
+                    f"[rc] beta={float(beta):.4g}: {regime} (|Q|~[{curve_min:.3f},{curve_max:.3f}] in scan), "
+                    f"rc_est={rc_est[bi]:.4f}"
+                )
+                continue
+
+            if curve_max <= float(args.q_low):
+                regime = "neutral_all_r" if scan_covers_1 else "neutral_in_scan"
+                rc_est[bi] = 1.0 if scan_covers_1 else scan_max
+                rc_ci_low[bi] = rc_est[bi]
+                rc_ci_high[bi] = rc_est[bi]
+                rc_valid_boot[bi] = 0
+                regimes.append(regime)
+                print(
+                    f"[rc] beta={float(beta):.4g}: {regime} (|Q|~[{curve_min:.3f},{curve_max:.3f}] in scan), "
+                    f"rc_est={rc_est[bi]:.4f}"
+                )
+                continue
+
+            regime = "flat_no_transition"
+            regimes.append(regime)
+            print(
+                f"[rc] beta={float(beta):.4g}: {regime} (|Q|~[{curve_min:.3f},{curve_max:.3f}] in scan), rc_est=nan"
+            )
+            continue
+
+        regimes.append("transition")
         # seed-level diagnostics
         for si in range(nS):
             rc_seed[bi, si] = _rc_from_max_slope(r_vals, q_abs[bi, :, si], min_delta=float(args.min_delta))
@@ -429,9 +488,16 @@ def main() -> None:
         q_abs_mean=q_abs.astype(float),
         q_mean=q_mean.astype(float),
         a_mean=a_mean.astype(float),
+        q_abs_med=q_abs_med.astype(float),
+        q_abs_min=q_abs_min.astype(float),
+        q_abs_max=q_abs_max.astype(float),
+        pos_branch_frac=pos_branch_frac.astype(float),
         # rc estimates
         rc_method="max_slope",
         min_delta=float(args.min_delta),
+        q_low=float(args.q_low),
+        q_high=float(args.q_high),
+        regime=np.asarray(regimes, dtype=str),
         rc_est=rc_est.astype(float),
         rc_ci_low=rc_ci_low.astype(float),
         rc_ci_high=rc_ci_high.astype(float),
@@ -461,4 +527,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
