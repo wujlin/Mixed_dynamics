@@ -1,5 +1,0 @@
-{
-  "input": "outputs/annotations/v3/annotated_intent_rule_v3.jsonl",
-  "lex_risk_vs_rule_norisk": 100,
-  "priority_top200": "outputs/annotations/v3/risk_conflict_priority_v3.jsonl"
-}
