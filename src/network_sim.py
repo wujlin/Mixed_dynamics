@@ -19,6 +19,11 @@ import networkx as nx
 import numpy as np
 from numpy.typing import ArrayLike
 
+try:  # 可选加速：用稀疏矩阵乘法快速计算邻居高唤醒计数
+    from scipy.sparse import csr_matrix  # type: ignore
+except Exception:  # pragma: no cover - 若缺少 scipy 则退化为纯 Python 计算
+    csr_matrix = None
+
 STATE_HIGH = 1
 STATE_MEDIUM = 0
 STATE_LOW = -1
@@ -89,6 +94,14 @@ class NetworkAgentModel:
         self.n = self.g.number_of_nodes()
         # 预存每个节点的度数，便于方案 B 按实际度数设置信号采样次数
         self.degrees = np.array([deg for _, deg in self.g.degree()], dtype=int)
+        # 预存稀疏邻接矩阵（若 scipy 可用），用于快速计算邻居高唤醒数量
+        self._adj_csr: Optional["csr_matrix"] = None
+        if csr_matrix is not None:
+            try:
+                # networkx>=3 推荐 to_scipy_sparse_array；在旧版本下也可用
+                self._adj_csr = nx.to_scipy_sparse_array(self.g, format="csr", dtype=np.int8)  # type: ignore[assignment]
+            except Exception:
+                self._adj_csr = None
         # 阈值可扩展为个体异质：此处简单用全局常数
         self.phi = np.full(self.n, cfg.phi, dtype=float)
         self.theta = np.full(self.n, cfg.theta, dtype=float)
@@ -124,13 +137,17 @@ class NetworkAgentModel:
         return num / denom
 
     def _local_perception(self, p_env: float) -> np.ndarray:
-        # 邻居高唤醒数量
-        neighbor_high = np.zeros(self.n, dtype=float)
-        for node in self.g.nodes:
-            nbrs = self.g.nodes[node]["neighbors"]
-            if not nbrs:
-                continue
-            neighbor_high[node] = np.sum(self.state[nbrs] == STATE_HIGH)
+        # 邻居高唤醒数量（优先用稀疏矩阵加速）
+        if self._adj_csr is not None:
+            high_vec = (self.state == STATE_HIGH).astype(np.int8, copy=False)
+            neighbor_high = np.asarray(self._adj_csr.dot(high_vec), dtype=float).reshape(-1)
+        else:
+            neighbor_high = np.zeros(self.n, dtype=float)
+            for node in self.g.nodes:
+                nbrs = self.g.nodes[node]["neighbors"]
+                if not nbrs:
+                    continue
+                neighbor_high[node] = np.sum(self.state[nbrs] == STATE_HIGH)
 
         # p_i = (global_num + beta * k_high) / (global_den + beta * k_i)
         # 简化：直接用 p_env 乘全局权重再加局部项
