@@ -38,14 +38,19 @@
 - `batches/`: **原始批次归档**。
   - `batch_01_filtered_rules/`: 第一轮规则标注。
   - `batch_02_official_llm/`: 第二轮 LLM 标注。
+  - `batch_03_expanded/`: 第三轮扩展采样标注（73,456 条，含 mid）。
 - `derived/`: **衍生分析数据**。
   - `time_series_1h.csv`: 1小时聚合。
   - `time_series_10m.csv`: 10分钟聚合。
 - `intermediate/`: **中间过程文件**。
   - `to_annotate_batch2.csv`: 中间产生的待标注名单。
+  - `to_annotate_batch3_clean.csv`: Batch3 扩展采样的原始元数据（含 publish_time/verify_typ 等）。
  - `legacy/`: **遗留归档**（只读，不用于主分析）。
    - `long_covid_annotations_master_full_23545.jsonl`: 清理前 master 备份。
    - `long_covid_annotations_no_mid_5941.jsonl`: 无 mid 的遗留记录。
+
+说明：
+- 经验验证阶段会同时分析 `master` 与 `batch_03_expanded` 两套标注（同口径但不同采样池），并在 `notebooks/07_Empirical_Validation.ipynb` 中给出对照与合并结果。
 
 ### 配置与代理
 - LLM 服务：远程 vLLM（示例 `http://10.13.12.164:7890/v1`，api_key=abc123），脚本内已内置代理设置并清除 no_proxy。

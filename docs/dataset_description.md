@@ -4,9 +4,15 @@
 本项目使用 **Weibo Long-COVID 话题数据** 来验证集体情绪的混合反馈模型。
 数据集包含从 2020年到 2024年（重点集中在 2020-2022）的微博内容、发布时间、用户信息及情绪/风险标注。
 
-- **总样本量**: 17,604 条（去重后）
-- **覆盖率**: 100% 已标注
-- **核心文件**: `outputs/annotations/master/long_covid_annotations_master.jsonl`
+目前存在两套“同口径标注但不同批次/采样池”的标注数据：
+
+- **核心对照集（Long-COVID 主话题）**：17,604 条（与 `merged_topic_official.csv` 对齐）
+  - 标注文件：`outputs/annotations/master/long_covid_annotations_master.jsonl`
+- **扩展集（Batch3 扩展采样）**：73,456 条（与核心对照集 `mid` 不重叠；union=91,060）
+  - 标注文件：`outputs/annotations/batches/batch_03_expanded/new_batch3.jsonl`
+  - 对应原始元数据（含 publish_time/verify_typ 等）：`outputs/annotations/intermediate/to_annotate_batch3_clean.csv`
+
+经验验证将同时在两套数据上运行同一套分析（见 `notebooks/07_Empirical_Validation.ipynb`），用于检验结论稳健性；暂不做话题分组比较（后续再补）。
 
 ## 2. 目录结构详解
 
@@ -14,12 +20,13 @@
 
 ```
 outputs/annotations/
-├── master/                  <-- 【主数据区】分析请认准这里
-│   └── long_covid_annotations_master.jsonl  (与 merged_topic_official.csv 完全对齐，17,604 条，含 mid)
+├── master/                  <-- 【核心对照集】与 merged_topic_official.csv 对齐
+│   └── long_covid_annotations_master.jsonl  (17,604 条，含 mid)
 │
-├── batches/                 <-- 【原始批次区】历史归档，只读
+├── batches/                 <-- 【批次归档】不同轮次的标注输出（含扩展集）
 │   ├── batch_01_filtered_rules/  (第一轮: 规则标注, 无mid, ~6k)
 │   └── batch_02_official_llm/    (第二轮: LLM标注, 含全量, ~17k)
+│   └── batch_03_expanded/        (第三轮: 扩展采样 LLM 标注, 73,456 条, 含 mid)
 │
 ├── derived/                 <-- 【分析产物区】可随时重跑脚本生成
 │   ├── time_series_1h.csv       (1小时粒度聚合)
@@ -47,6 +54,10 @@ outputs/annotations/
 
 **说明**：
 - `publish_time` / `user_name` / `verify_typ` 等用户与时间信息来自原始合并数据 `dataset/Topic_data/merged_topic_official.csv`，不在 master 标注文件中重复存储。
+
+### 3.2 扩展集标注文件 (`batches/batch_03_expanded/*.jsonl`)
+字段口径与 master 一致（同样包含 `mid/emotion_class/risk_class` 等），但其元数据来自：
+`outputs/annotations/intermediate/to_annotate_batch3_clean.csv`（由脚本扫描 `dataset/Topic_data/` 扩展采样得到）。
 
 ### 3.2 衍生时间序列 (`derived/*.csv`)
 用于假设检验和绘图的聚合数据。
@@ -83,6 +94,8 @@ outputs/annotations/
 
 4.  **聚合**:
     - `run_phase5_preprocessing.py`: 映射用户类型，按时间窗口聚合生成 CSV。
+
+补充：经验验证 notebook 会分别对核心对照集与扩展集生成时间序列，并在同一套 H1-H4 指标下对照（`notebooks/07_Empirical_Validation.ipynb`）。
 
 ## 5. 常见问题
 - **Q: 为什么 merged CSV 有 3万行？**
