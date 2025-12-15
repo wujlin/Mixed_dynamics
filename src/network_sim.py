@@ -61,6 +61,11 @@ class NetworkConfig:
     phi: float = 0.6  # 高唤醒阈值
     theta: float = 0.4  # 低唤醒阈值
     seed: Optional[int] = None  # 随机种子
+    # 局部耦合口径（用于 beta>0）：
+    # - "high_only"：只统计邻居高唤醒数量 neighbor_high（默认；会引入单边信息输入）
+    # - "symmetric"：用邻居 (high/low/medium) 构造对称局部概率 p_local = 0.5 + q_local/2
+    #               （其中 q_local=(n_high-n_low)/deg；等价于 medium 贡献 0.5 基线）
+    local_mode: Literal["high_only", "symmetric"] = "high_only"
 
 
 def generate_network(cfg: NetworkConfig) -> nx.Graph:
@@ -137,25 +142,45 @@ class NetworkAgentModel:
         return num / denom
 
     def _local_perception(self, p_env: float) -> np.ndarray:
-        # 邻居高唤醒数量（优先用稀疏矩阵加速）
-        if self._adj_csr is not None:
-            high_vec = (self.state == STATE_HIGH).astype(np.int8, copy=False)
-            neighbor_high = np.asarray(self._adj_csr.dot(high_vec), dtype=float).reshape(-1)
+        beta = float(self.cfg.beta)
+        if beta == 0.0:
+            return np.full(self.n, float(np.clip(p_env, 0.0, 1.0)), dtype=float)
+
+        # 邻居统计量（优先用稀疏矩阵加速）
+        if self.cfg.local_mode == "high_only":
+            if self._adj_csr is not None:
+                high_vec = (self.state == STATE_HIGH).astype(np.int8, copy=False)
+                neighbor_high = np.asarray(self._adj_csr.dot(high_vec), dtype=float).reshape(-1)
+            else:
+                neighbor_high = np.zeros(self.n, dtype=float)
+                for node in self.g.nodes:
+                    nbrs = self.g.nodes[node]["neighbors"]
+                    if not nbrs:
+                        continue
+                    neighbor_high[node] = np.sum(self.state[nbrs] == STATE_HIGH)
+            local_num = beta * neighbor_high
+        elif self.cfg.local_mode == "symmetric":
+            # q_local = (n_high - n_low) / deg，可用邻居状态和（state∈{-1,0,1}）快速得到 n_high-n_low
+            if self._adj_csr is not None:
+                state_vec = self.state.astype(np.int8, copy=False)
+                neighbor_sum = np.asarray(self._adj_csr.dot(state_vec), dtype=float).reshape(-1)
+            else:
+                neighbor_sum = np.zeros(self.n, dtype=float)
+                for node in self.g.nodes:
+                    nbrs = self.g.nodes[node]["neighbors"]
+                    if not nbrs:
+                        continue
+                    neighbor_sum[node] = float(np.sum(self.state[nbrs]))
+            local_num = beta * (0.5 * self.degrees + 0.5 * neighbor_sum)
         else:
-            neighbor_high = np.zeros(self.n, dtype=float)
-            for node in self.g.nodes:
-                nbrs = self.g.nodes[node]["neighbors"]
-                if not nbrs:
-                    continue
-                neighbor_high[node] = np.sum(self.state[nbrs] == STATE_HIGH)
+            raise ValueError("local_mode 仅支持 'high_only' 或 'symmetric'")
 
         # p_i = (global_num + beta * k_high) / (global_den + beta * k_i)
         # 简化：直接用 p_env 乘全局权重再加局部项
         base_num = p_env * ((1 - self.cfg.r) * self.cfg.n_m + self.cfg.r * self.cfg.n_w)
         base_den = (1 - self.cfg.r) * self.cfg.n_m + self.cfg.r * self.cfg.n_w
 
-        local_num = self.cfg.beta * neighbor_high
-        local_den = self.cfg.beta * self.degrees
+        local_den = beta * self.degrees
 
         denom = base_den + local_den
         # 避免除零：孤立点只受全局影响

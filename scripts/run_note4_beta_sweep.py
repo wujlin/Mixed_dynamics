@@ -78,6 +78,23 @@ def _rc_from_max_slope(r_vals: np.ndarray, y: np.ndarray, *, min_delta: float) -
     if not np.isfinite(dv).any():
         return float("nan")
     idx = int(np.nanargmax(dv))
+
+    # 用局部二次拟合对“最大斜率点”做亚网格插值，减轻 rc 被 r 网格量化锁死的问题
+    if 0 < idx < (r.size - 1):
+        x = r[idx - 1 : idx + 2]
+        y3 = dv[idx - 1 : idx + 2]
+        if np.all(np.isfinite(x)) and np.all(np.isfinite(y3)):
+            try:
+                a, b, _c = np.polyfit(x, y3, deg=2).astype(float).tolist()
+                if a != 0.0:
+                    x_star = -b / (2.0 * a)
+                    if float(x[0]) <= float(x_star) <= float(x[2]) and np.isfinite(x_star):
+                        # 只有在局部呈现“凹向下”(a<0) 且顶点落在邻域内时才采用
+                        if a < 0.0:
+                            return float(x_star)
+            except Exception:
+                pass
+
     return float(r[idx])
 
 
@@ -136,6 +153,7 @@ class SeedTask:
     n_m: float
     n_w: float
     symmetric_mode: bool
+    local_mode: str
 
 
 def _simulate_one_seed(task: SeedTask) -> Tuple[int, float, np.ndarray, np.ndarray, np.ndarray]:
@@ -171,6 +189,7 @@ def _simulate_one_seed(task: SeedTask) -> Tuple[int, float, np.ndarray, np.ndarr
             sample_n=int(task.sample_n),
             symmetric_mode=bool(task.symmetric_mode),
             update_rate=float(task.update_rate),
+            local_mode=str(task.local_mode),
         )
         sim = NetworkAgentModel(cfg)
         t, q_traj, a_traj = sim.run(steps=int(task.steps), record_interval=int(task.record_interval))
@@ -210,6 +229,7 @@ def _default_out_path(
     n_seeds: int,
     n_r: int,
     n_beta: int,
+    local_mode: str,
     tag: str,
 ) -> Path:
     data_dir = output_dir / "data"
@@ -223,7 +243,7 @@ def _default_out_path(
         f"nm{int(n_m)}_nw{int(n_w)}_k{k_avg}_"
         f"N{int(n)}_deg{deg_tag}_{model}_u{int(round(update_rate*100))}_"
         f"steps{int(steps)}_ri{int(record_interval)}_burn{burn_tag}_"
-        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_b{int(n_beta)}_{tag}.npz"
+        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_b{int(n_beta)}_lm{local_mode}_{tag}.npz"
     )
     return data_dir / name
 
@@ -250,6 +270,12 @@ def main() -> None:
     )
     parser.add_argument("--init-state", choices=["random", "medium"], default="medium")
     parser.add_argument("--sample-mode", choices=["fixed", "degree"], default="fixed")
+    parser.add_argument(
+        "--local-mode",
+        choices=["high_only", "symmetric"],
+        default="high_only",
+        help="beta>0 时的局部耦合口径：high_only=仅邻居高唤醒；symmetric=对称局部概率(含 low/medium 基线)",
+    )
     parser.add_argument("--betas", type=str, default="0,0.02,0.05,0.1")
     # 为了避免高 beta 下曲线在局部窗口内“已饱和”导致 rc=NaN，默认扫描全区间 [0, 1]
     parser.add_argument("--r-min", type=float, default=0.0)
@@ -307,6 +333,7 @@ def main() -> None:
             n_seeds=len(seeds),
             n_r=int(r_vals.size),
             n_beta=len(betas),
+            local_mode=str(args.local_mode),
             tag="v1",
         )
 
@@ -318,7 +345,7 @@ def main() -> None:
     print(f"theory reference: chi={chi_ref:.6f}, rc={rc_ref:.6f} (beta=0, symmetric)")
     print(
         f"scan: betas={betas}, r=[{args.r_min},{args.r_max}] x{r_vals.size}, "
-        f"n={args.n}, deg={args.avg_degree}, model={args.model}, "
+        f"n={args.n}, deg={args.avg_degree}, model={args.model}, local_mode={args.local_mode}, "
         f"steps={args.steps}, ri={args.record_interval}, burn={args.burn_in_frac}, win={args.metric_window}, "
         f"seeds={len(seeds)}, jobs={args.jobs}"
     )
@@ -354,6 +381,7 @@ def main() -> None:
             n_m=float(args.n_m),
             n_w=float(args.n_w),
             symmetric_mode=True,
+            local_mode=str(args.local_mode),
         )
         for beta in betas
         for seed in seeds
@@ -495,7 +523,7 @@ def main() -> None:
         q_abs_max=q_abs_max.astype(float),
         pos_branch_frac=pos_branch_frac.astype(float),
         # rc estimates
-        rc_method="max_slope",
+        rc_method="max_slope_parabola",
         min_delta=float(args.min_delta),
         q_low=float(args.q_low),
         q_high=float(args.q_high),
@@ -522,6 +550,7 @@ def main() -> None:
         init_state=str(args.init_state),
         sample_mode=str(args.sample_mode),
         symmetric_mode=True,
+        local_mode=str(args.local_mode),
         bootstrap=int(args.bootstrap),
     )
     print(f"[done] Saved: {out_path}")
