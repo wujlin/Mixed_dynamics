@@ -11,6 +11,8 @@ Note04（04_Sensitivity_Chi_Landscape）Part 4：
 - 当 beta>0 时，当前 NetworkAgentModel 的“本地耦合”项使用邻居高唤醒数量 neighbor_high，
   这本质上引入了非对称社会放大/抑制机制；因此此处的 rc(β) 应理解为“有效转变点”，
   不再等同于对称理论推导的 r_c。
+- 若使用 init_state=medium（全中立启动），在 beta>0 时更容易出现“分支选择偏置”（Q 更倾向某一符号）。
+  建议用 init_state=random 作为稳健性对照，并在 notebook 中保留 signed Q/分支偏置诊断图以避免误读。
 """
 
 from __future__ import annotations
