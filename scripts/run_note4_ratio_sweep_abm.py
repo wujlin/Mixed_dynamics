@@ -181,6 +181,21 @@ def _simulate_one_seed(task: SeedTask) -> Tuple[float, int, np.ndarray]:
     return float(task.ratio), int(task.seed), q_abs_mean
 
 
+def _float_list_sig(values: List[float], *, scale: int = 1000) -> str:
+    vals = sorted({float(v) for v in values})
+    if not vals:
+        return "none"
+    if len(vals) == 1:
+        return str(int(round(vals[0] * int(scale))))
+    return f"{int(round(vals[0] * int(scale)))}-{int(round(vals[-1] * int(scale)))}"
+
+
+def _unit_range_sig(r_min: float, r_max: float, *, scale: int = 1000) -> str:
+    a = int(round(float(r_min) * int(scale)))
+    b = int(round(float(r_max) * int(scale)))
+    return f"{a}-{b}"
+
+
 def _default_out_path(
     *,
     output_dir: Path,
@@ -195,8 +210,12 @@ def _default_out_path(
     record_interval: int,
     burn_in_frac: float,
     metric_window: int,
+    init_state: str,
     n_seeds: int,
     n_r: int,
+    r_min: float,
+    r_max: float,
+    ratio_list: List[float],
     n_ratio: int,
     tag: str,
 ) -> Path:
@@ -206,11 +225,14 @@ def _default_out_path(
     theta_tag = int(round(theta * 100))
     burn_tag = int(round(burn_in_frac * 100))
     deg_tag = int(round(avg_degree))
+    ratio_sig = _float_list_sig(ratio_list)
+    r_sig = _unit_range_sig(r_min, r_max)
     name = (
         f"note4_ratio_sweep_abm_phi{phi_tag}_theta{theta_tag}_k{k_avg}_"
         f"N{int(n)}_deg{deg_tag}_{model}_u{int(round(update_rate*100))}_"
         f"steps{int(steps)}_ri{int(record_interval)}_burn{burn_tag}_"
-        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_ratio{int(n_ratio)}_{tag}.npz"
+        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_rr{r_sig}_"
+        f"ratio{int(n_ratio)}_ratio{ratio_sig}_init{str(init_state)}_{tag}.npz"
     )
     return data_dir / name
 
@@ -273,8 +295,12 @@ def main() -> None:
             record_interval=int(args.record_interval),
             burn_in_frac=float(args.burn_in_frac),
             metric_window=int(args.metric_window),
+            init_state=str(args.init_state),
             n_seeds=len(seeds),
             n_r=int(r_vals.size),
+            r_min=float(args.r_min),
+            r_max=float(args.r_max),
+            ratio_list=ratio_list,
             n_ratio=len(ratio_list),
             tag="v1",
         )
@@ -406,4 +432,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

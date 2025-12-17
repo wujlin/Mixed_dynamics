@@ -84,7 +84,11 @@ def load_topic_dataset(
         df = df[df["content"].notna() & (df["content"].str.strip() != "")]
 
     if parse_dates:
-        df["publish_time"] = pd.to_datetime(df["publish_time"], errors="coerce")
+        # publish_time 在不同来源 csv 中可能存在混合格式；优先用 pandas>=2.0 的 mixed 解析
+        try:
+            df["publish_time"] = pd.to_datetime(df["publish_time"], errors="coerce", format="mixed")
+        except TypeError:
+            df["publish_time"] = pd.to_datetime(df["publish_time"], errors="coerce")
 
     # 用户类型映射
     user_types = map_user_types_batch(

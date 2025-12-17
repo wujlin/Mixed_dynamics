@@ -1,9 +1,9 @@
-## 远程工作站 vLLM 部署与本地调用（Qwen）
+## 工作站A：Qwen vLLM 部署与本地调用（OpenAI 兼容）
 
 整理自先前已验证的流程，便于快速复用。
 
 ### 一、远程工作站（Server）端
-目标：在工作站 `10.13.12.164` 上用 vLLM 启动 OpenAI 兼容服务。
+目标：在工作站A `10.13.12.164` 上用 vLLM 启动 OpenAI 兼容服务（默认端口 `7890`）。
 
 1. 登录与会话
    - SSH 登录工作站，使用 `tmux` 保持会话：
@@ -11,6 +11,9 @@
      tmux new -s qwen_service
      # 若已有会话：tmux attach -t qwen_service
      ```
+   - 常用 tmux 操作：
+     - 后台：按 `Ctrl+b` 然后按 `d`
+     - 结束会话：`tmux kill-session -t qwen_service`
    - 激活包含 vllm 的环境：
      ```bash
      conda activate your_env_name
@@ -28,9 +31,26 @@
      --trust-remote-code
    ```
    - 如需其他模型，可改 `--model`（如 `Qwen/Qwen2-7B-Instruct`）。
-   - `--host 0.0.0.0` 允许外部访问；`--api-key` 设置简易密钥。
+   - `--host 0.0.0.0` 允许外部访问；`--api-key` 是简易密钥（建议用环境变量注入，避免写死在脚本/仓库）。
+   - 可选性能参数（视 GPU/显存情况调整）：
+     ```bash
+     # 示例：多卡并行/显存利用率/最大上下文等
+     # --tensor-parallel-size 2
+     # --gpu-memory-utilization 0.90
+     # --max-model-len 8192
+     ```
 
-3. 防火墙（如连接失败）
+3. 服务可达性自检（建议）
+   - 在工作站A本机：
+     ```bash
+     curl -s http://127.0.0.1:7890/v1/models | head
+     ```
+   - 若你在外部机器访问（走隧道/代理），也可用同样接口测试：
+     ```bash
+     curl -s http://10.13.12.164:7890/v1/models | head
+     ```
+
+4. 防火墙（如连接失败）
    ```bash
    sudo ufw allow 7890/tcp
    ```
@@ -56,7 +76,7 @@
    ```python
    client = OpenAI(
        base_url="http://10.13.12.164:7890/v1",
-       api_key="abc123",
+       api_key="abc123",  # 示例；建议改为环境变量读取
    )
    resp = client.chat.completions.create(
        model="Qwen/Qwen3-8B",
@@ -65,7 +85,7 @@
    print(resp.choices[0].message.content)
    ```
 
-以上即可完成远程工作站的 vLLM 部署与本地调用。若端口/模型/密钥有变，按需调整对应参数。 
+以上即可完成工作站A的 vLLM 部署与本地调用。若端口/模型/密钥有变，按需调整对应参数。 
 
 ### 三、代理常见问题与处理
 - 连接超时多因未走代理或被 no_proxy 绕过。解决：

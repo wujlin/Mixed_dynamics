@@ -70,7 +70,10 @@ def aggregate_time_series(
     
     # 复制并预处理
     df = df.copy()
-    df[config.time_col] = pd.to_datetime(df[config.time_col])
+    try:
+        df[config.time_col] = pd.to_datetime(df[config.time_col], errors="coerce", format="mixed")
+    except TypeError:
+        df[config.time_col] = pd.to_datetime(df[config.time_col], errors="coerce")
     
     # 创建时间窗口
     df["time_window"] = df[config.time_col].dt.floor(config.freq)
@@ -363,4 +366,3 @@ def get_topic_summary(df_ts: pd.DataFrame, topic_name: str = "") -> Dict[str, An
     }
     
     return summary
-

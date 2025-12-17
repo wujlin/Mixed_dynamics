@@ -9,8 +9,9 @@ Phase 5: 用 Weibo Long-COVID 数据验证理论预测
 
 核心假设：
 - H1: Activity (a = 1 - X_M) 越高，情绪变化越陡峭（突变特征）
-- H2: Activity 低时，情绪呈渐变过渡
-- H3: 突变前应出现临界慢化信号（AC1↑, Var↑）
+- H2: r_proxy 越高（自媒体占比越高），波动性越大
+- H3: r_proxy × a 存在交互效应（高 r_proxy 且高 a 更脆弱）
+- H4: 突变前应出现临界慢化信号（AC1↑, Var↑）
 """
 
 # 延迟导入，避免循环依赖和不必要的加载
@@ -39,6 +40,12 @@ def __getattr__(name):
     elif name == "is_valid_for_annotation":
         from .text_preprocessor import is_valid_for_annotation
         return is_valid_for_annotation
+    elif name == "EventClusterer":
+        from .clusterer import EventClusterer
+        return EventClusterer
+    elif name == "TimeCluster":
+        from .clusterer import TimeCluster
+        return TimeCluster
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
@@ -50,5 +57,6 @@ __all__ = [
     "load_topic_dataset",
     "preprocess_weibo_text",
     "is_valid_for_annotation",
+    "EventClusterer",
+    "TimeCluster",
 ]
-

@@ -179,6 +179,21 @@ def _simulate_one_seed(task: SeedTask) -> Tuple[int, int, np.ndarray]:
     return int(task.k), int(task.seed), q_abs_mean
 
 
+def _int_list_sig(values: List[int]) -> str:
+    vals = sorted({int(v) for v in values})
+    if not vals:
+        return "none"
+    if len(vals) == 1:
+        return str(vals[0])
+    return f"{vals[0]}-{vals[-1]}"
+
+
+def _unit_range_sig(r_min: float, r_max: float, *, scale: int = 1000) -> str:
+    a = int(round(float(r_min) * int(scale)))
+    b = int(round(float(r_max) * int(scale)))
+    return f"{a}-{b}"
+
+
 def _default_out_path(
     *,
     output_dir: Path,
@@ -194,8 +209,11 @@ def _default_out_path(
     record_interval: int,
     burn_in_frac: float,
     metric_window: int,
+    init_state: str,
     n_seeds: int,
     n_r: int,
+    r_min: float,
+    r_max: float,
     k_list: List[int],
     tag: str,
 ) -> Path:
@@ -205,12 +223,15 @@ def _default_out_path(
     theta_tag = int(round(theta * 100))
     burn_tag = int(round(burn_in_frac * 100))
     deg_tag = int(round(avg_degree))
+    k_sig = _int_list_sig(k_list)
+    r_sig = _unit_range_sig(r_min, r_max)
     name = (
         f"note4_k_sweep_abm_phi{phi_tag}_theta{theta_tag}_"
         f"nm{int(n_m)}_nw{int(n_w)}_"
         f"N{int(n)}_deg{deg_tag}_{model}_u{int(round(update_rate*100))}_"
         f"steps{int(steps)}_ri{int(record_interval)}_burn{burn_tag}_"
-        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_k{len(k_list)}_{tag}.npz"
+        f"win{int(metric_window)}_seeds{int(n_seeds)}_r{int(n_r)}_rr{r_sig}_"
+        f"k{len(k_list)}_k{k_sig}_init{str(init_state)}_{tag}.npz"
     )
     return data_dir / name
 
@@ -275,8 +296,11 @@ def main() -> None:
             record_interval=int(args.record_interval),
             burn_in_frac=float(args.burn_in_frac),
             metric_window=int(args.metric_window),
+            init_state=str(args.init_state),
             n_seeds=len(seeds),
             n_r=int(r_vals.size),
+            r_min=float(args.r_min),
+            r_max=float(args.r_max),
             k_list=k_list,
             tag="v1",
         )
@@ -410,4 +434,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
