@@ -4,7 +4,9 @@ Project Development Guide: Mixed-Feedback Model of Collective Emotion
 
 - 理论验证阶段报告（Note01–Note04，图文版）：`docs/theory_validation_report_note01-04.md`
 - 经验验证汇总报告（Note07）：`docs/note07_empirical_validation_report.md`
+- 经验验证实时更新（随跑随更）：`docs/empirical_validation_live.md`
 - batch4 用户元信息补齐（用于 Note07 的 H2/H3）：`scripts/fetch_user_meta_weibo.py`（联网+本地 cookie）与 `scripts/fix_user_meta_csv.py`（离线修正口径）
+- 单词条口径（方案B2：strict vs concept）合并数据生成：`scripts/merge_datasets.py`（支持 `--official-keywords` 过滤官媒补充）
 - 数据集说明：`docs/dataset_description.md`
 - 代码/数据结构说明：`docs/code_data_structure.md`
 - 工作站 Qwen/vLLM 部署与调用记录：`docs/vllm_qwen_setup.md`

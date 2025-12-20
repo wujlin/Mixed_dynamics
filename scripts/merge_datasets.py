@@ -4,6 +4,7 @@
 输入：
 - --base dataset/Topic_data/#新冠后遗症#_filtered.csv （或其他主数据）
 - --official dataset/Topic_data/官媒补充_flat.csv （由 flatten_official_media.py 生成）
+  - 可选：--official-keywords 新冠后遗症,长新冠,Long COVID  （仅保留 content 命中关键词的官媒行）
 
 输出：
 - 合并后的 CSV（默认 dataset/Topic_data/merged_topic_official.csv）
@@ -32,6 +33,11 @@ def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="合并主数据与官媒补充数据")
     p.add_argument("--base", required=True, help="主数据 CSV 路径")
     p.add_argument("--official", required=True, help="官媒补充 CSV 路径")
+    p.add_argument(
+        "--official-keywords",
+        default="",
+        help="可选：逗号分隔关键词，仅保留官媒 content 命中任一关键词的行（大小写不敏感，使用包含匹配）",
+    )
     p.add_argument("--output", required=True, help="合并输出 CSV 路径")
     return p.parse_args()
 
@@ -58,6 +64,17 @@ def main() -> None:
 
     df_base = load_csv(base_path)
     df_off = load_csv(off_path)
+
+    keywords = [s.strip() for s in str(args.official_keywords or "").split(",") if s.strip()]
+    if keywords:
+        before = int(len(df_off))
+        text = df_off["content"].fillna("").astype(str)
+        mask = False
+        for kw in keywords:
+            mask = mask | text.str.contains(kw, regex=False, case=False)
+        df_off = df_off[mask].reset_index(drop=True)
+        after = int(len(df_off))
+        print(f"[filter] official keywords={keywords} kept {after}/{before} rows")
 
     df_base["source"] = "base"
     df_off["source"] = "official"

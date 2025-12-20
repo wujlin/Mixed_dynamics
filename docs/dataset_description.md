@@ -84,6 +84,7 @@ outputs/annotations/
 1.  **扁平化与合并**:
     - `flatten_official_media.py`: 将嵌套 JSON 转为 CSV。
     - `merge_datasets.py`: 结合 `#新冠后遗症#_filtered.csv` 和官媒补充数据，生成 `merged_topic_official.csv` (17,604 条)。
+      - 额外支持单词条口径（方案B2）：使用 `--official-keywords` 过滤官媒补充，只保留内容命中关键词的官媒行（例如生成 `merged_topic_official_batch1_strict.csv` 与 `merged_topic_official_batch1_concept.csv`）。
 
 2.  **筛选与标注**:
     - `extract_new_samples.py`: 筛选出去重后的待标注样本。

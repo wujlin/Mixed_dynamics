@@ -692,11 +692,11 @@ def main():
     ap.add_argument(
         "--datasets",
         default="master,batch3",
-        help="要分析的数据集：逗号分隔，可选 master,batch3,batch4（默认 master,batch3）",
+        help="要分析的数据集：逗号分隔，可选 master,batch1,batch1_concept,batch1_base,batch3,batch4（默认 master,batch3）",
     )
     ap.add_argument("--freq", default="4H", help="时间聚合窗口，例如 1H/4H/1D")
     ap.add_argument("--min-posts-public", type=int, default=5, help="每个窗口 public 帖子阈值（低于此值 a/Q 置 NaN）")
-    ap.add_argument("--time-start", default="2023-01-01", help="起始时间（含），例如 2023-01-01；空字符串表示不截断")
+    ap.add_argument("--time-start", default="", help="起始时间（含），例如 2023-01-01；空字符串表示不截断（建议显式设置以保证可复现）")
     ap.add_argument("--time-end", default="", help="结束时间（含），例如 2024-12-31；空字符串表示不截断")
     ap.add_argument("--segment", default="M", help="段内统计粒度：M(月)/W(周)等")
     ap.add_argument("--jump-quantile", type=float, default=0.95, help="H1 jump 指标用的分位数（默认 0.95）")
@@ -755,6 +755,24 @@ def main():
         "master": DatasetSpec(
             name="master",
             dataset_csv=ROOT / "dataset/Topic_data/merged_topic_official.csv",
+            annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
+        ),
+        # batch1：单词条口径（严格）——#新冠后遗症# + 官媒补充（仅保留 content 命中“新冠后遗症”的官媒行）
+        "batch1": DatasetSpec(
+            name="batch1",
+            dataset_csv=ROOT / "dataset/Topic_data/merged_topic_official_batch1_strict.csv",
+            annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
+        ),
+        # batch1_concept：单词条口径（概念扩展）——#新冠后遗症# + 官媒补充（命中“长新冠/后新冠/Long COVID/PASC”等）
+        "batch1_concept": DatasetSpec(
+            name="batch1_concept",
+            dataset_csv=ROOT / "dataset/Topic_data/merged_topic_official_batch1_concept.csv",
+            annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
+        ),
+        # batch1_base：只用 #新冠后遗症# 原始数据（不含官媒补充），用于对照“官媒补充是否改变可检验性”
+        "batch1_base": DatasetSpec(
+            name="batch1_base",
+            dataset_csv=ROOT / "dataset/Topic_data/#新冠后遗症#_filtered.csv",
             annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
         ),
         "batch3": DatasetSpec(

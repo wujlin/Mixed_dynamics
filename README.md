@@ -30,6 +30,41 @@
 - Notebook：`notebooks/07_Empirical_Validation.ipynb`
 - 命令行复现入口：`scripts/run_note7_empirical.py`
 - 阶段性报告：`docs/note07_empirical_validation_report.md`
+- 实时更新报告（随跑随更）：`docs/empirical_validation_live.md`
+
+#### 3.1 单词条口径（方案B2：strict vs concept）
+
+先生成两套“#新冠后遗症# + 官媒补充”合并数据（不入库，按需本地生成）：
+
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/merge_datasets.py \
+  --base 'dataset/Topic_data/#新冠后遗症#_filtered.csv' \
+  --official 'dataset/Topic_data/官媒补充_flat.csv' \
+  --official-keywords '新冠后遗症' \
+  --output 'dataset/Topic_data/merged_topic_official_batch1_strict.csv'
+
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/merge_datasets.py \
+  --base 'dataset/Topic_data/#新冠后遗症#_filtered.csv' \
+  --official 'dataset/Topic_data/官媒补充_flat.csv' \
+  --official-keywords '新冠后遗症,长新冠,后新冠,Long COVID,PASC,long covid,慢性新冠' \
+  --output 'dataset/Topic_data/merged_topic_official_batch1_concept.csv'
+```
+
+再在同一口径下跑对照（示例：团簇方案B，`cluster_segment=2D` 以保证短团簇也能计算相关）：
+
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets batch1_base,batch1,batch1_concept \
+  --freq 4H \
+  --min-posts-public 4 \
+  --time-start 2020-01-01 \
+  --cluster --cluster-only \
+  --cluster-roll-days 14 --cluster-quantile 0.9 --cluster-min-days 10 --cluster-merge-gap-days 7 \
+  --cluster-segment 2D \
+  --event-quantile 0.95 --event-on-eligible both \
+  --roll-win 12 --pre 24 \
+  --placebo-iters 2000 --placebo-tail-k 6
+```
 
 ## 经验代理口径（与代码一致）
 
