@@ -262,6 +262,16 @@ def partial_pearsonr(x: pd.Series, y: pd.Series, ctrl: pd.Series):
     return safe_pearsonr(pd.Series(xr), pd.Series(yr))
 
 
+def _hours_to_windows(hours: float, step_hours: float, *, name: str) -> int:
+    h = float(hours)
+    if h <= 0:
+        raise ValueError(f"{name} 必须为正数（hours={hours}）")
+    if step_hours <= 0:
+        raise ValueError(f"freq 无法转换为步长小时（step_hours={step_hours}）")
+    n = int(round(h / float(step_hours)))
+    return max(1, n)
+
+
 def plot_basic(plt, ts: pd.DataFrame, title: str, out_path: Path) -> None:
     df = ts.sort_values("time_window").reset_index(drop=True)
     fig, axes = plt.subplots(3, 1, figsize=(12, 7), sharex=True)
@@ -550,12 +560,15 @@ def run_one(
         r2, p2 = safe_pearsonr(seg["r_proxy_mean"], seg["volatility"])
         rs2, ps2 = safe_spearmanr(seg["r_proxy_mean"], seg["volatility"])
         rp1, pp1 = partial_pearsonr(seg["a_mean"], seg["jump_q95"], seg["n_windows_jump"])
+        rp2, pp2 = partial_pearsonr(seg["r_proxy_mean"], seg["volatility"], seg["n_windows_aq"])
 
         print(f"\n[{name}] segments={len(seg)}")
         print(f"H1: corr(a_mean, jump_q95)={r1:.3f} (p={p1:.4g}); spearman={rs1:.3f} (p={ps1:.4g})")
         if not np.isnan(rp1):
             print(f"H1(partial, ctrl=n_windows_jump): r={rp1:.3f} (p={pp1:.4g})")
         print(f"H2: corr(r_proxy_mean, volatility)={r2:.3f} (p={p2:.4g}); spearman={rs2:.3f} (p={ps2:.4g})")
+        if not np.isnan(rp2):
+            print(f"H2(partial, ctrl=n_windows_aq): r={rp2:.3f} (p={pp2:.4g})")
 
         stats.update(
             {
@@ -570,6 +583,8 @@ def run_one(
                 "h2_pearson_p": p2,
                 "h2_spearman_r": rs2,
                 "h2_spearman_p": ps2,
+                "h2_partial_r": rp2,
+                "h2_partial_p": pp2,
             }
         )
 
@@ -709,6 +724,8 @@ def main():
     )
     ap.add_argument("--roll-win", type=int, default=12, help="H4 rolling 窗口（单位：窗口数）")
     ap.add_argument("--pre", type=int, default=24, help="H4 事件对齐回看长度（单位：窗口数）")
+    ap.add_argument("--roll-win-hours", type=float, default=None, help="H4 rolling 窗口（单位：小时；优先于 --roll-win）")
+    ap.add_argument("--pre-hours", type=float, default=None, help="H4 事件对齐回看长度（单位：小时；优先于 --pre）")
     ap.add_argument("--cluster", action="store_true", help="启用方案B：按时间团簇分别分析（基于 n_public 密度）")
     ap.add_argument("--cluster-only", action="store_true", help="只输出团簇结果（跳过全时段汇总图）")
     ap.add_argument("--cluster-roll-days", type=float, default=14.0, help="团簇平滑窗口（天）")
@@ -743,9 +760,15 @@ def main():
         default=str(ROOT / "outputs/annotations/batches/batch_04_shanghai/new_batch4.jsonl"),
         help="batch4 标注 jsonl（默认 batch_04_shanghai/new_batch4.jsonl）",
     )
+    ap.add_argument("--no-plots", action="store_true", help="不输出任何图（只写 CSV/cache），适合批量跑参数栅格/工作站运行")
     args = ap.parse_args()
 
     args.freq = _normalize_pandas_freq(args.freq)
+    step_hours = _freq_to_step_hours(args.freq)
+    if args.roll_win_hours is not None:
+        args.roll_win = _hours_to_windows(args.roll_win_hours, step_hours, name="--roll-win-hours")
+    if args.pre_hours is not None:
+        args.pre = _hours_to_windows(args.pre_hours, step_hours, name="--pre-hours")
 
     time_start = args.time_start.strip() or None
     time_end = args.time_end.strip() or None
@@ -832,7 +855,8 @@ def main():
 
     fig_dir = ROOT / "outputs/figs/empirical"
     fig_dir.mkdir(parents=True, exist_ok=True)
-    plt = _ensure_matplotlib() if not args.cluster_grid else None
+    plot_enabled = (not args.no_plots) and (not args.cluster_grid)
+    plt = _ensure_matplotlib() if plot_enabled else None
 
     if args.cluster_grid:
         roll_days_list = [float(x) for x in args.grid_roll_days.split(",") if x.strip()]
@@ -911,7 +935,8 @@ def main():
             label = k
             if k == "all":
                 label = f"all ({'+'.join(selected)})"
-            plot_basic(plt, ts_map[k], f"{label}: Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_{k}_basic_{args.freq.lower()}.png")
+            if plot_enabled:
+                plot_basic(plt, ts_map[k], f"{label}: Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_{k}_basic_{args.freq.lower()}.png")
 
         for k in ts_map.keys():
             title = f"{k} (all time range)"
@@ -930,6 +955,7 @@ def main():
                 pre=args.pre,
                 event_on_eligible=args.event_on_eligible,
                 fig_dir=fig_dir,
+                plot=plot_enabled,
             )
 
     if args.cluster:
@@ -952,7 +978,8 @@ def main():
                 title = f"{tag} cluster{c.cluster_id}: {c.start.date()} ~ {c.end.date()}"
                 name = f"{tag}_c{c.cluster_id}"
                 ts_slice = ts[(ts["time_window"] >= c.start) & (ts["time_window"] <= c.end)].reset_index(drop=True)
-                plot_basic(plt, ts_slice, f"{title} ({args.freq})", fig_dir / f"fig7a_{name}_basic_{args.freq.lower()}.png")
+                if plot_enabled:
+                    plot_basic(plt, ts_slice, f"{title} ({args.freq})", fig_dir / f"fig7a_{name}_basic_{args.freq.lower()}.png")
                 stats = run_one(
                     plt,
                     ts_slice,
@@ -966,7 +993,7 @@ def main():
                     pre=args.pre,
                     event_on_eligible=args.event_on_eligible,
                     fig_dir=fig_dir,
-                    plot=True,
+                    plot=plot_enabled,
                     placebo_iters=args.placebo_iters,
                     placebo_tail_k=args.placebo_tail_k,
                     placebo_seed=args.placebo_seed,

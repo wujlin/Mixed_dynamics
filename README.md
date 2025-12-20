@@ -66,6 +66,8 @@
   --placebo-iters 2000 --placebo-tail-k 6
 ```
 
+说明：`--roll-win/--pre` 的单位是“窗口数”。如果不想手动换算（尤其在 `freq=1H/2H` 时），可改用 `--roll-win-hours 48 --pre-hours 96` 让脚本按 `freq` 自动折算。
+
 ## 经验代理口径（与代码一致）
 
 - 极化方向：$Q=X_H-X_L$

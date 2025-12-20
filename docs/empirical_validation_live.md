@@ -135,3 +135,39 @@
 2) 更新可检验性表：从 `time_series_*_4h.csv` 重新统计 `r_proxy`（mean/median/std/pct==1）。
 
 3) 在本文件顶部更新“更新时间”，并把第 2、3 节表格替换为最新快照。
+
+## 8. PI Two-Tier 复跑结果（新增，2025-12-20）
+
+> 目的：按 PI 建议把验证拆成两层：  
+> - H2/H3（结构性生态效应）尽量用更大的混合池换取 $r_{proxy}$ 方差；  
+> - H1/H4（动力学信号）优先用单词条更“干净”的时序，但允许提高频率以减少过度平滑。
+
+### 8.1 H2/H3：master+batch3（含 all）按周分段（freq=4H, segment=W）
+
+命令：
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets master,batch3 \
+  --freq 4H \
+  --min-posts-public 5 \
+  --time-start 2019-01-01 \
+  --segment W \
+  --event-on-eligible both \
+  --roll-win 12 --pre 24 \
+  --no-plots
+```
+
+核心输出（打印日志摘要）：
+- `batch3`：H2 显著为正（Pearson r=0.265, p=0.0043；Spearman r=0.244, p=0.0090）。但控制 `n_windows_aq` 后的部分相关不显著（r=0.078, p=0.411），提示存在“段内样本量/密度”对 H2 的潜在混杂，需要写进稳健性讨论。
+- `all`：H2 不显著（Pearson r=0.065, p=0.484；Spearman r=0.161, p=0.078）。H1 在 all 上显著为正（Pearson r=0.241, p=0.008），与“更活跃→更易出现大变化”的方向一致。
+- `master`：在当前严格口径（roll_win=12, pre=24）下连续块太短，H4 不可评估（eligible=0）。这更多是数据稀疏导致的功效/连续性问题，而不是“否定 H4”。
+
+### 8.2 H1/H4：batch1 单词条提频（freq=2H/1H）
+
+复跑要点（当前事实）：
+- `freq=2H` 时可以找到团簇，但由于 2H 序列缺口更多，连续块长度不足以支撑 **严格 block-aware 的 H4**（eligible=0，events=0）。在同等小时尺度下（roll=48h, pre=96h），这说明“提频”在当前数据稠密度下反而让 H4 更难做。
+- `freq=1H` 在默认团簇参数下难以找到满足最短天数的团簇（clusters=0）。为避免“人为调参”，我们改为用 4H 团簇窗口作为时间边界，在该窗口内做 1H 的段内统计；结果 H1 不显著，且 H4 仍因连续块不足而不可评估。
+
+结论（面向写作的策略建议）：
+- **H4 目前更适合保留在 4H 口径**（或者在更高密度、更连续的数据上再提频），否则严格连续性约束会让 “eligible events” 直接归零。  
+- batch1 提频对 H1 的提升有限（至少在当前窗口与阈值下没有出现更强的显著性）。
