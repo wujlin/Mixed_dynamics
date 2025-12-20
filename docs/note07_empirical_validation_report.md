@@ -9,6 +9,10 @@
 - **batch3（扩展集）**：`outputs/annotations/batches/batch_03_expanded/new_batch3.jsonl` + `outputs/annotations/intermediate/to_annotate_batch3_clean.csv`
 - **all（合并）**：master 与 batch3 去重后合并（按 `mid` 去重）
 
+### 1.1.1 batch4（上海疫情增强验证集，新增）
+- **batch4（上海疫情）**：`outputs/annotations/batches/batch_04_shanghai/new_batch4.jsonl` + `outputs/annotations/intermediate/to_annotate_batch4_shanghai_2022_loose.csv`
+- 注意：上海数据源缺少 `verify_typ`，因此若不提供用户元信息回填，`r_proxy` 将缺失或失真（H2/H3 不可检验）。代码已支持 `--user-meta` 回填 `verify_typ`/覆盖 `user_type`，详见第 5 节复现命令。
+
 **时间覆盖与密度（用于解释 TIME_START 的选择）**：
 - master（合并后 17,604 条）：主要集中在 **2022（8,506）** 与 **2023（4,719）**，2022 明显更密集。
 - batch3（合并后 73,435 条）：主要集中在 **2023（45,644）** 与 **2024（15,833）**，2023–2024 密度远高于 2022。
@@ -28,8 +32,9 @@
   $$
 - 正反馈占优程度（主流缺失代理）：  
   $$
-  r_{\text{proxy}}=\frac{n_{\text{wemedia}}}{n_{\text{wemedia}}+n_{\text{mainstream}}}
+  r_{\text{proxy}}=\frac{n_{\text{wemedia}}}{n_{\text{wemedia}}+n_{\text{mainstream}}+n_{\text{government}}}
   $$
+  其中政府/机构账号（`government`）按“官方叙事”并入主流分母（与后续 `calculate_r_proxy()` 口径一致）。
 
 ### 1.3 方案B：两层“稳健化”
 经验数据时间分布明显不均匀（非平稳+非均匀采样），因此“稳健化”分两层：
@@ -84,7 +89,7 @@ $$
 - 对 `|Q|` 计算 rolling：
   - $AC1(|Q|)$
   - $Var(|Q|)$
-- 以 `abs_dQ_abs_per_hour` 的高分位窗口作为事件点，做对齐平均（含 95% 区间）
+- **事件点定义（防伪影口径）**：只在“可评估窗口”集合上按 `abs_dQ_abs_per_hour` 取高分位作为事件点（默认要求 AC1/Var 都可用），避免把事件选在 rolling 尚未定义/跨缺口的位置，从而造成 `used events=0` 的伪阴性。
 
 ## 3. 结果总览（核心发现）
 
@@ -132,6 +137,30 @@ $$
 - 目前只能说：`Var(|Q|)` 在 jump 前有一定抬升迹象，但 `AC1(|Q|)` **并不稳定**（未出现清晰单调上升）。  
   因此 H4 **不能作为强结论写入论文主结果**，更适合以“弱证据/识别困难”方式客观汇报，并把提升数据密度（更连续、更高频、更大样本）作为下一步重点。
 
+### 3.4 batch4（上海疫情）结果：团簇内 H1/H4（方案B口径）
+batch4 的时间覆盖集中在 **2022 上半年**，但由于 `MIN_POSTS_PUBLIC=20` 且媒体用户类型缺失（`verify_typ` 不可用），当前更适合先用团簇方案B检验 **H1/H4**，并把 **H2/H3** 视为“待补齐用户类型元信息后再检验”的后续工作。
+
+本轮复现实验（`freq=4h, cluster_quantile=0.9, roll_days=14, cluster_min_days=10, cluster_segment=2D, event_quantile=0.9`）在 batch4 上自动识别到 1 个高密度团簇：
+- 团簇窗口：`2022-05-12 20:00 ~ 2022-05-25 20:00`（79 个 4H 窗口）
+- 段内统计：按 `2D` 分段得到 5 个有效段（满足段内样本量阈值）
+- 事件对齐：在“可评估窗口”上选取高 jump 分位数事件做对齐平均；事件数量会受连续块长度与缺口影响（这是功效瓶颈之一）。
+
+对应图：
+- 基础时序（团簇切片）：`../outputs/figs/empirical/fig7a_batch4_c0_basic_4h.png`
+- H1/H2 散点（团簇内，H2 因 r_proxy 缺失为 NaN）：`../outputs/figs/empirical/fig7b_h1_h2_scatter_batch4_c0_4h.png`
+- H4 事件对齐（含 95% 区间）：`../outputs/figs/empirical/fig7c_h4_eventstudy_batch4_c0_4h.png`
+
+![](../outputs/figs/empirical/fig7a_batch4_c0_basic_4h.png)
+![](../outputs/figs/empirical/fig7b_h1_h2_scatter_batch4_c0_4h.png)
+![](../outputs/figs/empirical/fig7c_h4_eventstudy_batch4_c0_4h.png)
+
+**batch4 结论（基于当前口径与 Placebo）**：
+- H1：`corr(a_mean, jump_q95)≈-0.02 (p≈0.97)`，段内相关接近 0，当前口径下 **不支持** “$a$ 越高越容易 jump”。
+- H4：Placebo（事件标签置换）下 `p≈0.55 (AC1)`、`p≈0.51 (Var)`，且 real 值略低于 placebo_mean，当前口径下 **不支持** “jump 前 AC1/Var 系统性抬升”的临界慢化证据。
+- H2/H3：由于上海数据源缺少 `verify_typ`，当前 `r_proxy` 近似不可用，**不具备检验条件**（需要 `--user-meta` 回填后复跑）。
+
+> 备注：本轮修复了 `cluster_segment=2D` 的分段口径问题（pandas `to_period('2D')` 会按天滑动标号，导致每段只有 6 个 4H 窗口、从而把 H1/H2 错误地判定为“段内样本不足”）。现在脚本对 `2D/12h` 这类固定长度 segment 使用 `.dt.floor()` 做全局对齐，确保分段符合直觉与统计口径。
+
 ## 4. 核心发现（给写作的一句话版本）
 1) **最稳健的经验支持来自 H2**：在扩展集 batch3 中，自媒体占比越高（$r_{\text{proxy}}$ 越大），情绪序参量 $Q$ 的段内波动越大（volatility↑），与“正反馈占优导致系统更不稳定”的理论预测一致。  
 2) **H1 在当前口径下不成立**：$a$ 与 jump 强度（段内 `jump_q95`）相关接近 0，提示“仅靠中立者缺失度”不足以解释突变，需要更细的条件化检验/更贴近机制的 jump 定义。  
@@ -143,6 +172,7 @@ $$
 使用本地 conda 环境：
 ```bash
 /home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets master,batch3 \
   --freq 4H \
   --min-posts-public 5 \
   --time-start 2023-01-01 \
@@ -151,9 +181,63 @@ $$
   --pre 24
 ```
 
+### 5.1.1 batch4（上海疫情）复现（推荐口径）
+先只跑 H1/H4（不依赖 `r_proxy`），建议聚焦 2022 上半年且用团簇方案B避免把不同阶段混在一起：
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets batch4 \
+  --freq 4H \
+  --min-posts-public 20 \
+  --time-start 2022-01-01 \
+  --time-end 2022-06-30 \
+  --cluster \
+  --cluster-only \
+  --cluster-quantile 0.9 \
+  --cluster-min-days 10 \
+  --cluster-segment 2D \
+  --event-quantile 0.9 \
+  --event-on-eligible both \
+  --roll-win 12 \
+  --pre 24 \
+  --placebo-iters 5000 \
+  --placebo-tail-k 6
+```
+
+若你已补齐用户类型元信息（例如 `user_meta.csv`，包含 `uid,verify_typ` 或 `uid,user_type`），即可在 batch4 上进一步检验 H2/H3：
+
+生成 `user_meta`（m.weibo.cn 用户资料；cookie 仅本地保存，不入库）：
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/fetch_user_meta_weibo.py \
+  --input-csv outputs/annotations/intermediate/to_annotate_batch4_shanghai_2022_loose.csv \
+  --output data/derived/user_meta_batch4.csv \
+  --rules data/config/weibo_crawler_rules.json \
+  --cookies secrets/weibo_cookies.json
+```
+
+如果你之前生成的 `user_meta_batch4.csv` 里存在 `verified_type==0` 但仍被标成 `verify_typ=无认证,user_type=public`（典型是个人认证/大V被误判），请先离线修正口径：
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/fix_user_meta_csv.py \
+  --input data/derived/user_meta_batch4.csv \
+  --output data/derived/user_meta_batch4_fixed.csv
+```
+
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets batch4 \
+  --user-meta data/derived/user_meta_batch4_fixed.csv \
+  --freq 4H \
+  --min-posts-public 20 \
+  --time-start 2022-01-01 \
+  --time-end 2022-06-30 \
+  --cluster \
+  --cluster-only \
+  --cluster-quantile 0.9 \
+  --cluster-segment W
+```
+
 ### 5.2 产出文件
 - 图：`outputs/figs/empirical/fig7a_*_4h.png`、`fig7b_*_4h.png`、`fig7c_*_4h.png`
-- 时间序列缓存：`outputs/annotations/derived/time_series_{master,batch3,all}_4h.csv`
+- 时间序列缓存：`outputs/annotations/derived/time_series_{master,batch3,batch4,all}_4h.csv`
 
 ## 6. 下一步建议（面向 batch4：上海疫情数据）
 你提到的上海疫情数据主要在 **2022 上半年**，且数据量更大（70万+）。这对 H4（CSD）非常关键：更高密度、更连续的序列更可能识别出 AC1/Var 的早期预警。
@@ -161,6 +245,37 @@ $$
 建议把 batch4 作为“增强验证集”接入后，优先做两类对照：
 - 时间窗更细：`freq=1H`，同时提高 `min_posts_public`（例如 50/100），让每个窗口的 $Q/a$ 更稳定
 - 时间范围聚焦：例如 `2022-01-01 ~ 2022-06-30`（或更贴近封控窗口）
+
+### 6.1 稳健性栅格（避免“参数挑选/p-hacking”质疑）
+为保证结论严谨，建议对 **团簇识别参数** 与 **事件阈值** 做小规模栅格扫描，并把结果以表格形式保存（同一套脚本、同一口径输出）：
+- `cluster_quantile ∈ {0.85, 0.90, 0.95}`
+- `cluster_roll_days ∈ {7, 14, 21}`
+- `event_quantile ∈ {0.90, 0.95}`（注意：团簇很短时 0.95 可能事件过少，会导致 H4 统计功效不足）
+- 固定：`freq=4H, min_posts_public=20, cluster_min_days=10, cluster_segment=2D, roll_win=12, pre=24, placebo_iters=5000`
+
+建议工作站上以“多次复现同口径”为原则，先做一轮小栅格（总计 3×3×2=18 组），再视情况扩展到 `cluster_quantile=0.8`（更完整地覆盖 pre-burst 发酵阶段）。
+
+对应命令（只输出 CSV，不画图；可长期挂在工作站跑）：
+```bash
+/home/wujlin/miniconda3/envs/emotion/bin/python scripts/run_note7_empirical.py \
+  --datasets batch4 \
+  --freq 4H \
+  --min-posts-public 20 \
+  --time-start 2022-01-01 \
+  --time-end 2022-06-30 \
+  --cluster-grid \
+  --cluster-roll-days 14 \
+  --cluster-min-days 10 \
+  --cluster-merge-gap-days 7 \
+  --cluster-segment 2D \
+  --grid-roll-days 7,14,21 \
+  --grid-quantiles 0.85,0.9,0.95 \
+  --grid-event-quantiles 0.9,0.95 \
+  --roll-win 12 \
+  --pre 24 \
+  --placebo-iters 5000 \
+  --placebo-tail-k 6
+```
 
 ## 7. 时间团簇分析（方案B：density-based clusters）
 
@@ -186,9 +301,9 @@ $$
 ```
 
 输出：
-- 团簇汇总表：`outputs/annotations/derived/note07_time_clusters_4h.csv`
-- 团簇统计表：`outputs/annotations/derived/note07_cluster_stats_4h.csv`（包含每个团簇的 H1/H2 相关、H4 event 数、以及 H4 placebo p 值等）
-- 稳健性栅格表：`outputs/annotations/derived/note07_cluster_grid_stats_4h.csv`（roll_days×quantile）
+- 团簇汇总表：`outputs/annotations/derived/note07_time_clusters_<datasets>_4h.csv`
+- 团簇统计表：`outputs/annotations/derived/note07_cluster_stats_<datasets>_4h.csv`（包含每个团簇的 H1/H2 相关、H4 event 数、以及 H4 placebo p 值等）
+- 稳健性栅格表：`outputs/annotations/derived/note07_cluster_grid_stats_<datasets>_4h.csv`（roll_days×quantile）
 - 团簇图：`outputs/figs/empirical/fig7a_*_c*_basic_4h.png`、`fig7b_*_c*_4h.png`、`fig7c_*_c*_4h.png`
 
 ### 7.2 本轮识别到的团簇（示例）

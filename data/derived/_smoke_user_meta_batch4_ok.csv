@@ -1,0 +1,5 @@
+uid,user_name,verified_type,verified_reason,verify_typ,user_type,source,error
+1001218734,,,,,,m.weibo.cn,api_not_ok: ok=0 msg=这里还没有内容
+1001914255,VERITYISVERITY,-1,,无认证,public,m.weibo.cn,
+1002627744,紫气东来-陈,-1,,无认证,public,m.weibo.cn,
+1003297331,乙卯天蝎,-1,,无认证,public,m.weibo.cn,

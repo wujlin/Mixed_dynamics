@@ -1,0 +1,15 @@
+{
+  "endpoints": {
+    "profile": "https://m.weibo.cn/api/container/getIndex?type=uid&value={uid}&containerid=100505{uid}"
+  },
+  "headers": {
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://m.weibo.cn/",
+    "X-Requested-With": "XMLHttpRequest"
+  },
+  "sleep_range": [3, 8],
+  "indicators": {
+    "government": ["发布", "公安", "法院", "检察", "卫健委", "疾控", "CDC", "政府", "应急管理"],
+    "media": ["日报", "晚报", "新闻", "时报", "周刊", "广播", "电视台", "新华社", "人民日报", "央视", "CCTV"]
+  }
+}

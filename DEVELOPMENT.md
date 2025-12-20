@@ -1,5 +1,14 @@
 Project Development Guide: Mixed-Feedback Model of Collective Emotion
 
+0. 快速入口（建议先读）
+
+- 理论验证阶段报告（Note01–Note04，图文版）：`docs/theory_validation_report_note01-04.md`
+- 经验验证汇总报告（Note07）：`docs/note07_empirical_validation_report.md`
+- batch4 用户元信息补齐（用于 Note07 的 H2/H3）：`scripts/fetch_user_meta_weibo.py`（联网+本地 cookie）与 `scripts/fix_user_meta_csv.py`（离线修正口径）
+- 数据集说明：`docs/dataset_description.md`
+- 代码/数据结构说明：`docs/code_data_structure.md`
+- 工作站 Qwen/vLLM 部署与调用记录：`docs/vllm_qwen_setup.md`
+
 1. 项目概述 (Project Overview)
 
 本项目旨在实现一个基于统计物理的混合反馈模型（Mixed-Feedback Model），用于研究集体情绪中的相变、极化及临界慢化现象。项目分为理论计算（Mean-Field Theory）、SDE 数值模拟与网络主体模拟（Agent-Based Simulation）三部分。
@@ -169,7 +178,7 @@ Phase 5: 经验数据验证 (Empirical Validation)
 
 | 模型参数 | 物理含义 | 经验代理变量 | 计算方法 |
 |----------|----------|--------------|----------|
-| **r** | 主流媒体移除比例 | **r_proxy** | n_wemedia / (n_mainstream + n_wemedia) |
+| **r** | 主流媒体移除比例 | **r_proxy** | n_wemedia / (n_wemedia + n_mainstream + n_government) |
 | **a** | Activity (1 - X_M) | **a** | (n_H + n_L) / n_total（公众情绪） |
 | **φ, θ** | 心理阈值 | 无法直接观测 | **a 是其综合效应的体现** |
 | **Q** | 极化方向 | **Q** | (n_H - n_L) / n_total |
@@ -331,7 +340,8 @@ Phase 5: 经验数据验证 (Empirical Validation)
 
 [ ] 5.3.2 计算 r_proxy（控制参数代理）
     ```python
-    r_proxy = n_wemedia / (n_mainstream + n_wemedia)
+    # government 视为“官方叙事”，并入主流分母（与 src/empirical/time_series.py 口径一致）
+    r_proxy = n_wemedia / (n_wemedia + n_mainstream + n_government)
     ```
     - r_proxy 高 → 自媒体主导（正反馈占优）
     - r_proxy 低 → 主流媒体主导（负反馈占优）
@@ -477,13 +487,10 @@ Week 2: 数据处理与假设检验
 > - 控制参数 r → **r_proxy**（自媒体占比）
 > - 心理敏感性 φ, θ → **a**（中立者缺失度，其综合效应的体现）
 >
-> 使用 Weibo Long-COVID 数据验证，结果表明：
-> 1. **a 越高，情绪变化越陡峭**（H1，Jump Score=0.6）
-> 2. **r_proxy 与波动性正相关**（H2，r=0.32, p=0.04）
-> 3. **交互效应未显现**（H3，统计不显著）
-> 4. **临界慢化未显现**（H4，AC1 无上升趋势）
->
-> 这些结果在经验层面支持了核心洞察的关键一段：**中立者缺失度（a）越高，系统越可能出现突变式变化**；同时也提示真实平台数据中，交互效应与临界慢化可能被外生冲击与平台机制所掩盖，需要更精细的识别策略。
+> 经验验证采用方案B（时间团簇 + Placebo Test）以降低“时间稀疏/缺口/选段偏置”的伪影风险。当前阶段性结果与图表以 `docs/note07_empirical_validation_report.md` 为准：
+> - master/batch3/all 的 H1–H4 在多数口径下**尚不稳健/不显著**（更像数据密度与外生冲击主导）。
+> - batch4（上海疫情 2022H1）用于增强信号密度，但需要先回填用户类型（`verify_typ/user_type`）后才能严谨检验 H2/H3（`r_proxy`）。
+> - `r_proxy` 的分母口径已统一为：主流媒体 + 政府机构 + 自媒体（政府视为官方叙事）。
 
 **政策启示**：
 > 保护信息生态系统中的"温和派"（中立信息/理性讨论）是维护社会情绪稳定的关键。

@@ -75,7 +75,7 @@ outputs/annotations/
 - `n_government`: 政府/机构账号发帖数
 
 可进一步派生（默认不落盘）：
-- `r_proxy` = $n_{wemedia} / (n_{mainstream} + n_{wemedia})$
+- `r_proxy` = $n_{wemedia} / (n_{mainstream} + n_{government} + n_{wemedia})$（默认将政府/机构视为“官方叙事”并并入主流口径）
 - `volatility`: $Q$ 的滚动波动率等
 
 ## 4. 数据处理流水线

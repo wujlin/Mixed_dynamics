@@ -1,0 +1,3 @@
+uid,user_name,verified_type,verified_reason,verify_typ,user_type,source,error
+1001218734,,,,,,m.weibo.cn,api_not_ok: ok=-100 msg=
+1001914255,,,,,,m.weibo.cn,api_not_ok: ok=-100 msg=

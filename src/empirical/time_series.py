@@ -21,6 +21,9 @@ from typing import Literal, Optional, List, Dict, Any
 from dataclasses import dataclass
 
 
+OFFICIAL_NARRATIVE_TYPES = ("mainstream", "government")
+
+
 @dataclass
 class TimeSeriesConfig:
     """时间序列配置"""
@@ -28,7 +31,7 @@ class TimeSeriesConfig:
     emotion_col: str = "emotion_class"
     risk_col: str = "risk_class"
     user_type_col: str = "user_type"
-    freq: str = "1H"  # 时间窗口：1H, 4H, 1D
+    freq: str = "1h"  # 时间窗口：1h, 4h, 1D（pandas>=2.2 建议小时用小写 h）
     min_posts: int = 5  # 最小帖子数（低于此数的窗口标记为缺失）
 
 
@@ -260,7 +263,7 @@ def calculate_r_proxy(df_ts: pd.DataFrame) -> pd.Series:
     """
     计算 r 的代理变量（主流媒体相对缺失程度）
     
-    r_proxy = n_wemedia / (n_mainstream + n_wemedia)
+    r_proxy = n_wemedia / (n_mainstream + n_government + n_wemedia)
     
     r_proxy 高 → 自媒体主导（正反馈占优）→ 类似高 r
     r_proxy 低 → 主流媒体主导（负反馈占优）→ 类似低 r
@@ -275,7 +278,9 @@ def calculate_r_proxy(df_ts: pd.DataFrame) -> pd.Series:
     pd.Series
         r_proxy 序列
     """
-    total_media = df_ts["n_mainstream"] + df_ts["n_wemedia"]
+    n_mainstream = df_ts.get("n_mainstream", 0)
+    n_government = df_ts.get("n_government", 0)
+    total_media = n_mainstream + n_government + df_ts["n_wemedia"]
     # 避免除零
     r_proxy = df_ts["n_wemedia"] / total_media.replace(0, np.nan)
     return r_proxy

@@ -36,7 +36,7 @@ def _freq_to_step_hours(freq: str) -> float:
 
 @dataclass(frozen=True)
 class EventClusterer:
-    freq: str = "4H"
+    freq: str = "4h"  # pandas>=2.2 建议小时用小写 h
     density_col: str = "n_public"
     roll_days: float = 14.0
     quantile: float = 0.9

@@ -7,7 +7,7 @@
   - `network_sim.py`：网络主体仿真（BA/ER，对称/非对称）。
   - `empirical/`（Phase 5）
     - `llm_annotator.py`：LLM 标注器（OpenAI/兼容端点）。
-    - `user_mapper.py`：用户类型映射（蓝V媒体/黄V自媒体/红V+无认证公众/政府/其他，自动加载官媒清单）。
+    - `user_mapper.py`：用户类型映射（蓝V媒体/黄V自媒体/红V+无认证公众/政府/其他，自动加载 `data/config/official_media_list.txt`）。
     - `time_series.py`：时间序列聚合与指标（X_H/X_M/X_L, a, Q, p_risk_mainstream/wemedia；r_proxy 等可由计数派生）。
     - `data_loader.py`：话题 CSV 加载与用户映射。
     - `hypothesis_test.py`：突变/交互效应/临界慢化工具函数。
@@ -16,6 +16,7 @@
 - `scripts/`
   - `run_phase5_preprocessing.py`：合并标注+聚合时间序列（默认以 mid 对齐；content 对齐仅用于遗留标注）。
   - 数据合并与标注辅助：`flatten_official_media.py`（扁平官媒 JSON）、`merge_datasets.py`（主数据+官媒 CSV 合并）、`extract_new_samples.py`（筛未标注样本）、`run_new_annotation.py`（批量标注）、`merge_new_annotations.py`（合并新旧标注）、`test_llm_connection.py`（连通性测试）。
+  - batch4 用户元信息补齐：`fetch_user_meta_weibo.py`（m.weibo.cn 用户资料抓取，需本地 cookie）与 `fix_user_meta_csv.py`（离线重标 verify_typ/user_type）。
   - 分析脚本：`analyze_time_series.py`、`analyze_active_periods.py`（如需扩展）、`verify_hypotheses.py`（假设验证）。
 - `notebooks/`
   - `06_Active_Period_Analysis.py`：活跃期分析（1h/4h 聚合、相关/回归/分布）。

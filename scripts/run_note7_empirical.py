@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -45,6 +46,29 @@ def _freq_to_step_hours(freq: str) -> float:
     return float(td.total_seconds() / 3600.0)
 
 
+_FREQ_UNIT_NORMALIZE = {
+    "H": "h",
+    "D": "d",
+}
+
+
+def _normalize_pandas_freq(freq: str) -> str:
+    """
+    pandas>=2.2 对大写 'H' 给出 FutureWarning（建议使用 'h'）。
+    我们只对小时/天做大小写归一，避免把 'M'（月）误伤成 minutes。
+    """
+    s = str(freq or "").strip()
+    if not s:
+        return s
+    m = re.fullmatch(r"(\d+)\s*([A-Za-z]+)", s)
+    if not m:
+        return s
+    n, unit = m.group(1), m.group(2)
+    if unit in _FREQ_UNIT_NORMALIZE:
+        return f"{n}{_FREQ_UNIT_NORMALIZE[unit]}"
+    return s
+
+
 def load_annotations_jsonl(path: Path) -> pd.DataFrame:
     records = []
     with path.open("r", encoding="utf-8") as f:
@@ -67,8 +91,8 @@ def load_annotations_jsonl(path: Path) -> pd.DataFrame:
     return df[keep].drop_duplicates(subset=["mid"]).reset_index(drop=True)
 
 
-def load_and_merge(spec: DatasetSpec, *, mapper: UserTypeMapper) -> pd.DataFrame:
-    df_raw = load_topic_dataset(spec.dataset_csv, mapper=mapper)
+def load_and_merge(spec: DatasetSpec, *, mapper: UserTypeMapper, user_meta_path: Optional[Path | str] = None) -> pd.DataFrame:
+    df_raw = load_topic_dataset(spec.dataset_csv, mapper=mapper, user_meta_path=user_meta_path)
     if "mid" not in df_raw.columns:
         raise ValueError(f"dataset 缺少 mid 列：{spec.dataset_csv}")
     df_raw["mid"] = df_raw["mid"].astype(str)
@@ -122,9 +146,39 @@ def add_window_metrics(ts: pd.DataFrame, *, freq: str, vol_win: int = 12) -> pd.
     return df
 
 
+_SEGMENT_FLOOR_UNITS = {
+    "H": "h",  # pandas>=2.2 建议用小写 h
+    "h": "h",
+    "D": "D",
+    "d": "D",
+}
+
+
+def _segment_start_time(ts: pd.Series, segment: str) -> pd.Series:
+    """
+    生成用于分段统计的“段起点”时间戳。
+
+    说明：
+    - 对 `2D/3D/12h` 这类“固定长度”窗口，优先用 `.dt.floor()` 做 **全局对齐**，
+      避免 `.dt.to_period('2D')` 在 pandas 中出现“按天滑动标号”的行为，导致每段样本过少。
+    - 对 `W/M/Q` 等非固定长度窗口，使用 `.dt.to_period().dt.to_timestamp()`。
+    """
+    s = str(segment or "").strip()
+    if not s:
+        raise ValueError("segment 不能为空")
+
+    m = re.fullmatch(r"(\d+)\s*([HhDd])", s)
+    if m:
+        n, unit = m.group(1), m.group(2)
+        unit_norm = _SEGMENT_FLOOR_UNITS.get(unit, unit)
+        return ts.dt.floor(f"{n}{unit_norm}")
+
+    return ts.dt.to_period(s).dt.to_timestamp()
+
+
 def segment_metrics(df: pd.DataFrame, *, segment: str = "M", jump_q: float = 0.95) -> pd.DataFrame:
     x = df.dropna(subset=["time_window"]).copy()
-    x["seg"] = x["time_window"].dt.to_period(segment).dt.to_timestamp()
+    x["seg"] = _segment_start_time(x["time_window"], segment)
     rows = []
     for seg, g in x.groupby("seg"):
         g_aq = g.dropna(subset=["a", "Q"])
@@ -143,7 +197,9 @@ def segment_metrics(df: pd.DataFrame, *, segment: str = "M", jump_q: float = 0.9
         if "n_mainstream" in g_aq.columns and "n_wemedia" in g_aq.columns:
             nw = float(g_aq["n_wemedia"].fillna(0).sum())
             nm = float(g_aq["n_mainstream"].fillna(0).sum())
-            r_proxy_mean = float(nw / (nw + nm)) if (nw + nm) > 0 else np.nan
+            ng = float(g_aq["n_government"].fillna(0).sum()) if "n_government" in g_aq.columns else 0.0
+            denom = nw + nm + ng
+            r_proxy_mean = float(nw / denom) if denom > 0 else np.nan
         else:
             r_proxy_mean = float(g_aq["r_proxy"].mean()) if "r_proxy" in g_aq.columns else np.nan
 
@@ -274,10 +330,15 @@ def pick_jump_events(
     quantile: float = 0.95,
     min_gap_windows: int = 6,
     block_col: str = "block_id",
+    allowed_idx: set[int] | None = None,
 ):
     x = df.dropna(subset=["time_window", q_col]).copy().sort_values("time_window")
+    if allowed_idx is not None:
+        if not allowed_idx:
+            return [], np.nan, 0, 0
+        x = x[x.index.isin(allowed_idx)]
     if len(x) < 30:
-        return []
+        return [], np.nan, int(len(x)), 0
     thr = float(x[q_col].quantile(float(quantile)))
     cand = x[x[q_col] >= thr]
     step_hours = _freq_to_step_hours(freq)
@@ -293,7 +354,7 @@ def pick_jump_events(
         events.append(int(idx))
         last_time = row["time_window"]
         last_block = b
-    return events
+    return events, thr, int(len(x)), int(len(cand))
 
 
 def event_study(df: pd.DataFrame, event_idx: list[int], *, col: str, pre: int = 24, block_col: str = "block_id"):
@@ -467,6 +528,7 @@ def run_one(
     event_quantile: float,
     roll_win: int,
     pre: int,
+    event_on_eligible: str = "both",
     fig_dir: Path,
     plot: bool = True,
     placebo_iters: int = 0,
@@ -519,29 +581,64 @@ def run_one(
 
     # H4
     df = add_block_rolling(df, col="Q_abs", window=int(roll_win), block_col="block_id")
-    events = pick_jump_events(
+    block_sizes = df.groupby("block_id").size() if "block_id" in df.columns else pd.Series(dtype=int)
+    n_blocks = int(block_sizes.shape[0]) if not block_sizes.empty else 0
+    max_block_len = int(block_sizes.max()) if n_blocks > 0 else 0
+
+    eligible_ac = _eligible_indices_by_block(df, col="Q_abs_rolling_ac1", pre=pre, block_col="block_id")
+    eligible_var = _eligible_indices_by_block(df, col="Q_abs_rolling_var", pre=pre, block_col="block_id")
+    eligible_ac_set = {i for xs in eligible_ac.values() for i in xs}
+    eligible_var_set = {i for xs in eligible_var.values() for i in xs}
+    eligible_both_set = eligible_ac_set & eligible_var_set
+
+    mode = str(event_on_eligible or "both").strip().lower()
+    allowed_idx: set[int] | None
+    if mode == "none":
+        allowed_idx = None
+    elif mode == "ac":
+        allowed_idx = eligible_ac_set
+    elif mode == "var":
+        allowed_idx = eligible_var_set
+    else:
+        allowed_idx = eligible_both_set
+
+    events, thr, n_pool, n_cand = pick_jump_events(
         df,
         freq=freq,
         q_col="abs_dQ_abs_per_hour",
         quantile=float(event_quantile),
         min_gap_windows=max(3, roll_win // 2),
+        allowed_idx=allowed_idx,
     )
     step_hours = _freq_to_step_hours(freq)
     print(
         f"[{name}] H4: roll_win={roll_win} (~{roll_win*step_hours:.0f}h), pre={pre} (~{pre*step_hours:.0f}h), "
-        f"events={len(events)} (q={event_quantile})"
+        f"blocks={n_blocks} max_block={max_block_len}, eligible(ac/var/both)={len(eligible_ac_set)}/{len(eligible_var_set)}/{len(eligible_both_set)}, "
+        f"events={len(events)} (q={event_quantile}, thr={thr:.4g}, pool={n_pool}, cand={n_cand}, mode={mode})"
     )
 
     ac = event_study(df, events, col="Q_abs_rolling_ac1", pre=pre)
     var = event_study(df, events, col="Q_abs_rolling_var", pre=pre)
+    used_ac = int(ac[3].shape[0]) if ac is not None else 0
+    used_var = int(var[3].shape[0]) if var is not None else 0
     stats.update(
         {
+            "h4_event_on_eligible": str(mode),
+            "h4_n_blocks": int(n_blocks),
+            "h4_max_block_len": int(max_block_len),
+            "h4_eligible_ac": int(len(eligible_ac_set)),
+            "h4_eligible_var": int(len(eligible_var_set)),
+            "h4_eligible_both": int(len(eligible_both_set)),
             "h4_event_quantile": float(event_quantile),
+            "h4_event_thr": float(thr) if not np.isnan(thr) else np.nan,
+            "h4_event_pool": int(n_pool),
+            "h4_event_cand": int(n_cand),
             "h4_events": int(len(events)),
-            "h4_events_used_ac": int(ac[3].shape[0]) if ac is not None else 0,
-            "h4_events_used_var": int(var[3].shape[0]) if var is not None else 0,
+            "h4_events_used_ac": used_ac,
+            "h4_events_used_var": used_var,
         }
     )
+    print(f"[{name}] H4 used events: ac={used_ac}/{len(events)}, var={used_var}/{len(events)}")
 
     if int(placebo_iters) > 0:
         ac_p = placebo_pvalue_for_event_curve(
@@ -578,6 +675,11 @@ def run_one(
                 "h4_placebo_var_q95": var_p["placebo_q95"],
             }
         )
+        print(
+            f"[{name}] H4 placebo: "
+            f"AC1 p={ac_p['p_one_sided']:.3g} (real={ac_p['real']:.4g}, placebo_mean={ac_p['placebo_mean']:.4g}); "
+            f"Var p={var_p['p_one_sided']:.3g} (real={var_p['real']:.4g}, placebo_mean={var_p['placebo_mean']:.4g})"
+        )
 
     if plot:
         plot_h4_eventstudy(plt, pre, ac, var, title=title, out_path=fig_dir / f"fig7c_h4_eventstudy_{name}_{freq.lower()}.png")
@@ -586,7 +688,12 @@ def run_one(
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Note07 经验验证：master/batch3/all 的 H1-H4（无话题分组）")
+    ap = argparse.ArgumentParser(description="Note07 经验验证：H1-H4（支持多批次数据集与团簇/Placebo）")
+    ap.add_argument(
+        "--datasets",
+        default="master,batch3",
+        help="要分析的数据集：逗号分隔，可选 master,batch3,batch4（默认 master,batch3）",
+    )
     ap.add_argument("--freq", default="4H", help="时间聚合窗口，例如 1H/4H/1D")
     ap.add_argument("--min-posts-public", type=int, default=5, help="每个窗口 public 帖子阈值（低于此值 a/Q 置 NaN）")
     ap.add_argument("--time-start", default="2023-01-01", help="起始时间（含），例如 2023-01-01；空字符串表示不截断")
@@ -594,6 +701,12 @@ def main():
     ap.add_argument("--segment", default="M", help="段内统计粒度：M(月)/W(周)等")
     ap.add_argument("--jump-quantile", type=float, default=0.95, help="H1 jump 指标用的分位数（默认 0.95）")
     ap.add_argument("--event-quantile", type=float, default=0.95, help="H4 事件点（jump windows）分位数阈值（默认 0.95）")
+    ap.add_argument(
+        "--event-on-eligible",
+        default="both",
+        choices=["none", "ac", "var", "both"],
+        help="H4 事件点只在可评估窗口上选：none=全量候选；ac/var=仅要求对应指标可用；both=同时要求 AC1/Var 可用（推荐）",
+    )
     ap.add_argument("--roll-win", type=int, default=12, help="H4 rolling 窗口（单位：窗口数）")
     ap.add_argument("--pre", type=int, default=24, help="H4 事件对齐回看长度（单位：窗口数）")
     ap.add_argument("--cluster", action="store_true", help="启用方案B：按时间团簇分别分析（基于 n_public 密度）")
@@ -607,51 +720,97 @@ def main():
     ap.add_argument("--cluster-grid", action="store_true", help="运行稳健性栅格（roll_days×quantile），只输出 CSV（不画图）")
     ap.add_argument("--grid-roll-days", default="7,14,21", help="栅格：roll_days 列表（逗号分隔）")
     ap.add_argument("--grid-quantiles", default="0.85,0.9,0.95", help="栅格：quantile 列表（逗号分隔）")
+    ap.add_argument(
+        "--grid-event-quantiles",
+        default="",
+        help="栅格：H4 事件阈值 event_quantile 列表（逗号分隔）；空字符串表示只用 --event-quantile",
+    )
     ap.add_argument("--placebo-iters", type=int, default=0, help="H4 placebo 重复次数（0=关闭；建议 1000~5000）")
     ap.add_argument("--placebo-tail-k", type=int, default=6, help="H4 placebo 统计量：事件前最后 k 个窗口的均值")
     ap.add_argument("--placebo-seed", type=int, default=0, help="H4 placebo 随机种子")
+    ap.add_argument(
+        "--user-meta",
+        default="",
+        help="可选：用户元信息 CSV/JSONL（uid->verify_typ/user_type），用于补齐用户类型（尤其是缺少 verify_typ 的数据源）",
+    )
+    ap.add_argument(
+        "--batch4-csv",
+        default=str(ROOT / "outputs/annotations/intermediate/to_annotate_batch4_shanghai_2022_loose.csv"),
+        help="batch4 数据集 csv（默认上海候选池 loose）",
+    )
+    ap.add_argument(
+        "--batch4-annotations",
+        default=str(ROOT / "outputs/annotations/batches/batch_04_shanghai/new_batch4.jsonl"),
+        help="batch4 标注 jsonl（默认 batch_04_shanghai/new_batch4.jsonl）",
+    )
     args = ap.parse_args()
+
+    args.freq = _normalize_pandas_freq(args.freq)
 
     time_start = args.time_start.strip() or None
     time_end = args.time_end.strip() or None
+    user_meta = args.user_meta.strip() or None
 
-    master = DatasetSpec(
-        name="master",
-        dataset_csv=ROOT / "dataset/Topic_data/merged_topic_official.csv",
-        annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
-    )
-    batch3 = DatasetSpec(
-        name="batch3",
-        dataset_csv=ROOT / "outputs/annotations/intermediate/to_annotate_batch3_clean.csv",
-        annotations_jsonl=ROOT / "outputs/annotations/batches/batch_03_expanded/new_batch3.jsonl",
-    )
-    for s in [master, batch3]:
+    specs = {
+        "master": DatasetSpec(
+            name="master",
+            dataset_csv=ROOT / "dataset/Topic_data/merged_topic_official.csv",
+            annotations_jsonl=ROOT / "outputs/annotations/master/long_covid_annotations_master.jsonl",
+        ),
+        "batch3": DatasetSpec(
+            name="batch3",
+            dataset_csv=ROOT / "outputs/annotations/intermediate/to_annotate_batch3_clean.csv",
+            annotations_jsonl=ROOT / "outputs/annotations/batches/batch_03_expanded/new_batch3.jsonl",
+        ),
+        "batch4": DatasetSpec(
+            name="batch4",
+            dataset_csv=Path(args.batch4_csv),
+            annotations_jsonl=Path(args.batch4_annotations),
+        ),
+    }
+
+    selected = [x.strip() for x in args.datasets.split(",") if x.strip()]
+    run_tag = "_".join(selected) if selected else "none"
+    allowed = set(specs.keys())
+    unknown = sorted(set(selected) - allowed)
+    if unknown:
+        raise ValueError(f"--datasets 包含未知值：{unknown}，可选：{sorted(allowed)}")
+
+    selected_specs = [specs[k] for k in selected]
+    for s in selected_specs:
         if not s.dataset_csv.exists():
             raise FileNotFoundError(s.dataset_csv)
         if not s.annotations_jsonl.exists():
             raise FileNotFoundError(s.annotations_jsonl)
 
     mapper = UserTypeMapper()
-    df_master = load_and_merge(master, mapper=mapper)
-    df_batch3 = load_and_merge(batch3, mapper=mapper)
-    df_all = pd.concat([df_master, df_batch3], ignore_index=True).drop_duplicates(subset=["mid"]).reset_index(drop=True)
+    dfs: dict[str, pd.DataFrame] = {}
+    for s in selected_specs:
+        dfs[s.name] = load_and_merge(s, mapper=mapper, user_meta_path=user_meta)
+
+    df_all = None
+    if len(dfs) >= 2:
+        df_all = pd.concat(list(dfs.values()), ignore_index=True).drop_duplicates(subset=["mid"]).reset_index(drop=True)
 
     print("config:", dict(freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end))
-    print("merged rows:", dict(master=len(df_master), batch3=len(df_batch3), all=len(df_all)))
-    print("time span (master):", df_master["publish_time"].min(), "~", df_master["publish_time"].max())
-    print("time span (batch3):", df_batch3["publish_time"].min(), "~", df_batch3["publish_time"].max())
+    print("datasets:", selected)
+    print("user_meta:", user_meta or "(none)")
+    print("merged rows:", {k: len(v) for k, v in dfs.items()} | ({"all": len(df_all)} if df_all is not None else {}))
+    for k, v in dfs.items():
+        print(f"time span ({k}):", v["publish_time"].min(), "~", v["publish_time"].max())
 
-    ts_master = build_time_series(df_master, freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end)
-    ts_batch3 = build_time_series(df_batch3, freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end)
-    ts_all = build_time_series(df_all, freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end)
+    ts_map: dict[str, pd.DataFrame] = {}
+    for k, v in dfs.items():
+        ts_map[k] = build_time_series(v, freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end)
+    if df_all is not None:
+        ts_map["all"] = build_time_series(df_all, freq=args.freq, min_posts_public=args.min_posts_public, time_start=time_start, time_end=time_end)
 
-    print("valid windows (a notna):", dict(master=int(ts_master["a"].notna().sum()), batch3=int(ts_batch3["a"].notna().sum()), all=int(ts_all["a"].notna().sum())))
+    print("valid windows (a notna):", {k: int(ts["a"].notna().sum()) for k, ts in ts_map.items()})
 
     out_dir = ROOT / "outputs/annotations/derived"
     out_dir.mkdir(parents=True, exist_ok=True)
-    ts_master.to_csv(out_dir / f"time_series_master_{args.freq.lower()}.csv", index=False)
-    ts_batch3.to_csv(out_dir / f"time_series_batch3_{args.freq.lower()}.csv", index=False)
-    ts_all.to_csv(out_dir / f"time_series_all_{args.freq.lower()}.csv", index=False)
+    for k, ts in ts_map.items():
+        ts.to_csv(out_dir / f"time_series_{k}_{args.freq.lower()}.csv", index=False)
 
     fig_dir = ROOT / "outputs/figs/empirical"
     fig_dir.mkdir(parents=True, exist_ok=True)
@@ -660,11 +819,15 @@ def main():
     if args.cluster_grid:
         roll_days_list = [float(x) for x in args.grid_roll_days.split(",") if x.strip()]
         quantiles_list = [float(x) for x in args.grid_quantiles.split(",") if x.strip()]
+        if args.grid_event_quantiles.strip():
+            event_q_list = [float(x) for x in args.grid_event_quantiles.split(",") if x.strip()]
+        else:
+            event_q_list = [float(args.event_quantile)]
         grid_rows = []
 
         for roll_days in roll_days_list:
             for q in quantiles_list:
-                for tag, ts in [("master", ts_master), ("batch3", ts_batch3), ("all", ts_all)]:
+                for tag, ts in ts_map.items():
                     clusterer = EventClusterer(
                         freq=args.freq,
                         density_col="n_public",
@@ -678,95 +841,84 @@ def main():
                     print(f"\n[grid] {tag} clusters={len(clusters)} (roll={roll_days}d, q={q})")
                     for c in clusters:
                         ts_slice = ts[(ts["time_window"] >= c.start) & (ts["time_window"] <= c.end)].reset_index(drop=True)
-                        stats = run_one(
-                            None,
-                            ts_slice,
-                            name=f"{tag}_grid",
-                            title=f"{tag} cluster{c.cluster_id}: {c.start.date()} ~ {c.end.date()}",
-                            freq=args.freq,
-                            segment=args.cluster_segment,
-                            jump_quantile=args.jump_quantile,
-                            event_quantile=args.event_quantile,
-                            roll_win=args.roll_win,
-                            pre=args.pre,
-                            fig_dir=fig_dir,
-                            plot=False,
-                        )
-                        row = {
-                            "dataset": tag,
-                            "cluster_id": c.cluster_id,
-                            "start": str(c.start),
-                            "end": str(c.end),
-                            "n_windows": c.n_windows,
-                            "n_public_sum": c.n_public_sum,
-                            "n_valid_a": c.n_valid_a,
-                            "smooth_threshold": c.smooth_threshold,
-                            "freq": args.freq,
-                            "min_posts_public": args.min_posts_public,
-                            "segment": args.cluster_segment,
-                            "cluster_roll_days": float(roll_days),
-                            "cluster_quantile": float(q),
-                            "cluster_min_days": float(args.cluster_min_days),
-                            "cluster_merge_gap_days": float(args.cluster_merge_gap_days),
-                        }
-                        row.update(stats)
-                        grid_rows.append(row)
+                        for event_q in event_q_list:
+                            stats = run_one(
+                                None,
+                                ts_slice,
+                                name=f"{tag}_grid",
+                                title=f"{tag} cluster{c.cluster_id}: {c.start.date()} ~ {c.end.date()}",
+                                freq=args.freq,
+                                segment=args.cluster_segment,
+                                jump_quantile=args.jump_quantile,
+                                event_quantile=float(event_q),
+                                roll_win=args.roll_win,
+                                pre=args.pre,
+                                event_on_eligible=args.event_on_eligible,
+                                fig_dir=fig_dir,
+                                plot=False,
+                                placebo_iters=args.placebo_iters,
+                                placebo_tail_k=args.placebo_tail_k,
+                                placebo_seed=args.placebo_seed,
+                            )
+                            row = {
+                                "dataset": tag,
+                                "cluster_id": c.cluster_id,
+                                "start": str(c.start),
+                                "end": str(c.end),
+                                "n_windows": c.n_windows,
+                                "n_public_sum": c.n_public_sum,
+                                "n_valid_a": c.n_valid_a,
+                                "smooth_threshold": c.smooth_threshold,
+                                "freq": args.freq,
+                                "min_posts_public": args.min_posts_public,
+                                "segment": args.cluster_segment,
+                                "grid_event_quantile": float(event_q),
+                                "cluster_roll_days": float(roll_days),
+                                "cluster_quantile": float(q),
+                                "cluster_min_days": float(args.cluster_min_days),
+                                "cluster_merge_gap_days": float(args.cluster_merge_gap_days),
+                            }
+                            row.update(stats)
+                            grid_rows.append(row)
 
         if grid_rows:
-            pd.DataFrame(grid_rows).to_csv(out_dir / f"note07_cluster_grid_stats_{args.freq.lower()}.csv", index=False)
+            pd.DataFrame(grid_rows).to_csv(out_dir / f"note07_cluster_grid_stats_{run_tag}_{args.freq.lower()}.csv", index=False)
 
         print("\nSaved:")
         print("-", out_dir)
         return
 
     if not args.cluster_only:
-        plot_basic(plt, ts_master, f"Master: Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_master_basic_{args.freq.lower()}.png")
-        plot_basic(plt, ts_batch3, f"Batch3: Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_batch3_basic_{args.freq.lower()}.png")
-        plot_basic(plt, ts_all, f"All (master+batch3): Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_all_basic_{args.freq.lower()}.png")
+        for k in ts_map.keys():
+            label = k
+            if k == "all":
+                label = f"all ({'+'.join(selected)})"
+            plot_basic(plt, ts_map[k], f"{label}: Q/a/r_proxy ({args.freq})", fig_dir / f"fig7a_{k}_basic_{args.freq.lower()}.png")
 
-        run_one(
-            plt,
-            ts_master,
-            name="master",
-            title="master (all time range)",
-            freq=args.freq,
-            segment=args.segment,
-            jump_quantile=args.jump_quantile,
-            event_quantile=args.event_quantile,
-            roll_win=args.roll_win,
-            pre=args.pre,
-            fig_dir=fig_dir,
-        )
-        run_one(
-            plt,
-            ts_batch3,
-            name="batch3",
-            title="batch3 (all time range)",
-            freq=args.freq,
-            segment=args.segment,
-            jump_quantile=args.jump_quantile,
-            event_quantile=args.event_quantile,
-            roll_win=args.roll_win,
-            pre=args.pre,
-            fig_dir=fig_dir,
-        )
-        run_one(
-            plt,
-            ts_all,
-            name="all",
-            title="all (all time range)",
-            freq=args.freq,
-            segment=args.segment,
-            jump_quantile=args.jump_quantile,
-            event_quantile=args.event_quantile,
-            roll_win=args.roll_win,
-            pre=args.pre,
-            fig_dir=fig_dir,
-        )
+        for k in ts_map.keys():
+            title = f"{k} (all time range)"
+            if k == "all":
+                title = f"all ({'+'.join(selected)}) (all time range)"
+            run_one(
+                plt,
+                ts_map[k],
+                name=k,
+                title=title,
+                freq=args.freq,
+                segment=args.segment,
+                jump_quantile=args.jump_quantile,
+                event_quantile=args.event_quantile,
+                roll_win=args.roll_win,
+                pre=args.pre,
+                event_on_eligible=args.event_on_eligible,
+                fig_dir=fig_dir,
+            )
 
     if args.cluster:
         cluster_rows = []
-        for tag, ts in [("master", ts_master), ("batch3", ts_batch3), ("all", ts_all)]:
+        for tag, ts in ts_map.items():
+            if tag == "all" and df_all is None:
+                continue
             clusterer = EventClusterer(
                 freq=args.freq,
                 density_col="n_public",
@@ -794,6 +946,7 @@ def main():
                     event_quantile=args.event_quantile,
                     roll_win=args.roll_win,
                     pre=args.pre,
+                    event_on_eligible=args.event_on_eligible,
                     fig_dir=fig_dir,
                     plot=True,
                     placebo_iters=args.placebo_iters,
@@ -821,7 +974,7 @@ def main():
                 cluster_rows.append(row)
         if cluster_rows:
             dfc = pd.DataFrame(cluster_rows)
-            dfc.to_csv(out_dir / f"note07_cluster_stats_{args.freq.lower()}.csv", index=False)
+            dfc.to_csv(out_dir / f"note07_cluster_stats_{run_tag}_{args.freq.lower()}.csv", index=False)
             dfc[
                 [
                     "dataset",
@@ -840,7 +993,7 @@ def main():
                     "cluster_min_days",
                     "cluster_merge_gap_days",
                 ]
-            ].to_csv(out_dir / f"note07_time_clusters_{args.freq.lower()}.csv", index=False)
+            ].to_csv(out_dir / f"note07_time_clusters_{run_tag}_{args.freq.lower()}.csv", index=False)
 
     print("\nSaved:")
     print("-", out_dir)

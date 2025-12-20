@@ -46,17 +46,31 @@ GOVERNMENT_KEYWORDS = {
 
 def _load_official_list() -> Set[str]:
     """
-    读取 dataset/官媒清单.txt，返回精确匹配的主流媒体名单。
+    读取官媒清单，返回精确匹配的主流媒体名单（按账号名匹配）。
+
+    优先读取 `data/config/official_media_list.txt`，若不存在则回退到 `dataset/官媒清单.txt`。
+    支持行格式：
+    - name
+    - uid,name  （忽略 uid，仅取 name）
     若文件不存在则返回空集合。
     """
     names: Set[str] = set()
     try:
         base = Path(__file__).resolve().parents[2]  # project root
-        path = base / "dataset/官媒清单.txt"
+        path = base / "data/config/official_media_list.txt"
+        if not path.exists():
+            path = base / "dataset/官媒清单.txt"
         if path.exists():
             for line in path.read_text(encoding="utf-8").splitlines():
-                name = line.strip()
-                if name:
+                s = line.strip()
+                if not s or s.startswith("#"):
+                    continue
+                if "," in s:
+                    _, name = s.split(",", 1)
+                    name = name.strip()
+                else:
+                    name = s
+                if name and not name.isdigit():
                     names.add(name)
     except Exception:
         # 静默失败，避免因路径/编码问题中断

@@ -16,6 +16,14 @@ dataset/
 .venv/
 venv/
 
+# secrets / cookies（不入库）
+secrets/
+cookies*.json
+data/config/cookies*.json
+data/config/*cookies*.json
+data/config/*token*.json
+data/config/*secrets*.json
+
 # IDE
 .idea/
 .vscode/
