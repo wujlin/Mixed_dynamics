@@ -956,6 +956,9 @@ def main():
                 event_on_eligible=args.event_on_eligible,
                 fig_dir=fig_dir,
                 plot=plot_enabled,
+                placebo_iters=args.placebo_iters,
+                placebo_tail_k=args.placebo_tail_k,
+                placebo_seed=args.placebo_seed,
             )
 
     if args.cluster:

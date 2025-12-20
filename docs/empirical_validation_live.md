@@ -162,6 +162,10 @@
 - `all`：H2 不显著（Pearson r=0.065, p=0.484；Spearman r=0.161, p=0.078）。H1 在 all 上显著为正（Pearson r=0.241, p=0.008），与“更活跃→更易出现大变化”的方向一致。
 - `master`：在当前严格口径（roll_win=12, pre=24）下连续块太短，H4 不可评估（eligible=0）。这更多是数据稀疏导致的功效/连续性问题，而不是“否定 H4”。
 
+> 更新：我们已把 PI 的最终收敛叙事写成可直接引用的文档：`Essay/note07_empirical_closure.md`，并生成了 PI 指定的“密度分组 H2 散点图”：
+> - 图：`outputs/figs/empirical/fig7b_h2_scatter_batch3_density_4h.png`
+> - 结论：raw H2 显著，但 partial（ctrl `n_windows_aq`）不显著，密度混杂需在论文中如实披露。
+
 ### 8.2 H1/H4：batch1 单词条提频（freq=2H/1H）
 
 复跑要点（当前事实）：
@@ -171,3 +175,10 @@
 结论（面向写作的策略建议）：
 - **H4 目前更适合保留在 4H 口径**（或者在更高密度、更连续的数据上再提频），否则严格连续性约束会让 “eligible events” 直接归零。  
 - batch1 提频对 H1 的提升有限（至少在当前窗口与阈值下没有出现更强的显著性）。
+
+## 9. 写作收敛（PI Final Decision 对应产物）
+
+PI 已明确：停止经验迭代，进入写作。我们已补齐：
+
+- 论文可用的 Table 1 + H2 主图 + 1H/2H 失败附录：`Essay/note07_empirical_closure.md`
+- H2 主图（含密度分组与 partial 诊断）：`outputs/figs/empirical/fig7b_h2_scatter_batch3_density_4h.png`
