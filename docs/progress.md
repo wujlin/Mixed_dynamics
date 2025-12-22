@@ -1,9 +1,9 @@
-## 开发进度与对照（Phase 5 完成）
+## 开发进度与对照（Phase 5 收敛）
 
 ### 1. 总体状态
 - **Phase 1-4 (理论/模拟)**: ✅ 已完成
-- **Phase 5 (经验验证)**: 🔄 已扩展（新增 Batch3 标注；需在 Note07 复核 H1-H4）
-- **文档更新**: 🔄 进行中（对齐 master vs batch3 口径）
+- **Phase 5 (经验验证)**: ✅ 已收敛（按 PI Two‑Tier 叙事停止新增迭代）
+- **写作推进**: 🔄 进行中（Essay 主稿逐段打磨）
  
 ### 2. Phase 5 详细成果
 对应 `DEVELOPMENT.md` 的 Phase 5 任务：
@@ -19,18 +19,19 @@
 - **5.2 数据预处理**:
   - ✅ 用户类型映射 (`user_mapper.py`) 覆盖率 100%。
   - ✅ 数据重构完成：建立了 `master`/`batches`/`derived` 清晰目录结构。
-  - ✅ 核心对照集聚合产出: `outputs/annotations/derived/time_series_1h.csv`。
-  - 🔄 扩展集与合并口径的聚合：由 `notebooks/07_Empirical_Validation.ipynb` 统一生成与对照（避免口径漂移）。
+  - ✅ 聚合与检验口径已统一收敛：以 `scripts/run_note7_empirical.py` 生成的 `time_series_*_4h.csv` 与 `note07_cluster_stats_*_4h.csv` 为准（避免 notebook 口径漂移）。
 
 - **5.3/5.4 假设检验 (验证结果)**:
-  - 🔄 结果需以 `notebooks/07_Empirical_Validation.ipynb` 的复核输出为准（将同时报告：核心对照集 / 扩展集 / 合并样本 三套结果）。
+  - ✅ 已按 PI 决策收敛：主结果聚焦 H1（All=master+batch3）与 H2（batch3）；H4 作为“受数据连续性/功效限制的不定论”写入附录。
+  - 权威收敛稿：`Essay/note07_empirical_closure.md`
 
 - **5.5 精细化分析**:
   - ✅ 尝试了 10分钟窗口 (`time_series_10m.csv`)。
-  - 备注：该结论需要在新增扩展集后复核；后续将把“窗口敏感性”作为稳健性分析的一部分。
+  - 备注：更细粒度（1H/2H）在真实数据中会遇到连续块不足（eligible=0），已作为“可观测边界”的负结果写入附录，不再继续迭代。
 
 ### 3. 下一步建议
-优先完成经验验证口径统一与复核（Note07），再进入论文撰写阶段：
-- 先给出 H1-H4 在三套口径下的一致/不一致结论与稳健性说明；
-- 再客观讨论 H4（CSD）在经验数据中可能难以显现的原因（外生冲击/平台机制/观测噪声等）。
+进入论文写作阶段（不再新增经验迭代）：
+- 结果素材总索引：`docs/results_materials_catalog.md`
+- 理论/模拟图文报告：`docs/theory_validation_report_note01-04.md`
+- 经验收敛稿（可直接引用）：`Essay/note07_empirical_closure.md`
  

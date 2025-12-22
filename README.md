@@ -29,8 +29,10 @@
 
 - Notebook：`notebooks/07_Empirical_Validation.ipynb`
 - 命令行复现入口：`scripts/run_note7_empirical.py`
-- 阶段性报告：`docs/note07_empirical_validation_report.md`
-- 实时更新报告（随跑随更）：`docs/empirical_validation_live.md`
+- 收敛稿（论文可直接引用，含 Table 1/主图/附录）：`Essay/note07_empirical_closure.md`
+- 阶段性报告（面向仓库读者）：`docs/note07_empirical_validation_report.md`
+- 实时报告（已冻结，避免口径漂移）：`docs/empirical_validation_live.md`
+- 结果素材索引（论文图映射/关键数值汇总）：`docs/results_materials_catalog.md`
 
 #### 3.1 单词条口径（方案B2：strict vs concept）
 
@@ -84,6 +86,7 @@
 - 数据集说明：`docs/dataset_description.md`
 - 理论验证报告（Note01–04）：`docs/theory_validation_report_note01-04.md`
 - 经验验证报告（Note07）：`docs/note07_empirical_validation_report.md`
+- 结果素材索引：`docs/results_materials_catalog.md`
 - 工作站 Qwen/vLLM 记录：`docs/vllm_qwen_setup.md`
 
 ## 数据与合规说明

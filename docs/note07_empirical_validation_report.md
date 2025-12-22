@@ -6,6 +6,8 @@
 > - 主结果（Primary）：H1 在 `all` 上显著；H2 在 `batch3` 上显著（但密度为混杂因素）。  
 > - 次要/探索（Secondary）：H4（CSD/early warning）在当前数据分辨率/连续性下不定论，1H/2H 提频会导致连续块不足（eligible=0）。  
 > 论文可直接引用的收敛稿（含 Table 1、H2 密度散点图与 1H/2H 失败附录）：`Essay/note07_empirical_closure.md`。
+>
+> 结果素材总索引（论文图映射/关键数值汇总）：`docs/results_materials_catalog.md`。
 
 ## 1. 数据与口径
 
@@ -61,7 +63,7 @@
 理论预测：$a$ 越高（中立者越少），系统更容易出现“突变式变化”。
 
 经验检验（段内统计）：
-- 先按月分段（`segment=M`），每段计算：
+- 按周分段（`segment=W`；主口径用于 master/batch3/all），每段计算：
   - `a_mean`：按 `n_public` 加权平均的段内 $a$
   - `jump_q95`：段内 `|d|Q|/dt|` 的 95% 分位数（用分位数替代 max，降低极值偏置）
 - 报告 Pearson / Spearman 相关，并给出 **控制段内样本量（n_windows_jump）** 的部分相关作为伪影诊断。
@@ -76,7 +78,7 @@ $$
 理论预测：$r_{\text{proxy}}$ 越高（自媒体更占优，正反馈更强），系统波动性更大。
 
 经验检验（段内统计）：
-- 仍按月分段，计算：
+- 同样按周分段（`segment=W`），计算：
   - `r_proxy_mean`：使用段内媒体计数比值（sum 计数）而非窗口级 ratio 的简单平均
   - `volatility = std(Q)`：段内 $Q$ 的标准差
 - 报告 Pearson / Spearman 相关。
@@ -110,7 +112,7 @@ $$
 解释要点：
 - `r_proxy` 在窗口级会出现大量接近 0/1 的点，这是媒体窗口计数稀疏时“比值离散”的自然结果。我们在 H2/H3 中使用段内计数比值来降低这一噪声源。
 
-### 3.2 H1/H2 散点（按月分段）
+### 3.2 H1/H2 散点（按周分段）
 - master：`../outputs/figs/empirical/fig7b_h1_h2_scatter_master_4h.png`
 - batch3：`../outputs/figs/empirical/fig7b_h1_h2_scatter_batch3_4h.png`
 - all：`../outputs/figs/empirical/fig7b_h1_h2_scatter_all_4h.png`
@@ -120,12 +122,14 @@ $$
 ![](../outputs/figs/empirical/fig7b_h1_h2_scatter_all_4h.png)
 
 **H1 结论（Activity → Jump）**：
-- 在当前“按月段内 `jump_q95`”定义下：batch3 / all **均不显著**，master 因段数过少无法检验。  
-  这表明：在当前经验数据与指标口径下，**$a$ 单独不足以解释 jump 强度**；更可能需要条件化（例如在高 $r_{\text{proxy}}$ 条件下看 $a$ 的边际效应），或改用更贴近“状态跃迁”的 jump 定义（后续任务）。
+- 按 PI 收敛口径（`freq=4H, segment=W`）复跑后：**H1 在 `all`（master+batch3）上为正且显著**（Pearson $r=0.241$, $p=0.00798$），支持“更高活跃度对应更强的变化幅度/更大 jump”的方向性结论。  
+- `batch3` 单独检验为弱正但未达显著（Pearson $r=0.159$, $p=0.090$），提示效应在不同采样池中存在差异或功效限制。  
+- 单词条（Batch1）口径下对 `min_posts_public/segment` 较敏感，不作为主结果；详见收敛稿 Table 1：`Essay/note07_empirical_closure.md`。
 
 **H2 结论（r_proxy → Volatility）**：
-- 在 batch3 上：相关显著为正，支持理论“正反馈占优 → 波动更大”的方向性预测。
-- 在 all 上：方向为正但稳健性弱于 batch3（合并后引入更稀疏的 master 部分，会削弱统计功效；另外 all 在 2025 的覆盖来自 batch3，时间截断也会影响显著性）。
+- 在 `batch3` 上：相关显著为正（Pearson $r=0.265$, $p=0.00434$；Spearman $r=0.244$, $p=0.00902$），支持“正反馈占优 → 波动更大”的方向性预测。  
+- **但密度是重要混杂因素**：控制段内有效窗口数 `n_windows_aq` 后，partial $r=0.078$, $p=0.411$（不显著）。推荐在论文主图中直接展示密度分组散点：`../outputs/figs/empirical/fig7b_h2_scatter_batch3_density_4h.png`。  
+- 在 `all` 上：H2 不显著（Pearson $r=0.065$, $p=0.484$），因此论文将 H2 的经验证据定位为“batch3 上成立、且需要诚实披露混杂”的主张（见 PI 收敛叙事）。
 
 > 注：具体数值由脚本打印输出为准（见第 5 节复现命令）。本轮复跑（4H，2023+）中 batch3 的 H2 在 Pearson 与 Spearman 下均显著为正。
 
@@ -139,10 +143,10 @@ $$
 ![](../outputs/figs/empirical/fig7c_h4_eventstudy_all_4h.png)
 
 **H4 结论（临界慢化）**：
-- 目前只能说：`Var(|Q|)` 在 jump 前有一定抬升迹象，但 `AC1(|Q|)` **并不稳定**（未出现清晰单调上升）。  
-  因此 H4 **不能作为强结论写入论文主结果**，更适合以“弱证据/识别困难”方式客观汇报，并把提升数据密度（更连续、更高频、更大样本）作为下一步重点。
+- 4H 主口径下：Batch3/All 的 Placebo 检验整体不显著，因此 H4 **不作为论文主结果**。  
+- 1H/2H 提频会因连续块不足导致 eligible=0、events=0（不可评估）。因此更合适的写法是：理论上存在 CSD，但在当前社交媒体数据的连续性/功效限制下难以稳定捕捉；该“负结果”用于划定经验可观测边界（详见 `Essay/note07_empirical_closure.md` 附录）。
 
-### 3.4 batch4（上海疫情）结果：团簇内 H1/H4（方案B口径）
+### 3.4 batch4（上海疫情）结果（探索性，不纳入主结果）
 batch4 的时间覆盖集中在 **2022 上半年**，但由于 `MIN_POSTS_PUBLIC=20` 且媒体用户类型缺失（`verify_typ` 不可用），当前更适合先用团簇方案B检验 **H1/H4**，并把 **H2/H3** 视为“待补齐用户类型元信息后再检验”的后续工作。
 
 本轮复现实验（`freq=4h, cluster_quantile=0.9, roll_days=14, cluster_min_days=10, cluster_segment=2D, event_quantile=0.9`）在 batch4 上自动识别到 1 个高密度团簇：
@@ -180,10 +184,10 @@ batch4 的时间覆盖集中在 **2022 上半年**，但由于 `MIN_POSTS_PUBLIC
   --datasets master,batch3 \
   --freq 4H \
   --min-posts-public 5 \
-  --time-start 2023-01-01 \
-  --segment M \
-  --roll-win 12 \
-  --pre 24
+  --time-start 2019-01-01 \
+  --segment W \
+  --roll-win 12 --pre 24 \
+  --placebo-iters 5000 --placebo-tail-k 6 --placebo-seed 0
 ```
 
 ### 5.1.1 batch4（上海疫情）复现（推荐口径）
@@ -293,9 +297,8 @@ batch4 的时间覆盖集中在 **2022 上半年**，但由于 `MIN_POSTS_PUBLIC
   --freq 4H \
   --min-posts-public 5 \
   --time-start 2019-01-01 \
-  --segment M \
-  --roll-win 12 \
-  --pre 24 \
+  --segment W \
+  --roll-win 12 --pre 24 \
   --cluster \
   --cluster-only \
   --cluster-roll-days 14 \

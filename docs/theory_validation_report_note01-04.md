@@ -17,6 +17,8 @@
 2) 有限尺寸下 susceptibility 峰值法会产生伪峰/双峰风险，已改用 Binder cumulant 交点估计 $r_c$。  
 3) 极端信息密度 `k=500` 的“看似不一致”已通过 N-sweep 有限尺寸外推 + 离散阈值严格导数理论对照闭环解释。
 
+写作素材索引（论文图映射/关键数值汇总）：`docs/results_materials_catalog.md`
+
 ---
 
 ## 1. 研究主线（为什么要做 Note01–04）

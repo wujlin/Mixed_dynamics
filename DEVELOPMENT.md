@@ -3,8 +3,10 @@ Project Development Guide: Mixed-Feedback Model of Collective Emotion
 0. 快速入口（建议先读）
 
 - 理论验证阶段报告（Note01–Note04，图文版）：`docs/theory_validation_report_note01-04.md`
-- 经验验证汇总报告（Note07）：`docs/note07_empirical_validation_report.md`
-- 经验验证实时更新（随跑随更）：`docs/empirical_validation_live.md`
+- 经验验证收敛稿（Note07，论文可直接引用）：`Essay/note07_empirical_closure.md`
+- 经验验证汇总报告（Note07，面向仓库读者）：`docs/note07_empirical_validation_report.md`
+- 经验验证实时报告（已冻结，避免口径漂移）：`docs/empirical_validation_live.md`
+- 结果素材索引（论文图映射/关键数值汇总）：`docs/results_materials_catalog.md`
 - batch4 用户元信息补齐（用于 Note07 的 H2/H3）：`scripts/fetch_user_meta_weibo.py`（联网+本地 cookie）与 `scripts/fix_user_meta_csv.py`（离线修正口径）
 - 单词条口径（方案B2：strict vs concept）合并数据生成：`scripts/merge_datasets.py`（支持 `--official-keywords` 过滤官媒补充）
 - 数据集说明：`docs/dataset_description.md`
@@ -149,6 +151,11 @@ Phase 4: 临界慢化与高级分析 (Critical Phenomena)
 Phase 5: 经验数据验证 (Empirical Validation)
 
 目标：用 Weibo Long-COVID 话题数据验证理论预测的核心机制。
+
+更新（2025-12-21）：
+- 经验验证已按 PI “Two‑Tier Validation” 叙事收敛并停止新增迭代。
+- 论文主结果聚焦 H1（All=master+batch3）与 H2（batch3，需披露密度混杂）；H4 降级为“受数据连续性/功效限制的不定论”并写入附录。
+- 以收敛稿为准：`Essay/note07_empirical_closure.md`（并参考 `docs/results_materials_catalog.md`）。
 
 ---
 
