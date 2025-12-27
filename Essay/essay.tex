@@ -147,16 +147,16 @@ We then simulate agent-based dynamics on ER and BA networks to evaluate robustne
   \centering
   \begin{subfigure}[b]{0.48\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/fig2a_network_validation.png}
+    \includegraphics[width=\linewidth]{figures/fig2a_network_validation}
     \caption{}
   \end{subfigure}
   \hfill
   \begin{subfigure}[b]{0.48\linewidth}
     \centering
-    \includegraphics[width=\linewidth]{figures/fig2b_binder_u4.png}
+    \includegraphics[width=\linewidth]{figures/fig2b_binder_u4}
     \caption{}
   \end{subfigure}
-  \caption{Network validation and finite-size stability. (a) Agent-based simulations reproduce the theoretical bifurcation in the symmetric regime and reveal shifts under asymmetric coupling. (b) Binder cumulant $U_4(r;N)$ curves provide robust critical-region localization across system sizes.}
+  \caption{Network validation and finite-size stability. (a) Agent-based simulations on ER and BA graphs reproduce the mean-field pitchfork bifurcation in the symmetric regime; shaded bands indicate 95\% confidence intervals for the mean across realizations, plotting $\pm|\langle Q\rangle|$ where $\langle Q\rangle$ is the steady-state time average (post burn-in) in each realization. (b) Binder cumulant curves $U_4(r;N)$ for multiple system sizes cross near the theoretical $r_c$ (vertical dotted line), providing a robust estimator of the transition under finite-size noise.}
   \label{fig:network}
 \end{figure}
 
@@ -165,8 +165,18 @@ Theory predicts a dynamic signature near criticality: as $r$ approaches $r_c$, t
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/fig3_csd.png}
-  \caption{Critical slowing down near the theoretical critical point. Relaxation time and autocorrelation-based indicators increase as $r\to r_c$, and the trend persists after aligning ABM steps with sweep-based time scales.}
+  \begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig3a_csd_scaling}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig3b_csd_sde_vs_abm}
+    \caption{}
+  \end{subfigure}
+  \caption{Critical slowing down near the theoretical critical point. (a) Deterministic mean-field dynamics yields $\tau \propto (r_c-r)^{-1}$ for $r<r_c$ (log-log fit exponent $\approx 1$). (b) After time-scale alignment, the short-lag autocorrelation increases as $r\to r_c$ in both the reduced SDE and the ABM; we align the lag by matching the effective time step (SDE: $\Delta t=0.01$ with lag time $1.0$; ABM: update\_rate$=0.1$ so $10$ Monte Carlo steps $\approx 1$ sweep). Shaded bands indicate 95\% confidence intervals for the mean across realizations, and the vertical dotted line marks the theoretical $r_c$.}
   \label{fig:csd}
 \end{figure}
 

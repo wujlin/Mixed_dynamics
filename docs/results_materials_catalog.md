@@ -38,13 +38,14 @@
 
 ### Figure 2：网络验证与有限尺寸稳健性
 
-- `Essay/figures/fig2a_network_validation.png`（网络 ABM 分岔验证，含对称/非对称对照）
-- `Essay/figures/fig2b_binder_u4.png`（Binder cumulant 稳健定位临界区）
+- `Essay/figures/fig2a_network_validation.pdf`（网络 ABM 分岔验证，ER vs BA + 95% CI + 理论分支）
+- `Essay/figures/fig2b_binder_u4.pdf`（Binder cumulant $U_4$ 稳健定位临界区）
 - 来源：Note02（`notebooks/02_Network_Topology.ipynb`）
 
 ### Figure 3：临界慢化（CSD）
 
-- `Essay/figures/fig3_csd.png`（弛豫时间/自相关随 $r\to r_c$ 上升）
+- `Essay/figures/fig3a_csd_scaling.pdf`（确定性 ODE：$\tau \propto (r_c-r)^{-1}$ 的 log-log 标度）
+- `Essay/figures/fig3b_csd_sde_vs_abm.pdf`（SDE vs ABM：time-aligned short-lag autocorrelation 随 $r\to r_c$ 上升）
 - 来源：Note03（`notebooks/03_Critical_Slowing_Down.ipynb`）
 
 ### Figure 4：结构效应相图（阈值/密度/生态/耦合）
@@ -93,4 +94,3 @@
 - 收敛稿（主入口）：`Essay/note07_empirical_closure.md`
 - 汇总报告（面向仓库读者）：`docs/note07_empirical_validation_report.md`
 - 实时报告（已冻结，避免口径漂移）：`docs/empirical_validation_live.md`
-
