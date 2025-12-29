@@ -23,7 +23,6 @@ import matplotlib as mpl
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import font_manager as fm  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +30,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from src import theory, NetworkAgentModel, NetworkConfig  # noqa: E402
+from src.plot_style import FIGSIZE_HALF, add_panel_label, apply_paper_style  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -160,57 +160,6 @@ def _simulate_abs_mean_by_seed(
     return abs_by_seed
 
 
-def _style_rcparams() -> None:
-    # 优先使用 Windows 字体（WSL 常见路径），以实现 Times New Roman 统一字体。
-    times_paths = [
-        Path("/mnt/c/Windows/Fonts/times.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbd.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesi.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbi.ttf"),
-    ]
-    if any(p.exists() for p in times_paths):
-        for p in times_paths:
-            if p.exists():
-                fm.fontManager.addfont(str(p))
-        font_family = "Times New Roman"
-        serif_fallback = ["Times New Roman"]
-    else:
-        # 兜底：使用 Matplotlib 自带的 STIX 字体（Times-like）
-        font_family = "STIXGeneral"
-        serif_fallback = ["STIXGeneral", "DejaVu Serif"]
-
-    mpl.rcParams.update(
-        {
-            # 字体：Times New Roman（优先）/ STIX（兜底）
-            "font.family": font_family,
-            "font.serif": serif_fallback,
-            # 数学字体：STIX 与 Times 风格更一致
-            "mathtext.fontset": "stix",
-            "axes.unicode_minus": False,
-            # 期刊观感：无网格、线条更厚、字体更大
-            "axes.grid": False,
-            "axes.linewidth": 1.2,
-            "lines.linewidth": 2.4,
-            "lines.markersize": 5.5,
-            "xtick.major.size": 4.0,
-            "ytick.major.size": 4.0,
-            "xtick.major.width": 1.1,
-            "ytick.major.width": 1.1,
-            "font.size": 13.0,
-            "axes.labelsize": 14.0,
-            "xtick.labelsize": 12.0,
-            "ytick.labelsize": 12.0,
-            "legend.fontsize": 11.0,
-            # 避免 Type3 字体（期刊/印刷更友好）
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            # 导出
-            "savefig.dpi": 300,
-            "figure.dpi": 150,
-        }
-    )
-
-
 def main() -> None:
     # 避免多线程 BLAS 在受限 /dev/shm 下产生噪声告警；不影响数值正确性
     os.environ.setdefault("OMP_NUM_THREADS", "1")
@@ -278,9 +227,9 @@ def main() -> None:
         scale = 0.0
     u_fit = float("inf") if scale <= 0 else float(1.0 / (scale * scale))
 
-    _style_rcparams()
+    apply_paper_style()
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.4))
+    fig, ax = plt.subplots(figsize=FIGSIZE_HALF)
 
     # 参考线
     ax.axhline(0.0, color="#666666", linewidth=0.9, zorder=1)
@@ -298,14 +247,14 @@ def main() -> None:
             linestyle=":",
             linewidth=2.0,
             zorder=2,
-            label=rf"Mean-field (theory $r_c$={rc:.3f}): $\propto\sqrt{{r-r_c}}$ (fit $u$={u_fit:.2g})",
+            label="Mean-field",
         )
         ax.plot(r_dense, -q_dense, color="black", linestyle=":", linewidth=2.0, zorder=2)
 
     # ER：均值 + 95%CI（仅正支画 CI，负支用镜像线避免过密）
     er_color = "#0072B2"  # Okabe–Ito blue
     ax.fill_between(r_vals, ci_er[:, 0], ci_er[:, 1], color=er_color, alpha=0.18, linewidth=0, zorder=0)
-    ax.plot(r_vals, mean_er, color=er_color, linewidth=2.4, label="ER (mean ±95% CI)", zorder=3)
+    ax.plot(r_vals, mean_er, color=er_color, linewidth=2.4, label="ER", zorder=3)
     ax.plot(r_vals, -mean_er, color=er_color, linewidth=2.0, alpha=0.35, zorder=3)
 
     # BA
@@ -317,7 +266,7 @@ def main() -> None:
         color=ba_color,
         linewidth=2.4,
         linestyle="--",
-        label="BA (mean ±95% CI)",
+        label="BA",
         zorder=3,
     )
     ax.plot(r_vals, -mean_ba, color=ba_color, linewidth=2.0, linestyle="--", alpha=0.35, zorder=3)
@@ -328,8 +277,21 @@ def main() -> None:
     ax.set_ylabel(r"$\pm|\langle Q\rangle|$")
 
     ax.tick_params(direction="in", top=True, right=True)
-    ax.legend(loc="upper left", frameon=False)
-    fig.tight_layout()
+    add_panel_label(ax, "a")
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        frameon=False,
+        ncol=3,
+        handlelength=2.0,
+        columnspacing=1.2,
+        handletextpad=0.6,
+    )
+    # 固定边距：与 Fig3a/b 对齐，避免并排时“视觉字号”不一致
+    fig.subplots_adjust(left=0.22, right=0.96, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig2a_network_validation.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)

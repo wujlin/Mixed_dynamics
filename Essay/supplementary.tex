@@ -1,0 +1,45 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{authblk}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\captionsetup[subfigure]{labelformat=empty,skip=0pt}
+
+% Supplementary numbering (S1, S2, ...; Figure S1; Table S1)
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thesubsection}{S\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{S\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+
+\title{Supplementary Materials for:\\Phase Transitions in Collective Emotion: A Theoretical Framework Motivated by Media Dynamics During the COVID-19 Pandemic}
+\author[1]{Author A (TBD)}
+\affil[1]{Affiliation TBD}
+\date{}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\FloatBarrier
+
+\input{supplementary_s1_llm_annotation.tex}
+
+% Add additional supplementary notes, figures, and tables below.
+
+\FloatBarrier
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

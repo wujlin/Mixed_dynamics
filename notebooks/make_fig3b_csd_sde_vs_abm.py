@@ -12,7 +12,7 @@ Fig 3b：CSD 对比（SDE vs ABM，time-aligned short-lag autocorrelation）—�
 
 from __future__ import annotations
 
-import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
@@ -22,10 +22,13 @@ import matplotlib as mpl
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import font_manager as fm  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.plot_style import FIGSIZE_HALF, add_panel_label, apply_paper_style  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -37,60 +40,12 @@ class Fig3bConfig:
         / "data"
         / "csd_abm_wm_sym_phi54_theta46_nm10_nw5_k50_N1000_u10_steps20000_ri1_burn50_win5000_seeds64_r26_v1.npz"
     )
-    fig_size: Tuple[float, float] = (7.2, 4.4)
+    fig_size: Tuple[float, float] = FIGSIZE_HALF
     band_alpha: float = 0.18
     # 取 time-aligned 的短滞后：以 “sweep” 为单位，默认对齐到 1 sweep（update_rate=0.1 时对应 lag_index≈10）
     target_lag_sweeps: float = 1.0
     n_bootstrap: int = 2000
     ci_level: float = 0.95
-
-
-def _style_rcparams() -> None:
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
-    os.environ.setdefault("MKL_NUM_THREADS", "1")
-
-    times_paths = [
-        Path("/mnt/c/Windows/Fonts/times.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbd.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesi.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbi.ttf"),
-    ]
-    if any(p.exists() for p in times_paths):
-        for p in times_paths:
-            if p.exists():
-                fm.fontManager.addfont(str(p))
-        font_family = "Times New Roman"
-        serif_fallback = ["Times New Roman"]
-    else:
-        font_family = "STIXGeneral"
-        serif_fallback = ["STIXGeneral", "DejaVu Serif"]
-
-    mpl.rcParams.update(
-        {
-            "font.family": font_family,
-            "font.serif": serif_fallback,
-            "mathtext.fontset": "stix",
-            "axes.unicode_minus": False,
-            "axes.grid": False,
-            "axes.linewidth": 1.2,
-            "lines.linewidth": 2.4,
-            "lines.markersize": 5.5,
-            "xtick.major.size": 4.0,
-            "ytick.major.size": 4.0,
-            "xtick.major.width": 1.1,
-            "ytick.major.width": 1.1,
-            "font.size": 13.0,
-            "axes.labelsize": 14.0,
-            "xtick.labelsize": 12.0,
-            "ytick.labelsize": 12.0,
-            "legend.fontsize": 11.0,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "savefig.dpi": 300,
-            "figure.dpi": 150,
-        }
-    )
 
 
 def _bootstrap_ci_mean(
@@ -155,7 +110,7 @@ def main() -> None:
             ci_level=cfg.ci_level,
         )
 
-    _style_rcparams()
+    apply_paper_style()
     fig, ax = plt.subplots(figsize=cfg.fig_size)
 
     # 参考线：rc（不进 legend）
@@ -179,9 +134,21 @@ def main() -> None:
     ax.set_xlabel(r"Control parameter $r$")
     ax.set_ylabel(r"Autocorrelation")
     ax.tick_params(direction="in", top=True, right=True)
-    ax.legend(loc="upper left", frameon=False)
-
-    fig.tight_layout()
+    add_panel_label(ax, "b")
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        frameon=False,
+        ncol=2,
+        handlelength=2.0,
+        columnspacing=1.2,
+        handletextpad=0.6,
+    )
+    # 固定版式边距：与 Fig3a 保持一致，避免并排时视觉尺寸不一致
+    fig.subplots_adjust(left=0.25, right=0.96, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig3b_csd_sde_vs_abm.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)

@@ -11,7 +11,7 @@ Fig 3a：Critical slowing down 的标度律（单面板 log-log 拟合）——�
 
 from __future__ import annotations
 
-import os
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
@@ -21,66 +21,21 @@ import matplotlib as mpl
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib import font_manager as fm  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.plot_style import FIGSIZE_HALF, add_panel_label, apply_paper_style  # noqa: E402
 
 
 @dataclass(frozen=True)
 class Fig3aConfig:
     data_path: Path = ROOT / "outputs" / "data" / "csd_sde_r_q_stats.npz"
-    fig_size: Tuple[float, float] = (7.2, 4.4)
+    fig_size: Tuple[float, float] = FIGSIZE_HALF
     n_bootstrap: int = 2000
     ci_level: float = 0.95
-
-
-def _style_rcparams() -> None:
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
-    os.environ.setdefault("MKL_NUM_THREADS", "1")
-
-    times_paths = [
-        Path("/mnt/c/Windows/Fonts/times.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbd.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesi.ttf"),
-        Path("/mnt/c/Windows/Fonts/timesbi.ttf"),
-    ]
-    if any(p.exists() for p in times_paths):
-        for p in times_paths:
-            if p.exists():
-                fm.fontManager.addfont(str(p))
-        font_family = "Times New Roman"
-        serif_fallback = ["Times New Roman"]
-    else:
-        font_family = "STIXGeneral"
-        serif_fallback = ["STIXGeneral", "DejaVu Serif"]
-
-    mpl.rcParams.update(
-        {
-            "font.family": font_family,
-            "font.serif": serif_fallback,
-            "mathtext.fontset": "stix",
-            "axes.unicode_minus": False,
-            "axes.grid": False,
-            "axes.linewidth": 1.2,
-            "lines.linewidth": 2.4,
-            "lines.markersize": 6.0,
-            "xtick.major.size": 4.0,
-            "ytick.major.size": 4.0,
-            "xtick.major.width": 1.1,
-            "ytick.major.width": 1.1,
-            "font.size": 13.0,
-            "axes.labelsize": 14.0,
-            "xtick.labelsize": 12.0,
-            "ytick.labelsize": 12.0,
-            "legend.fontsize": 11.0,
-            "pdf.fonttype": 42,
-            "ps.fonttype": 42,
-            "savefig.dpi": 300,
-            "figure.dpi": 150,
-        }
-    )
 
 
 def _fit_power_law(x: np.ndarray, y: np.ndarray) -> Tuple[float, float, float]:
@@ -133,12 +88,12 @@ def main() -> None:
     gamma = -slope
     gamma_err = slope_err
 
-    _style_rcparams()
+    apply_paper_style()
     fig, ax = plt.subplots(figsize=cfg.fig_size)
 
     # 数据点
     data_color = "#0072B2"  # Okabe–Ito blue
-    ax.plot(x_fit, tau_fit, marker="o", linestyle="none", color=data_color, label="Deterministic ODE", zorder=3)
+    ax.plot(x_fit, tau_fit, marker="o", linestyle="none", color=data_color, label="ODE", zorder=3)
 
     # 拟合线
     x_line = np.logspace(np.log10(float(np.min(x_fit))), np.log10(float(np.max(x_fit))), 256)
@@ -148,7 +103,7 @@ def main() -> None:
         y_line,
         color="#D55E00",  # Okabe–Ito vermillion
         linewidth=2.6,
-        label=rf"Fit: $\gamma={gamma:.3f}\pm{gamma_err:.3f}$",
+        label=rf"Fit ($\gamma={gamma:.3f}$)",
         zorder=2,
     )
 
@@ -156,15 +111,28 @@ def main() -> None:
     x0 = float(np.median(x_fit))
     y0 = float(A * (x0**slope))
     y_ref = y0 * (x_line / x0) ** (-1.0)
-    ax.plot(x_line, y_ref, color="black", linestyle=":", linewidth=2.0, label=r"Theory: $\gamma=1$", zorder=1)
+    ax.plot(x_line, y_ref, color="black", linestyle=":", linewidth=2.0, label=r"Theory ($\gamma=1$)", zorder=1)
 
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"$r_c - r$")
-    ax.set_ylabel(r"Relaxation time $\tau$")
+    ax.set_ylabel(r"$\tau$ (steps)")
     ax.tick_params(direction="in", top=True, right=True)
-    ax.legend(loc="upper right", frameon=False)
-    fig.tight_layout()
+    add_panel_label(ax, "a")
+    handles, labels = ax.get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        frameon=False,
+        ncol=3,
+        handlelength=1.8,
+        columnspacing=1.2,
+        handletextpad=0.6,
+    )
+    # 固定版式边距：与 Fig3b 保持一致，避免并排时视觉尺寸不一致
+    fig.subplots_adjust(left=0.22, right=0.96, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig3a_csd_scaling.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)
@@ -180,4 +148,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
