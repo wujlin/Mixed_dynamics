@@ -113,7 +113,7 @@ def main() -> None:
     ax.set_xlim(-0.005, 0.205)
     ax.set_ylim(0.10, 0.80)
     ax.tick_params(direction="in", top=True, right=True)
-    add_panel_label(ax, "d")
+    add_panel_label(ax, "d", dx=-55.0)
     handles, labels = ax.get_legend_handles_labels()
     fig.legend(
         handles,
@@ -126,7 +126,7 @@ def main() -> None:
         columnspacing=1.2,
         handletextpad=0.6,
     )
-    fig.subplots_adjust(left=0.23, right=0.96, bottom=0.36, top=0.96)
+    fig.subplots_adjust(left=0.25, right=0.96, bottom=0.36, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig4d_beta_effect.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)

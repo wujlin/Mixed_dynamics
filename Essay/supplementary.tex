@@ -13,6 +13,8 @@
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
 
+\graphicspath{{figures_supp/}{figures/}}
+
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 \captionsetup[subfigure]{labelformat=empty,skip=0pt}
@@ -32,10 +34,51 @@
 \begin{document}
 \maketitle
 
+\renewcommand{\contentsname}{Supplementary Contents}
+\setcounter{tocdepth}{2}
 \tableofcontents
+\clearpage
+\FloatBarrier
+
+\section*{Guide to this Supplementary Materials}
+\addcontentsline{toc}{section}{Guide to this Supplementary Materials}
+This document provides supporting details that cannot be fully developed in the main text due to space constraints. It is organized to mirror the main-text workflow and results: S1--S2 extend the \emph{Materials and Methods}, and S3--S6 provide additional diagnostics for the \emph{Results}. The main text cites these materials as ``Supplementary Materials S\#'' and ``Supplementary Fig.~S\#''.
+
+\noindent\textbf{Contents overview.}
+\begin{itemize}
+  \item \textbf{Supplementary Methods}
+  \begin{itemize}
+    \item \textbf{S1} LLM annotation protocol and validation.
+    \item \textbf{S2} Mean-field derivations for the critical point and Ginzburg--Landau form.
+  \end{itemize}
+  \item \textbf{Supplementary Results}
+  \begin{itemize}
+    \item \textbf{S3} Additional theory and network-validation diagnostics.
+    \item \textbf{S4} Additional critical-slowing-down diagnostics.
+    \item \textbf{S5} Additional parameter-landscape analyses.
+    \item \textbf{S6} Additional empirical analyses and robustness checks.
+  \end{itemize}
+\end{itemize}
+\FloatBarrier
+
+\section*{Supplementary Methods}
+\addcontentsline{toc}{section}{Supplementary Methods}
+\noindent Sections S1--S2 provide additional methodological details for the empirical annotation pipeline and the mean-field derivations.
 \FloatBarrier
 
 \input{supplementary_s1_llm_annotation.tex}
+\input{supplementary_s2_mean_field_derivation.tex}
+\FloatBarrier
+
+\section*{Supplementary Results}
+\addcontentsline{toc}{section}{Supplementary Results}
+\noindent Sections S3--S6 provide additional figures and robustness checks that support the main-text results, organized in the same order as the Results section.
+\FloatBarrier
+
+\input{supplementary_s3_theory_network_robustness.tex}
+\input{supplementary_s4_csd_additional.tex}
+\input{supplementary_s5_parameter_additional.tex}
+\input{supplementary_s6_empirical_additional.tex}
 
 % Add additional supplementary notes, figures, and tables below.
 

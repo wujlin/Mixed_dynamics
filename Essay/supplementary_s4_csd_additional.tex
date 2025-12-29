@@ -1,0 +1,19 @@
+\section{Additional critical-slowing-down diagnostics}
+\label{supp:s4-csd}
+
+This note provides additional diagnostics for critical slowing down (CSD) beyond the main-text panels. We report early-warning statistics based on short-lag autocorrelation and variance, and we evaluate multi-lag autocorrelation in agent-based simulations to verify that the rising autocorrelation near the threshold is not an artifact of a single lag choice.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{s3_ews_ac_var.pdf}
+  \caption{Early-warning signals from autocorrelation and variance. As $r$ approaches $r_c$ from below, the polarization dynamics exhibit increasing persistence (higher short-lag autocorrelation) and elevated variance, consistent with the weakening restoring force predicted by mean-field theory.}
+  \label{fig:supp:ews-ac-var}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{s3_abm_multilag_ac.pdf}
+  \caption{Multi-lag autocorrelation in ABM trajectories. Autocorrelation increases near criticality across multiple lags, supporting the interpretation of rising persistence as a CSD signature rather than a lag-specific plotting choice.}
+  \label{fig:supp:abm-multilag-ac}
+\end{figure}
+

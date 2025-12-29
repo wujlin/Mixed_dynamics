@@ -85,7 +85,7 @@ def main() -> None:
     axes[1].set_xlabel(r"Control parameter $r$")
 
     # Panel label for the whole subfigure block
-    add_panel_label(axes[0], "c")
+    add_panel_label(axes[0], "c", dx=-55.0)
 
     # 用图内最小注释替代 legend（避免遮挡 + 省空间）
     for ax in axes:

@@ -134,7 +134,7 @@ def main() -> None:
     ax.set_xlabel(r"Control parameter $r$")
     ax.set_ylabel(r"Autocorrelation")
     ax.tick_params(direction="in", top=True, right=True)
-    add_panel_label(ax, "b")
+    add_panel_label(ax, "b", dx=-55.0)
     handles, labels = ax.get_legend_handles_labels()
     fig.legend(
         handles,

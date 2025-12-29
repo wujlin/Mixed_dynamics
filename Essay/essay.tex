@@ -12,6 +12,16 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
+\usepackage{xr-hyper}
+% Cross-document references to Supplementary Materials.
+% Make this robust to different build working directories (repo root vs ./Essay).
+\IfFileExists{supplementary.aux}{%
+  \externaldocument{supplementary}%
+}{%
+  \IfFileExists{Essay/supplementary.aux}{%
+    \externaldocument{Essay/supplementary}%
+  }{}%
+}
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{C}{>{\centering\arraybackslash}X}
@@ -56,7 +66,7 @@ Finally, we confront the theoretical signatures with large-scale online discussi
 \FloatBarrier
 
 \section{Materials and Methods}
-\noindent Our strategy is theory-driven: we first build a minimal mechanistic model that captures the competition between stabilizing and amplifying feedback channels, derive analytic predictions for the bifurcation and its dynamical precursors, then test robustness in network simulations before confronting these predictions with empirical data. This sequence ensures that the statistical tests are grounded in well-defined theoretical signatures rather than exploratory pattern-finding.
+\noindent Our strategy is theory-driven. We first build a minimal mechanistic model that captures the competition between stabilizing and amplifying feedback channels. From this model, we derive analytic predictions for the bifurcation and its dynamical precursors. We then test robustness in network simulations before confronting these predictions with empirical data. This sequence ensures that our statistical tests are grounded in well-defined theoretical signatures rather than exploratory pattern-finding.
 
 \subsection{Model framework}
 We consider a population of $N$ individuals with three arousal states: high ($H$), medium ($M$), and low ($L$). Let $(\rho_H,\rho_M,\rho_L)$ denote the population fractions with $\rho_H+\rho_M+\rho_L=1$. To separate polarization direction from intensity, we introduce two macroscopic variables: the polarization direction
@@ -78,7 +88,11 @@ The information environment is modeled as a competition between a stabilizing ma
 p^{\text{main}}(q)=\frac{1-q}{2},
 \label{eq:pmain}
 \end{equation}
-which counteracts the current polarization. For the user-generated channel we use two regimes. In the symmetric validation regime, used for analytical verification, we set
+which counteracts the current polarization.
+
+The user-generated channel, unlike mainstream media, can respond to the current collective state in multiple ways. To separate analytic tractability from empirical realism, we use two complementary formulations. The symmetric validation regime enforces directional symmetry ($q\to -q$) and allows closed-form derivation of the critical point. The asymmetric, realistic regime allows amplification to depend on activity as well as direction, capturing attention-driven reinforcement observed on real platforms.
+
+In the symmetric validation regime, used for analytical verification, we set
 \begin{equation}
 p^{\text{we}}(q)=\frac{1}{2}+\frac{q}{2},
 \label{eq:pwe_sym}
@@ -96,17 +110,17 @@ p_{\text{env}}(q,a;r)=\frac{(1-r)n_m p^{\text{main}} + r n_w p^{\text{we}}}{(1-r
 where $n_m$ and $n_w$ are the baseline strengths of the mainstream and user-generated channels, and the control parameter $r$ tunes their relative weight ($r=0$: mainstream-dominant; $r=1$: user-generated-dominant).
 
 \subsection{Mean-field analysis and critical point}
-With the model defined, we now derive the conditions under which polarization becomes self-sustaining. Under the symmetric regime, $q=0$ is a fixed point with $p_{\text{env}}=1/2$. Linearizing the mean-field dynamics around $q=0$ yields
+We next derive the mean-field conditions under which polarization becomes self-sustaining in the symmetric validation regime. Under this regime, $q=0$ is a fixed point with $p_{\text{env}}=1/2$. Linearizing the mean-field dynamics around $q=0$ yields
 \begin{equation}
 \frac{dq}{dt}=-q+\mathcal{S}(p),
 \label{eq:q_dynamics}
 \end{equation}
-where $\mathcal{S}(p)$ is the collective response. We define the psychological sensitivity
+where $\mathcal{S}(p)$ is the collective response to the environmental risk $p=p_{\text{env}}$. We define the psychological sensitivity
 \begin{equation}
 \chi=\left.\frac{d\mathcal{S}}{dp}\right|_{p=1/2},
 \label{eq:chi}
 \end{equation}
-where $\chi$ measures how strongly the collective response changes with the information environment near neutrality ($p=1/2$). We also define the feedback gradient $\Gamma=\left.\partial p_{\text{env}}/\partial q\right|_{q=0}$. The stability condition $\chi\Gamma=1$ gives the analytic critical point
+where $\chi$ measures how strongly the collective response changes with the information environment near neutrality ($p=1/2$). We also define the feedback gradient $\Gamma=\left.\partial p_{\text{env}}/\partial q\right|_{q=0}$. Near neutrality, $\mathcal{S}(p)\approx \chi(p-1/2)$ and $p_{\text{env}}\approx 1/2+\Gamma q$, so Eq.~(\ref{eq:q_dynamics}) reduces to $dq/dt\approx(-1+\chi\Gamma)q$ (Supplementary Materials S2). The neutral fixed point loses stability when the restoring coefficient changes sign, yielding $\chi\Gamma=1$ and the analytic critical point
 \begin{equation}
 r_c=\frac{n_m(\chi+2)}{n_m(\chi+2)+n_w(\chi-2)}.
 \label{eq:rc}
@@ -116,28 +130,42 @@ Near $r\approx r_c$, the order parameter obeys a Ginzburg-Landau form,
 \frac{dq}{dt}=-\frac{\partial V_{\text{eff}}(q)}{\partial q}+\eta(t),\qquad V_{\text{eff}}(q)=\frac{1}{2}\alpha q^2+\frac{u}{4}q^4,
 \label{eq:gl}
 \end{equation}
-with $\alpha\propto(r_c-r)$ and $u>0$, predicting a pitchfork bifurcation and critical slowing down, $\tau\sim 1/|r_c-r|$.
+where $\eta(t)$ represents stochastic fluctuations due to finite-population effects, modeled as white noise with variance scaling as $1/N$ (Supplementary Materials S2). With $\alpha\propto(r_c-r)$ and $u>0$, this predicts a pitchfork bifurcation and critical slowing down, $\tau\sim 1/|r_c-r|$.
 
-Critical slowing down manifests as increasing relaxation time and rising autocorrelation near the transition. We estimate the relaxation time $\tau$ in the deterministic mean-field dynamics by initializing at a small perturbation and measuring the time required for $|q|$ to decay by a factor of $e$. For stochastic trajectories, we compute short-lag autocorrelation of the order parameter over steady-state windows and report autocorrelation at lag 1 sweep. To align discrete ABM time with the continuous-time theory, we convert steps to sweeps: one sweep corresponds to $N$ asynchronous node updates; with update fraction $f$ (fraction of nodes updated per step), one sweep corresponds to $1/f$ steps.
+These predictions---bifurcation, bistability, and critical slowing down---are derived under idealized mean-field assumptions; we next test their robustness under networked agent-based dynamics.
 
 \subsection{Agent-based network simulations}
-The mean-field analysis assumes well-mixed populations. To test whether the predicted bifurcation and slowing down persist under network structure and finite-size effects, we simulate microscopic dynamics on ER and BA networks with size $N$ and average degree $\langle k\rangle$. Updates are asynchronous: each step updates a fraction of nodes, and we report time in both steps and sweeps. Local coupling $\beta$ mixes the global signal $p_{\text{env}}$ with neighbor information, allowing us to quantify how topology and local reinforcement shift the effective transition. We denote the finite-size network polarization by $Q$, which corresponds to the mean-field order parameter $q$. In the symmetric regime, trajectories select either polarized branch with equal probability, so the signed mean $\langle Q\rangle$ cancels; we therefore measure $|Q|$ or align signs across runs (by flipping trajectories to a common branch) before averaging. We estimate finite-size transition points using Binder cumulant crossings,
+Agent-based simulations serve two purposes. First, they test whether the mean-field signatures (bifurcation, bistability, and critical slowing down) persist under network structure and finite-size fluctuations. Second, they map how structural parameters---psychological thresholds, information density, media ecology, and local coupling---shift the effective transition boundary.
+
+We implement microscopic dynamics on Erd\H{o}s--R\'enyi (ER) and Barab\'asi--Albert (BA) networks with size $N$ and average degree $\langle k\rangle$. Updates are asynchronous: each step updates a fraction $f$ of nodes. We report time in steps and in sweeps, where one sweep corresponds to $N$ asynchronous updates (approximately $1/f$ steps). To capture local reinforcement, we introduce a coupling parameter $\beta$ that blends the global environment $p_{\text{env}}$ with neighbor information when forming each agent's perceived risk probability; $\beta=0$ recovers the well-mixed limit. Here $\langle k\rangle$ denotes average network degree, whereas $k$ denotes the number of sampled signals per update.
+
+From node states we compute polarization $Q$ and activity $a$ using the same definitions as in Eqs.~(\ref{eq:q})--(\ref{eq:a}). In the symmetric regime, trajectories select either polarized branch with (approximately) equal probability, so the signed mean $\langle Q\rangle$ cancels by symmetry. We therefore track $|Q|$ or align trajectory signs across realizations before averaging.
+
+Finite-size effects blur sharp transitions, so critical-point estimation can be sensitive to noise. We therefore estimate transition points using Binder cumulant crossings, which are more robust than susceptibility peaks:
 \begin{equation}
 U_4(r;N)=1-\frac{\langle Q^4\rangle}{3\langle Q^2\rangle^2}.
 \label{eq:binder}
 \end{equation}
 
-To map the parameter landscape in Fig.~\ref{fig:landscape}, we compute the sensitivity $\chi(\phi,\theta,k)$ on a grid $\phi,\theta\in[0.1,0.9]$ (step 0.01) and evaluate $r_c$ via Eq.~(\ref{eq:rc}) where a transition exists ($\chi>2$). For simulation-based sweeps around the baseline $(\phi,\theta)=(0.54,0.46)$, we scan $k\in\{10,20,50,100,200,500\}$, $n_w/n_m\in[0.1,2.0]$ (40 values), and $\beta\in\{0,0.02,0.05,0.1,0.2\}$. In each sweep we sample $r$ on a 201-point grid in $[0,1]$ and estimate $r_c$ as the $r$ value at which the median $|Q|(r)$ across seeds has maximal slope; 95\% CIs are obtained by bootstrap resampling seeds.
+To quantify critical slowing down, we estimate relaxation and autocorrelation indicators near the transition. We estimate the relaxation time $\tau$ in the deterministic mean-field dynamics by initializing at a small perturbation and measuring the time required for $|q|$ to decay by a factor of $e$. For stochastic trajectories (SDE and ABM), we compute short-lag autocorrelation of the polarization time series ($Q$) over steady-state windows and report autocorrelation at lag 1 sweep (after converting ABM steps to sweeps as above).
+
+To characterize which structural conditions promote fragility, we map how parameters move the transition boundary. First, we compute the analytic sensitivity $\chi(\phi,\theta,k)$ on a dense grid $\phi,\theta\in[0.1,0.9]$ (step 0.01) and evaluate $r_c$ via Eq.~(\ref{eq:rc}) wherever a transition exists ($\chi>2$). Second, to validate these predictions and assess finite-size corrections, we conduct simulation-based sweeps around the baseline $(\phi,\theta)=(0.54,0.46)$. We vary information density $k\in\{10,20,50,100,200,500\}$, media ecology ratio $n_w/n_m\in[0.1,2.0]$ (40 values), and local coupling $\beta\in\{0,0.02,0.05,0.1,0.2\}$. For each parameter combination, we sample $r$ on a 201-point grid in $[0,1]$ and estimate $r_c$ as the value at which the median $|Q|(r)$ across seeds has maximal slope. We obtain 95\% confidence intervals by bootstrap resampling seeds.
 
 \subsection{Empirical data and operational proxies}
-Having established the theoretical benchmarks, we now describe the empirical data used to test whether corresponding signatures appear in real-world discussions. We use a Weibo corpus spanning January 2019 to July 2025, including the early COVID-19 period, with posts from mainstream sources, government accounts, user-generated media accounts, and public users. After de-duplication and filtering, the corpus contains 880,100 unique posts; the empirical analyses reported here use an annotated subset of 90,982 posts. Each post is annotated for emotional arousal (High/Medium/Low) and risk content (risk/norisk) using \texttt{Qwen/Qwen3-8B} via a vLLM-based OpenAI-compatible API with structured prompts and a fixed JSON schema (temperature=0.1, max\_tokens=512; prompt and schema in Supplementary Materials S1). On a manually rated subset ($n=3{,}000$), the LLM annotations achieved 83\% overall accuracy (exact-match agreement) with human raters (Supplementary Materials S1).
+Mean-field theory and network simulations predict two empirical signatures. First, elevated activity should be associated with larger polarization jumps. Second, greater user-generated dominance should be associated with higher polarization volatility. Testing these predictions in real-world data requires mapping the model's latent variables to observable proxies. We describe the data sources and proxy construction below.
 
-We aggregate annotated posts into 4-hour (4H) time windows and compute window-level arousal fractions $(X_H,X_M,X_L)$ and media-type counts. From these windows we construct polarization $Q=X_H-X_L$ and activity $a=X_H+X_L$, corresponding to net imbalance and total high-arousal fraction in the model. Media composition is proxied by
+We use a Weibo corpus spanning January 2019 to July 2025, including the early COVID-19 period. The corpus includes posts from mainstream sources, government accounts, user-generated media accounts, and public users. After de-duplication and filtering, it contains 880,100 unique posts; the empirical analyses reported here use an annotated subset of 90,982 posts. Each post is annotated for emotional arousal (High/Medium/Low) and risk content (risk/norisk) using \texttt{Qwen/Qwen3-8B} via a vLLM-based OpenAI-compatible API with structured prompts and a fixed JSON schema (temperature=0.1, max\_tokens=512; prompt and schema in Supplementary Materials S1). On a manually rated subset ($n=3{,}000$), the LLM annotations achieved 83\% overall accuracy (exact-match agreement) with human raters (Supplementary Materials S1).
+
+We aggregate posts into time windows and compute window-level proxies. We use two aggregation scales to balance temporal resolution against sampling density. The primary analysis uses 4-hour (4H) windows. As a robustness check, we repeat key analyses under 12-hour (12H) aggregation (Supplementary Fig.~\ref{fig:supp:h2-density-12h}), which increases per-window sample size at the cost of temporal granularity. Results are reported for the 4H primary analysis unless otherwise noted. Within each window, we compute arousal fractions $(X_H,X_M,X_L)$ from public-user posts; windows with fewer than 5 public posts are treated as missing. We compute media-type counts from all posts.
+
+From these windows we construct polarization $Q=X_H-X_L$ and activity $a=X_H+X_L$, corresponding to net imbalance and total high-arousal fraction in the model. Media composition is proxied by
 \begin{equation}
 r_{\text{proxy}}=\frac{n_{\text{wemedia}}}{n_{\text{wemedia}}+n_{\text{mainstream}}+n_{\text{government}}},
 \label{eq:rproxy}
 \end{equation}
-treating government accounts as part of the mainstream channel. For statistical testing, we group consecutive 4H windows into weekly segments and use segments with sufficient valid windows as analysis units. Within each segment, we compute jump intensity as the 95th percentile of $|d|Q|/dt|$ and volatility as $\text{std}(Q)$; these quantities are used in the correlation analyses reported in Results.
+treating government accounts as part of the mainstream channel because they typically share the stabilizing orientation of official narratives during public crises.
+
+For segment-level tests, we group consecutive windows into weekly segments (42 windows under 4H aggregation; 14 under 12H). Weekly segments provide enough within-segment points for derivative-based statistics while maintaining stable segment summaries. We retain segments with sufficient coverage: at least 10 valid windows for $Q$ and $a$, and at least 5 valid consecutive differences for the derivative-based jump statistic. Within each retained segment, volatility is $\text{std}(Q)$ and jump intensity is $\text{jump}_{q95}$, the 95th percentile of $|d|Q|/dt|$ computed on consecutive windows (i.e., excluding gaps); these quantities are used in the correlation analyses reported in Results.
 
 \FloatBarrier
 \section{Results}
@@ -152,7 +180,7 @@ This clean bifurcation, however, relies on a simplifying assumption: the user-ge
 
 The comparison reveals a qualitative difference. Under symmetry, $|q|$ stays near zero until close to $r_c$ and $a$ rises mainly near the transition; under activity-coupled asymmetry, both $|q|$ and $a$ begin to increase already for $r<r_c$, turning the sharp tipping point into a broader crossover.
 
-This entanglement has a crucial implication: elevated activity is not merely a symptom but a structural precursor. Systems with higher activity operate closer to the critical boundary, making abrupt direction reversals more likely even before the formal transition is crossed. Consistent with this, in asymmetric simulations activity relaxes faster than polarization ($\tau_a/\tau_q\approx 0.70$), indicating that $a$ cannot be treated as a passive slow variable and must be tracked jointly with $q$.
+This entanglement has a crucial implication: elevated activity is not merely a symptom but a structural precursor. Systems with higher activity operate closer to the critical boundary, making abrupt direction reversals more likely even before the formal transition is crossed. Consistent with this, in asymmetric simulations activity relaxes faster than polarization ($\tau_a/\tau_q\approx 0.70$), indicating that $a$ cannot be treated as a passive slow variable and must be tracked jointly with $q$ (Supplementary Fig.~\ref{fig:supp:tau-ratio}).
 
 \begin{figure}[H]
   \centering
@@ -178,7 +206,7 @@ This entanglement has a crucial implication: elevated activity is not merely a s
 \end{figure}
 
 \subsection{Network validation}
-The mean-field analysis assumes infinite, well-mixed populations. Real social systems violate both assumptions: they are finite, and interactions are mediated by sparse, heterogeneous networks that can shift or suppress collective transitions. To test whether the predicted bifurcation persists beyond mean-field, we implement agent-based simulations on Erd\H{o}s--R\'enyi and Barab\'asi--Albert graphs spanning multiple system sizes. In the symmetric regime, branch selection is random, so the signed mean $\langle Q\rangle$ cancels; using $|Q|$ or aligned signed $Q$ recovers the expected bifurcation. Finite-size scaling further supports the transition when estimated via Binder cumulant crossings, which are more stable than susceptibility peaks (Fig.~\ref{fig:network_validation}a,b).
+The mean-field analysis assumes infinite, well-mixed populations. Real social systems violate both assumptions: they are finite, and interactions are mediated by sparse, heterogeneous networks that can shift or suppress collective transitions. To test whether the predicted bifurcation persists beyond mean-field, we implement agent-based simulations on Erd\H{o}s--R\'enyi and Barab\'asi--Albert graphs spanning multiple system sizes. In the symmetric regime, branch selection is random, so the signed mean $\langle Q\rangle$ cancels; using $|Q|$ or aligned signed $Q$ recovers the expected bifurcation. Finite-size scaling further supports the transition when estimated via Binder cumulant crossings, which are more stable than susceptibility peaks (Fig.~\ref{fig:network_validation}a,b; Supplementary Figs.~\ref{fig:supp:signed-vs-abs-q}--\ref{fig:supp:susceptibility-fss}).
 
 Fig.~\ref{fig:theory}c predicted that activity-coupled asymmetry should produce direction--intensity coupling: both $|q|$ and $a$ increase together as $r$ rises. We test this prediction in network simulations by tracking steady-state activity $a(r)$ alongside $|Q|$. Under symmetry, activity rises mainly near $r_c$, whereas under activity-coupled asymmetry it increases earlier, consistent with the theoretical prediction (Fig.~\ref{fig:network_validation}c). This coupling is critical for empirical interpretation: if activity serves as a structural precursor, then elevated activity should predict larger polarization jumps, a hypothesis we test below.
 
@@ -207,6 +235,7 @@ Fig.~\ref{fig:theory}c predicted that activity-coupled asymmetry should produce 
 
 \subsection{Critical slowing down}
 The bifurcation analysis tells us when polarization becomes self-sustaining, but it is observed only after the transition has occurred. A more practical question is whether an approaching transition can be detected in advance, before the system crosses the threshold. Mean-field theory predicts exactly such a leading indicator: as $r$ approaches $r_c$, the restoring force weakens and relaxation times diverge. To test this prediction, we align time scales between asynchronous ABM updates and continuous-time theory by converting steps to sweeps, then evaluate relaxation and autocorrelation indicators. The simulations show increasing relaxation time and rising autocorrelation as $r$ approaches $r_c$, consistent with $\tau\sim 1/|r_c-r|$ (Fig.~\ref{fig:csd}a,b).
+Additional early-warning diagnostics and multi-lag autocorrelation checks are provided in Supplementary Figs.~\ref{fig:supp:ews-ac-var}--\ref{fig:supp:abm-multilag-ac}.
 Representative trajectories visually confirm this slowing: far from criticality the system relaxes within a few sweeps, whereas near-critical systems exhibit prolonged fluctuations and slower recovery (Fig.~\ref{fig:csd}c).
 
 \begin{figure}[H]
@@ -238,6 +267,7 @@ The preceding analysis establishes the mechanism for a single baseline configura
 The sensitivity $\chi$ and the critical point $r_c$ vary systematically across $(\phi,\theta)$, and a transition exists only when $\chi>2$. Increasing information density $k$ generally raises $\chi$ and shifts $r_c$ in a non-monotonic pattern (Fig.~\ref{fig:landscape}a,b).
 
 Media ecology plays a critical role: greater user-generated dominance (larger $n_w/n_m$) lowers the effective transition point, indicating greater fragility (Fig.~\ref{fig:landscape}c). Local coupling $\beta$ amplifies neighborhood reinforcement and shifts the macroscopic boundary (Fig.~\ref{fig:landscape}d). These effects are consistent across mean-field calculations and network simulations, showing that topology and media ecology jointly determine how close the system operates to criticality.
+Supplementary Figs.~\ref{fig:supp:symmetric-diagonal}--\ref{fig:supp:beta-q-a} provide additional diagnostics, including symmetry checks, decomposition of the $k$ effect, finite-size closure for $k=500$, and $\beta$-induced branch-selection bias.
 
 The media-ecology effect motivates our empirical proxy $r_{\text{proxy}}$: if shifts toward user-generated dominance lower resilience in the model, they should manifest as increased volatility in real-world data.
 
@@ -266,16 +296,18 @@ The media-ecology effect motivates our empirical proxy $r_{\text{proxy}}$: if sh
     \includegraphics[width=\linewidth]{figures/fig4d_beta_effect.pdf}
     \caption{}
   \end{subfigure}
-  \caption{Parameter landscapes and structural effects. (a) Theoretical critical point landscape $r_c(\phi,\theta)$ in the symmetric regime; the pale shaded region indicates no transition ($\chi\le 2$), while the white region denotes the invalid parameter space ($\phi\le\theta$); the star marks the baseline parameters used in Fig.~\ref{fig:csd}. (b) Information density $k$ reshapes psychological sensitivity $\chi$ and induces a non-monotonic shift in $r_c$; ABM estimates of $r_c(k)$ include 95\% CIs. Note: The deviation at $k=500$ reflects finite-size effects and discrete-threshold corrections and is consistent with finite-size extrapolation. (c) Media ecology shifts resilience: increasing user-generated dominance ($n_w/n_m$) lowers $r_c$ (gray dotted line marks the baseline ratio). (d) Local coupling $\beta$ amplifies reinforcement and shifts the effective transition boundary; ABM max-slope estimates include 95\% CIs, and the gray dotted line denotes the theoretical $r_c$ at $\beta=0$.}
+  \caption{Parameter landscapes and structural effects. (a) Theoretical critical point landscape $r_c(\phi,\theta)$ in the symmetric regime; the pale shaded region indicates no transition ($\chi\le 2$), while the white region denotes the invalid parameter space ($\phi\le\theta$); the star marks the baseline parameters used in Fig.~\ref{fig:csd}. (b) Information density $k$ reshapes psychological sensitivity $\chi$ and induces a non-monotonic shift in $r_c$; ABM estimates of $r_c(k)$ include 95\% CIs. Note: The deviation at $k=500$ reflects finite-size effects and discrete-threshold corrections and is consistent with finite-size extrapolation (Supplementary Fig.~\ref{fig:supp:k500-finite-size}). (c) Media ecology shifts resilience: increasing user-generated dominance ($n_w/n_m$) lowers $r_c$ (gray dotted line marks the baseline ratio). (d) Local coupling $\beta$ amplifies reinforcement and shifts the effective transition boundary; ABM max-slope estimates include 95\% CIs, and the gray dotted line denotes the theoretical $r_c$ at $\beta=0$.}
   \label{fig:landscape}
 \end{figure}
 
 \subsection{Empirical signatures}
 With theoretical and simulation benchmarks established, we now test whether corresponding statistical patterns appear in data. We bridge the model variables to window-level measures computed from the labeled corpus: polarization $Q=X_H-X_L$ captures net high-arousal imbalance, activity $a=X_H+X_L$ tracks the total high-arousal fraction (depletion of the moderate buffer), and $r_{\text{proxy}}$ estimates user-generated dominance (see Methods for construction details). We then evaluate two segment-level signatures aligned with the direction--intensity mechanism.
+Supplementary Fig.~\ref{fig:supp:time-series-overview} summarizes the 4H time series and highlights the non-uniform sampling density motivating segment-level aggregation.
 
 If activity is a structural precursor, do more active segments exhibit larger polarization jumps? In the pooled dataset, segments with higher activity show larger jump intensity (95th percentile of $|d|Q|/dt|$; Pearson $r=0.241$, $p=0.00798$; Fig.~\ref{fig:empirical}a), consistent with the idea that depletion of the moderate buffer increases susceptibility to abrupt direction changes.
 
 A second prediction concerns media composition. Does user-generated dominance track higher polarization volatility? The raw association in a high-density subset is consistent with the mechanism (Pearson $r=0.265$, $p=0.00434$; Fig.~\ref{fig:empirical}b). When segment-level sampling density is controlled, the effect attenuates (partial $r=0.078$, $p=0.411$), suggesting that observed volatility partly reflects data coverage rather than true dynamics.
+Supplementary Figs.~\ref{fig:supp:scatter-h1-h2}--\ref{fig:supp:eventstudy-h4} provide additional scatter diagnostics across datasets and the event-aligned early-warning analysis used to assess dynamical precursors under realistic sampling constraints.
 
 \begin{figure}[H]
   \centering

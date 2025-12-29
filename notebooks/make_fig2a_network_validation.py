@@ -277,7 +277,7 @@ def main() -> None:
     ax.set_ylabel(r"$\pm|\langle Q\rangle|$")
 
     ax.tick_params(direction="in", top=True, right=True)
-    add_panel_label(ax, "a")
+    add_panel_label(ax, "a", dx=-55.0)
     handles, labels = ax.get_legend_handles_labels()
     fig.legend(
         handles,
@@ -291,7 +291,7 @@ def main() -> None:
         handletextpad=0.6,
     )
     # 固定边距：与 Fig3a/b 对齐，避免并排时“视觉字号”不一致
-    fig.subplots_adjust(left=0.22, right=0.96, bottom=0.34, top=0.96)
+    fig.subplots_adjust(left=0.25, right=0.96, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig2a_network_validation.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)

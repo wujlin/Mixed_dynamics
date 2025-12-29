@@ -71,6 +71,38 @@
 
 ---
 
+## 1.1 Supplementary 图表（Essay/figures_supp）与主线关联
+
+> 说明：以下补充图用于支撑正文中“口径解释/稳健性/额外诊断”的一句话结论，并已在 `Essay/supplementary.tex` 中按 S1–S6 的结构组织。正文通过 “Supplementary Fig.” 引用这些补充材料，避免把核心证据完全移出正文。
+
+### S3：Theory / Network diagnostics（Note01–02）
+
+- `Essay/figures_supp/s2_signed_vs_abs_q.pdf`：对称系统下 signed $\langle Q\rangle$ 被 ± 分支抵消；$|Q|$/对齐 signed $Q$ 恢复分岔曲线（对应 Results Network validation 的“口径解释”）。
+- `Essay/figures_supp/s2_tau_ratio.pdf`：$\tau_a/\tau_q$ 对称 vs 非对称对比（对应 Results Direction--intensity bifurcation 里“activity 不是慢变量”的一句话）。
+- `Essay/figures_supp/s2_binder_fss.pdf`：Binder cumulant crossing 的有限尺寸稳健估计（对应 Results Network validation 的“估计策略”）。
+- `Essay/figures_supp/s2_susceptibility_fss.pdf`：susceptibility 峰值的伪峰/双峰风险（解释为什么正文优先 Binder）。
+
+### S4：CSD extra（Note03）
+
+- `Essay/figures_supp/s3_ews_ac_var.pdf`：AC/Var 早期预警统计量的补充诊断（对应 Results Critical slowing down）。
+- `Essay/figures_supp/s3_abm_multilag_ac.pdf`：ABM 多 lag autocorrelation，验证“AC 上升”不是单 lag 选择伪影。
+
+### S5：Parameter landscape extra（Note04）
+
+- `Essay/figures_supp/s4_symmetric_diagonal.pdf`：对称验证域的额外一致性诊断（理论假设边界检查）。
+- `Essay/figures_supp/s4_k_effect_split.pdf`：拆分展示 $k$ 如何影响 $\chi$ 与 $r_c$（补正文 Fig 4b 的解释细节）。
+- `Essay/figures_supp/s4_k500_finite_size.pdf`：$k=500$ 的有限尺寸外推闭环（支撑正文 Fig 4b 的 “k=500 deviation 可解释” 注记）。
+- `Essay/figures_supp/s4_beta_branch_bias.pdf`：$\beta>0$ 引发的分支选择偏置（结构扩展域效应）。
+- `Essay/figures_supp/s4_beta_q_a.pdf`：$\beta$ 下 $(q,a)$ 的耦合形态（支撑正文 Fig 4d 的“local coupling 改变边界/耦合”）。
+
+### S6：Empirical extra（Note07）
+
+- `Essay/figures_supp/s5_time_series_overview.pdf`：全时序覆盖/密度概览（解释为什么必须 segment-level 聚合）。
+- `Essay/figures_supp/s5_scatter_h1_h2.pdf`：H1/H2 的跨数据集散点诊断与 density 分层视角（对应 Results Empirical signatures）。
+- `Essay/figures_supp/s5_eventstudy_h4.pdf`：事件对齐 early-warning（H4）与“1H/2H 不可用”的失败证据（对应 Discussion/Limitations 的“密度与连续性要求”）。
+
+---
+
 ## 2. 可直接写进 Results 的“关键数值”
 
 ### 2.1 理论/模拟（Note01–04）

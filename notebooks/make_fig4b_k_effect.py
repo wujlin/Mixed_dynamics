@@ -90,7 +90,7 @@ def main() -> None:
     ax_rc.set_ylabel(r"$r_c$")
     ax_chi.tick_params(direction="in", top=True)
     ax_rc.tick_params(direction="in", top=True, right=True)
-    add_panel_label(ax_chi, "b")
+    add_panel_label(ax_chi, "b", dx=-55.0)
 
     handles, labels = ax_rc.get_legend_handles_labels()
     fig.legend(
@@ -106,7 +106,7 @@ def main() -> None:
     )
 
     # twin y-axis 需要给右侧 ylabel 预留空间，避免被裁剪
-    fig.subplots_adjust(left=0.22, right=0.88, bottom=0.34, top=0.96)
+    fig.subplots_adjust(left=0.25, right=0.88, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig4b_k_effect.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)
