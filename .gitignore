@@ -34,3 +34,20 @@ data/config/*secrets*.json
 
 # 本地写作训练（不入库）
 docs/writing_drills.md
+
+# 论文制图预览（不入库）
+outputs/figs/
+
+# LaTeX 构建产物（不入库）
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Overleaf 跨文档引用需要的“可读取”aux（作为源文件维护）
+!Essay/supplementary.aux

@@ -9,6 +9,7 @@ Supplementary S5：Empirical validation（补充图 + 表格素材）。
   - Essay/figures_supp/s5_time_series_overview.pdf
   - Essay/figures_supp/s5_scatter_h1_h2.pdf
   - Essay/figures_supp/s5_eventstudy_h4.pdf
+  - Essay/figures_supp/s5_h2_density_12h.pdf
 
 运行：
   /home/wujlin/miniconda3/envs/emotion/bin/python notebooks/make_supp_s5_empirical_extra.py
@@ -29,6 +30,11 @@ import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+try:
+    from scipy import stats as sps  # type: ignore
+except Exception:  # pragma: no cover
+    sps = None
+
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -47,6 +53,14 @@ class S5Config:
     roll_win: int = 12
     pre: int = 24
     event_quantile: float = 0.95
+
+
+DATASET_ORDER = ["master", "batch3", "all"]
+DATASET_DISPLAY = {
+    "master": "Dataset A",
+    "batch3": "Dataset B",
+    "all": "Dataset C",
+}
 
 
 def _out_dirs() -> Dict[str, Path]:
@@ -158,6 +172,39 @@ def segment_metrics_h2(df: pd.DataFrame, *, segment: str) -> pd.DataFrame:
     return out.sort_values("seg").reset_index(drop=True) if not out.empty else out
 
 
+def _pearsonr_with_p(x: np.ndarray, y: np.ndarray) -> tuple[float, float]:
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    m = np.isfinite(x) & np.isfinite(y)
+    x = x[m]
+    y = y[m]
+    if x.size < 3:
+        return float("nan"), float("nan")
+    if sps is None:
+        return float(np.corrcoef(x, y)[0, 1]), float("nan")
+    r, p = sps.pearsonr(x, y)
+    return float(r), float(p)
+
+
+def _partial_corr_1ctrl(x: np.ndarray, y: np.ndarray, z: np.ndarray) -> tuple[float, float]:
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    z = np.asarray(z, dtype=float)
+    m = np.isfinite(x) & np.isfinite(y) & np.isfinite(z)
+    x = x[m]
+    y = y[m]
+    z = z[m]
+    if x.size < 5:
+        return float("nan"), float("nan")
+
+    X = np.column_stack([np.ones_like(z), z])
+    bx = np.linalg.lstsq(X, x, rcond=None)[0]
+    by = np.linalg.lstsq(X, y, rcond=None)[0]
+    rx = x - X @ bx
+    ry = y - X @ by
+    return _pearsonr_with_p(rx, ry)
+
+
 def _bootstrap_fit_band(x: np.ndarray, y: np.ndarray, grid: np.ndarray, *, n_boot: int, seed: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -174,6 +221,112 @@ def _bootstrap_fit_band(x: np.ndarray, y: np.ndarray, grid: np.ndarray, *, n_boo
     lo = np.percentile(preds, 2.5, axis=0)
     hi = np.percentile(preds, 97.5, axis=0)
     return mean, lo, hi
+
+
+def fig_h2_density_12h(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
+    """
+    Robustness check: repeat the media-dominance--volatility association under 12H aggregation.
+
+    Notes:
+    - Dataset: batch3 (high-frequency discussion set used in the main-text H2 analysis)
+    - Segment: weekly (cfg.segment)
+    - Density grouping: median split by the number of valid windows per segment
+    """
+
+    ts = add_window_metrics(_load_ts("batch3", freq="12h"), freq="12h")
+    seg = segment_metrics_h2(ts, segment=cfg.segment)
+    if seg.empty:
+        raise SystemExit("12H: 无可用分段数据（数据过稀疏或阈值过严）。")
+
+    cut = float(seg["n_windows_aq"].median())
+    seg["density"] = np.where(seg["n_windows_aq"] >= cut, "High density", "Low density")
+
+    x = seg["r_proxy_mean"].to_numpy(dtype=float)
+    y = seg["volatility"].to_numpy(dtype=float)
+    z = seg["n_windows_aq"].to_numpy(dtype=float)
+    pearson_r, pearson_p = _pearsonr_with_p(x, y)
+    partial_r, partial_p = _partial_corr_1ctrl(x, y, z)
+
+    apply_paper_style()
+    fig, ax = plt.subplots(figsize=(6.5, 3.2))
+
+    colors = {"High density": OKABE_ITO["blue"], "Low density": OKABE_ITO["vermillion"]}
+    linestyles = {"High density": "-", "Low density": "--"}
+    for grp, g in seg.groupby("density", sort=False):
+        gx = g["r_proxy_mean"].to_numpy(dtype=float)
+        gy = g["volatility"].to_numpy(dtype=float)
+        m = np.isfinite(gx) & np.isfinite(gy)
+        gx = gx[m]
+        gy = gy[m]
+        if gx.size < 3:
+            continue
+        c = colors.get(str(grp), OKABE_ITO["gray"])
+        ax.scatter(
+            gx,
+            gy,
+            s=46,
+            alpha=0.85,
+            c=c,
+            edgecolors="white",
+            linewidths=0.6,
+            zorder=3,
+        )
+        if gx.size >= 5 and float(np.nanstd(gx)) > 1e-6:
+            grid = np.linspace(float(np.min(gx)), float(np.max(gx)), 200)
+            mean, lo, hi = _bootstrap_fit_band(
+                gx,
+                gy,
+                grid,
+                n_boot=cfg.n_boot,
+                seed=cfg.seed + (0 if grp == "High density" else 17),
+            )
+            ax.plot(grid, mean, color=c, lw=2.2, linestyle=linestyles.get(str(grp), "-"), zorder=4)
+            ax.fill_between(grid, lo, hi, color=c, alpha=0.14, linewidth=0, zorder=2)
+
+    ax.set_xlabel(r"User-generated dominance $r_{\mathrm{proxy}}$")
+    ax.set_ylabel("Volatility")
+    ax.tick_params(direction="in", top=True, right=True)
+
+    handles = [
+        mpl.lines.Line2D(
+            [],
+            [],
+            marker="o",
+            linestyle=linestyles["High density"],
+            color=colors["High density"],
+            markersize=7,
+            markeredgecolor="white",
+            markeredgewidth=0.8,
+            lw=2.2,
+        ),
+        mpl.lines.Line2D(
+            [],
+            [],
+            marker="o",
+            linestyle=linestyles["Low density"],
+            color=colors["Low density"],
+            markersize=7,
+            markeredgecolor="white",
+            markeredgewidth=0.8,
+            lw=2.2,
+        ),
+    ]
+    fig.legend(
+        handles,
+        ["High density", "Low density"],
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        frameon=False,
+        ncol=2,
+        handlelength=2.0,
+        columnspacing=1.2,
+        handletextpad=0.6,
+    )
+    fig.subplots_adjust(left=0.14, right=0.98, bottom=0.30, top=0.98)
+
+    fig.savefig(out_pdf)
+    fig.savefig(out_png, dpi=300)
+    plt.close(fig)
 
 
 def rolling_ac1_window(w: np.ndarray) -> float:
@@ -282,24 +435,49 @@ def _load_ts(name: str, *, freq: str) -> pd.DataFrame:
 
 
 def fig_time_series(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
-    df = pd.concat([_load_ts(n, freq=cfg.freq) for n in ["master", "batch3", "all"]], ignore_index=True)
+    df = pd.concat([_load_ts(n, freq=cfg.freq) for n in DATASET_ORDER], ignore_index=True)
 
     apply_paper_style()
     fig, axes = plt.subplots(3, 1, figsize=(6.5, 5.4), sharex=True)
 
     palette = {"master": OKABE_ITO["gray"], "batch3": OKABE_ITO["blue"], "all": OKABE_ITO["vermillion"]}
+    # Plot the merged sample in the background to avoid hiding the two component datasets.
+    plot_order = ["all", "batch3", "master"]
+    style = {
+        "all": dict(alpha=0.35, linewidth=1.2, zorder=1),
+        "batch3": dict(alpha=0.85, linewidth=1.6, zorder=3),
+        "master": dict(alpha=0.85, linewidth=1.6, zorder=4),
+    }
     for ax, col, ylabel in [
         (axes[0], "Q", r"Polarization $Q$"),
         (axes[1], "a", r"Activity $a$"),
         (axes[2], "r_proxy", r"$r_{\mathrm{proxy}}$"),
     ]:
-        for name, g in df.groupby("dataset"):
-            ax.plot(g["time_window"], g[col], color=palette[str(name)], linewidth=1.6, alpha=0.85, label=str(name))
+        lines = {}
+        for name in plot_order:
+            g = df[df["dataset"] == name]
+            if g.empty:
+                continue
+            (ln,) = ax.plot(
+                g["time_window"],
+                g[col],
+                color=palette[str(name)],
+                linewidth=style[name]["linewidth"],
+                alpha=style[name]["alpha"],
+                zorder=style[name]["zorder"],
+                label=DATASET_DISPLAY.get(str(name), str(name)),
+            )
+            lines[str(name)] = ln
         ax.set_ylabel(ylabel)
         ax.tick_params(direction="in", top=True, right=True)
 
     axes[2].set_xlabel("Time")
-    handles, labels = axes[0].get_legend_handles_labels()
+    handles = []
+    labels = []
+    for name in ["master", "batch3", "all"]:
+        if name in lines:
+            handles.append(lines[name])
+            labels.append(DATASET_DISPLAY.get(name, name))
     fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 0.995), frameon=False, ncol=3, handlelength=2.0)
     fig.subplots_adjust(left=0.12, right=0.98, bottom=0.10, top=0.93, hspace=0.22)
     fig.savefig(out_pdf)
@@ -308,7 +486,7 @@ def fig_time_series(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
 
 
 def fig_scatter_h1_h2(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
-    datasets = ["master", "batch3", "all"]
+    datasets = DATASET_ORDER
     ts = {name: add_window_metrics(_load_ts(name, freq=cfg.freq), freq=cfg.freq) for name in datasets}
     seg_h1 = {name: segment_metrics_h1(ts[name], segment=cfg.segment, jump_q=cfg.jump_q) for name in datasets}
     seg_h2 = {name: segment_metrics_h2(ts[name], segment=cfg.segment) for name in datasets}
@@ -331,7 +509,7 @@ def fig_scatter_h1_h2(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
             mean, lo, hi = _bootstrap_fit_band(x, y, grid, n_boot=cfg.n_boot, seed=cfg.seed + j)
             ax.plot(grid, mean, color=c, lw=2.0, zorder=4)
             ax.fill_between(grid, lo, hi, color=c, alpha=0.16, linewidth=0, zorder=2)
-        ax.set_title(name)
+        ax.set_title(DATASET_DISPLAY.get(str(name), str(name)))
         ax.set_xlabel(r"Activity $a$ (segment mean)")
         ax.set_ylabel(r"Jump intensity (q95)")
         ax.tick_params(direction="in", top=True, right=True)
@@ -352,12 +530,20 @@ def fig_scatter_h1_h2(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
                 continue
             c2 = colors[str(grp)]
             ax.scatter(x, y, s=26, alpha=0.80, c=c2, edgecolors="white", linewidths=0.5, zorder=3)
-            grid = np.linspace(float(np.min(x)), float(np.max(x)), 200)
-            mean, lo, hi = _bootstrap_fit_band(x, y, grid, n_boot=cfg.n_boot, seed=cfg.seed + 17 + j + (0 if grp == "High density" else 7))
-            ax.plot(grid, mean, color=c2, lw=2.0, linestyle=linestyles[str(grp)], zorder=4)
-            ax.fill_between(grid, lo, hi, color=c2, alpha=0.14, linewidth=0, zorder=2)
+            if x.size >= 10 and float(np.nanstd(x)) > 1e-6:
+                grid = np.linspace(float(np.min(x)), float(np.max(x)), 200)
+                mean, lo, hi = _bootstrap_fit_band(
+                    x,
+                    y,
+                    grid,
+                    n_boot=cfg.n_boot,
+                    seed=cfg.seed + 17 + j + (0 if grp == "High density" else 7),
+                )
+                ax.plot(grid, mean, color=c2, lw=2.0, linestyle=linestyles[str(grp)], zorder=4)
+                ax.fill_between(grid, lo, hi, color=c2, alpha=0.14, linewidth=0, zorder=2)
         ax.set_xlabel(r"$r_{\mathrm{proxy}}$ (segment mean)")
         ax.set_ylabel("Volatility")
+        ax.set_ylim(bottom=0.0)
         ax.tick_params(direction="in", top=True, right=True)
 
     # 全图 legend：密度分组
@@ -374,7 +560,7 @@ def fig_scatter_h1_h2(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
 
 
 def fig_eventstudy_h4(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
-    datasets = ["master", "batch3", "all"]
+    datasets = DATASET_ORDER
     apply_paper_style()
     fig, axes = plt.subplots(2, 3, figsize=(7.6, 4.6), sharex=True)
 
@@ -408,8 +594,20 @@ def fig_eventstudy_h4(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
             mean, lo, hi = ac
             ax.plot(xs, mean, color=OKABE_ITO["blue"], lw=2.0)
             ax.fill_between(xs, lo, hi, color=OKABE_ITO["blue"], alpha=0.18, linewidth=0)
-        ax.set_title(name)
+        else:
+            ax.text(
+                0.5,
+                0.5,
+                "Insufficient data",
+                transform=ax.transAxes,
+                ha="center",
+                va="center",
+                color=OKABE_ITO["gray"],
+                fontsize=float(mpl.rcParams.get("legend.fontsize", 9.0)),
+            )
+        ax.set_title(DATASET_DISPLAY.get(str(name), str(name)))
         ax.set_ylabel("AC1(|Q|)")
+        ax.set_ylim(-0.6, 0.6)
         ax.tick_params(direction="in", top=True, right=True)
 
         # Var
@@ -419,8 +617,20 @@ def fig_eventstudy_h4(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
             mean, lo, hi = var
             ax.plot(xs, mean, color=OKABE_ITO["vermillion"], lw=2.0)
             ax.fill_between(xs, lo, hi, color=OKABE_ITO["vermillion"], alpha=0.18, linewidth=0)
+        else:
+            ax.text(
+                0.5,
+                0.5,
+                "Insufficient data",
+                transform=ax.transAxes,
+                ha="center",
+                va="center",
+                color=OKABE_ITO["gray"],
+                fontsize=float(mpl.rcParams.get("legend.fontsize", 9.0)),
+            )
         ax.set_xlabel("Hours before event (4H steps)")
         ax.set_ylabel("Var(|Q|)")
+        ax.set_ylim(0.0, 0.06)
         ax.tick_params(direction="in", top=True, right=True)
 
     fig.subplots_adjust(left=0.09, right=0.99, bottom=0.12, top=0.92, wspace=0.32, hspace=0.34)
@@ -436,6 +646,7 @@ def main() -> None:
     fig_time_series(cfg, out_pdf=out["pdf"] / "s5_time_series_overview.pdf", out_png=out["png"] / "s5_time_series_overview.png")
     fig_scatter_h1_h2(cfg, out_pdf=out["pdf"] / "s5_scatter_h1_h2.pdf", out_png=out["png"] / "s5_scatter_h1_h2.png")
     fig_eventstudy_h4(cfg, out_pdf=out["pdf"] / "s5_eventstudy_h4.pdf", out_png=out["png"] / "s5_eventstudy_h4.png")
+    fig_h2_density_12h(cfg, out_pdf=out["pdf"] / "s5_h2_density_12h.pdf", out_png=out["png"] / "s5_h2_density_12h.png")
 
     print("[supp:S5] done")
 

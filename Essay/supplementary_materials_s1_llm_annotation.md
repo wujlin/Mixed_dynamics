@@ -1,6 +1,6 @@
 # Supplementary Materials S1: LLM Annotation Protocol
 
-说明：该内容已同步迁移到 LaTeX 版本 `Essay/supplementary_s1_llm_annotation.tex`，后续以 LaTeX 版本为准（本文件保留作内部备份/草稿）。
+说明：该内容已同步迁移到 LaTeX 主文件 `Essay/supplementary.tex` 的 Section S1，后续以该 LaTeX 版本为准（本文件保留作内部备份/草稿）。
 
 This document specifies the LLM-based annotation pipeline used to label Weibo posts for emotional arousal and risk content.
 
