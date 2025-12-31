@@ -254,7 +254,7 @@ The noise term $\eta(t)$ represents stochastic fluctuations induced by finite po
 \section{Additional theory and network-validation diagnostics}
 \label{supp:s3-theory-network}
 
-This note provides robustness checks supporting the theoretical and network-validation results in the main text. The additional analyses below serve three narrative purposes: (i) justify the order-parameter conventions used to visualize the transition, (ii) validate that the activity variable carries independent dynamical information under realistic asymmetry, and (iii) motivate the finite-size estimator used to locate the transition in sparse networks.
+This note provides robustness checks supporting the theoretical and network-validation results in the main text. The additional analyses below clarify the order-parameter conventions used to visualize the transition, validate that the activity variable carries independent dynamical information under realistic asymmetry, and motivate the finite-size estimator used to locate the transition in sparse networks.
 
 \subsection{Order parameter under symmetric branch selection}
 In the symmetric validation regime, different realizations can select either the $+q^\ast$ or $-q^\ast$ branch with approximately equal probability. As a result, the signed mean $\langle Q\rangle$ cancels even when the bifurcation exists, while $|Q|$ (or sign-aligned $Q$) recovers the transition curve used in the main text.
@@ -340,7 +340,7 @@ The analytic critical point is derived in a symmetric validation regime. Along t
 \end{figure}
 
 \subsection{Decomposing the information-density effect}
-The main text reports a non-monotonic $k$ effect on the estimated transition point. We separate this into (i) how $k$ changes the psychological sensitivity $\chi$ and (ii) how the induced $\chi(k)$ maps to $r_c(k)$.
+The main text reports a non-monotonic $k$ effect on the estimated transition point. We separate this into two components: how $k$ changes the psychological sensitivity $\chi$, and how the induced $\chi(k)$ maps to $r_c(k)$.
 
 \begin{figure}[H]
   \centering
@@ -397,12 +397,12 @@ We first summarize the window-level proxies used in the main text and highlight 
 \end{figure}
 
 \subsection{Scatter diagnostics for the two empirical signatures}
-To connect directly to the theoretical mechanism, we evaluate two segment-level associations: (i) elevated activity predicting larger polarization jumps, and (ii) increased user-generated dominance predicting higher polarization volatility. Density stratification is shown to diagnose coverage-driven confounds.
+To connect directly to the theoretical mechanism, we evaluate two segment-level associations under the primary 4-hour aggregation: elevated activity predicting larger polarization jumps, and increased user-generated dominance predicting higher polarization volatility. Density stratification is shown to diagnose coverage-driven confounds. The main text reports the density-controlled H2 estimate under 12-hour aggregation; the 4-hour diagnostics here provide additional context across datasets and missingness patterns.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s5_scatter_h1_h2.pdf}
-  \caption{Scatter diagnostics for empirical signatures across datasets (Dataset A/B/C as defined above). We show the segment-level associations used for the activity--jump and media-dominance--volatility tests, including density-stratified views used to diagnose sampling-coverage confounds.}
+  \caption{Scatter diagnostics for empirical signatures under the primary 4-hour aggregation across datasets (Dataset A/B/C as defined above). We show the segment-level associations for the activity--jump and media-dominance--volatility tests, including density-stratified views used to diagnose sampling-coverage confounds.}
   \label{fig:supp:scatter-h1-h2}
 \end{figure}
 
@@ -416,13 +416,13 @@ We additionally assess early-warning behavior by aligning autocorrelation/varian
   \label{fig:supp:eventstudy-h4}
 \end{figure}
 
-\subsection{Robustness to temporal aggregation (12H)}
-Finally, we repeat the media-dominance--volatility test under 12-hour aggregation, which increases per-window sample size at the cost of temporal granularity. The positive association remains, supporting that the main-text pattern is not an artifact of a single aggregation choice.
+\subsection{Density-controlled H2 under 12H aggregation}
+We report the media-dominance--volatility association under 12-hour aggregation, which increases per-window sample size at the cost of temporal granularity and stabilizes within-segment estimates of $r_{\text{proxy}}$ and volatility. The positive association remains significant after controlling for segment sampling density, supporting that the media-ecology signature is not explained by coverage alone.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s5_h2_density_12h.pdf}
-  \caption{Robustness to temporal aggregation for the media-dominance--volatility signature. Repeating the analysis under 12-hour aggregation increases per-window sample size and yields a similar positive association between $r_{\text{proxy}}$ and volatility (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; partial $r=0.386$, $p=8.79\times 10^{-6}$ controlling for the number of valid windows per week; median split at 14 windows). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
+  \caption{Density-controlled media-dominance--volatility signature under 12-hour aggregation. The analysis yields a positive association between $r_{\text{proxy}}$ and volatility (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; partial $r=0.386$, $p=8.79\times 10^{-6}$ controlling for the number of valid windows per week; median split at 14 windows). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
   \label{fig:supp:h2-density-12h}
 \end{figure}
 

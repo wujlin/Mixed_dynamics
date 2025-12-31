@@ -1,16 +1,14 @@
 """
-Fig 5b：经验验证 H2（Batch3）——r_proxy 与波动性（std(Q)）的关系，并展示密度分组。
+Fig 5b：经验验证 H2（High-density / batch3）——r_proxy 与波动性（std(Q)）的关系，并展示密度分组。
 
-口径（与 Note07 收敛稿一致）：
-- 数据：outputs/annotations/derived/time_series_batch3_4h.csv（freq=4h）
+口径（与主文 3.5 一致）：
+- 数据：outputs/annotations/derived/time_series_batch3_12h.csv（freq=12h）
 - 段内统计：segment=W（周）
 - 密度：段内可用窗口数 n_windows_aq，按中位数二分（high/low）
 
-可视化决策（PI + 本轮确认）：
-- 图内不放相关系数/partial r（放 Table/Caption）
-- 图内强调趋势：两组各自的线性拟合 + 95% CI
-- Times New Roman、无网格、线宽字号对齐 Fig2–4
-- 输出 PDF（矢量）+ 预览 PNG
+说明：
+- 12H 聚合会提高每个窗口内的媒体计数与 Q/a 的稳定性，从而更可靠地估计 r_proxy 与 volatility。
+- 图内不放相关系数/partial r（主文正文与 Table 1 报告）；图中只展示两组趋势（线性拟合 + 95% CI）。
 
 运行：
   /home/wujlin/miniconda3/envs/emotion/bin/python notebooks/make_fig5b_h2_batch3_density.py
@@ -40,8 +38,8 @@ from src.plot_style import FIGSIZE_HALF, add_panel_label, apply_paper_style  # n
 
 @dataclass(frozen=True)
 class Fig5bConfig:
-    input_csv: Path = ROOT / "outputs" / "annotations" / "derived" / "time_series_batch3_4h.csv"
-    freq: str = "4h"
+    input_csv: Path = ROOT / "outputs" / "annotations" / "derived" / "time_series_batch3_12h.csv"
+    freq: str = "12h"
     segment: str = "W"
     fig_size: Tuple[float, float] = FIGSIZE_HALF
     n_boot: int = 2000
@@ -100,9 +98,6 @@ def segment_metrics(df: pd.DataFrame, *, segment: str = "W") -> pd.DataFrame:
     for seg, g in x.groupby("seg"):
         g_aq = g.dropna(subset=["a", "Q"])
         if len(g_aq) < 10:
-            continue
-        g_jump = g.dropna(subset=["abs_dQ_abs_per_hour"])
-        if len(g_jump) < 5:
             continue
 
         nw = float(g_aq.get("n_wemedia", pd.Series(dtype=float)).fillna(0).sum())
