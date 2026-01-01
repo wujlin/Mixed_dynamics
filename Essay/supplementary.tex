@@ -387,7 +387,7 @@ This note provides additional empirical figures supporting the main-text empiric
 \noindent\textbf{Dataset convention.} For compact visualization, we label the three empirical subsets as Dataset A (official-media topic set), Dataset B (high-density discussion set used for the primary empirical tests), and Dataset C (their merged sample). These labels are used only in Supplementary figures.
 
 \subsection{Time-series overview and segmentation rationale}
-We first summarize the window-level proxies used in the main text and highlight missingness patterns. This motivates segment-based aggregation and density-aware diagnostics used in subsequent panels.
+We summarize the window-level proxies used in the main text and highlight missingness patterns. This motivates segment-based aggregation and density-aware diagnostics used in subsequent panels.
 
 \begin{figure}[H]
   \centering
@@ -416,13 +416,23 @@ We additionally assess early-warning behavior by aligning autocorrelation/varian
   \label{fig:supp:eventstudy-h4}
 \end{figure}
 
-\subsection{Density-controlled H2 under 12H aggregation}
-We report the media-dominance--volatility association under 12-hour aggregation, which increases per-window sample size at the cost of temporal granularity and stabilizes within-segment estimates of $r_{\text{proxy}}$ and volatility. The positive association remains significant after controlling for segment sampling density, supporting that the media-ecology signature is not explained by coverage alone.
+\subsection{H2 density diagnostics: 4H versus 12H aggregation}
+The media-dominance--volatility association is sensitive to sampling density and missingness. Under the primary 4-hour aggregation, the raw correlation is positive but largely attenuates after controlling for segment sampling density (number of valid windows per week). Aggregating to 12-hour windows increases per-window sample size at the cost of temporal granularity and yields more stable within-segment estimates of $r_{\text{proxy}}$ and volatility; under this aggregation, the density-controlled association remains significant.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.92\linewidth]{s5_h2_density_12h.pdf}
-  \caption{Density-controlled media-dominance--volatility signature under 12-hour aggregation. The analysis yields a positive association between $r_{\text{proxy}}$ and volatility (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; partial $r=0.386$, $p=8.79\times 10^{-6}$ controlling for the number of valid windows per week; median split at 14 windows). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
+  \begin{subfigure}[b]{0.92\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{s5_h2_density_4h.pdf}
+    \caption{}
+  \end{subfigure}
+  \vspace{0.6em}
+  \begin{subfigure}[b]{0.92\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{s5_h2_density_12h.pdf}
+    \caption{}
+  \end{subfigure}
+  \caption{Density diagnostics for the media-dominance--volatility signature under two aggregation scales (Dataset B / batch3). \textbf{Top:} 4-hour aggregation, showing a positive raw association (Pearson $r=0.265$, $p=0.00434$) that attenuates after controlling for segment sampling density (partial $r=0.078$, $p=0.411$; median split at 28 windows). \textbf{Bottom:} 12-hour aggregation, yielding a stronger positive association that remains significant after density control (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; partial $r=0.386$, $p=8.79\times 10^{-6}$; median split at 14 windows). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
   \label{fig:supp:h2-density-12h}
 \end{figure}
 

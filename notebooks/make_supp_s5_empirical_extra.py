@@ -9,6 +9,7 @@ Supplementary S5：Empirical validation（补充图 + 表格素材）。
   - Essay/figures_supp/s5_time_series_overview.pdf
   - Essay/figures_supp/s5_scatter_h1_h2.pdf
   - Essay/figures_supp/s5_eventstudy_h4.pdf
+  - Essay/figures_supp/s5_h2_density_4h.pdf
   - Essay/figures_supp/s5_h2_density_12h.pdf
 
 运行：
@@ -154,6 +155,11 @@ def segment_metrics_h2(df: pd.DataFrame, *, segment: str) -> pd.DataFrame:
     for seg, g in x.groupby("seg"):
         g_aq = g.dropna(subset=["a", "Q"])
         if len(g_aq) < 10:
+            continue
+        # 与主文的“段内统计口径”一致：同时要求 jump 统计的连续差分可计算，
+        # 避免把缺口密集的段混入 H2（coverage confound）。
+        g_jump = g.dropna(subset=["abs_dQ_abs_per_hour"])
+        if len(g_jump) < 5:
             continue
         nw = float(g_aq.get("n_wemedia", pd.Series(dtype=float)).fillna(0).sum())
         nm = float(g_aq.get("n_mainstream", pd.Series(dtype=float)).fillna(0).sum())
@@ -327,6 +333,118 @@ def fig_h2_density_12h(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
     fig.savefig(out_pdf)
     fig.savefig(out_png, dpi=300)
     plt.close(fig)
+
+
+def fig_h2_density_4h(cfg: S5Config, *, out_pdf: Path, out_png: Path) -> None:
+    """
+    Baseline diagnostic: the media-dominance--volatility association under 4H aggregation.
+
+    Notes:
+    - Dataset: batch3 (high-density discussion set)
+    - Segment: weekly (cfg.segment)
+    - Segment retention uses the same coverage rule as the main text:
+      at least 10 valid windows for Q/a and at least 5 valid consecutive differences for jump.
+    """
+
+    ts = add_window_metrics(_load_ts("batch3", freq=cfg.freq), freq=cfg.freq)
+    seg = segment_metrics_h2(ts, segment=cfg.segment)
+    if seg.empty:
+        raise SystemExit("4H: 无可用分段数据（数据过稀疏或阈值过严）。")
+
+    cut = float(seg["n_windows_aq"].median())
+    seg["density"] = np.where(seg["n_windows_aq"] >= cut, "High density", "Low density")
+
+    x = seg["r_proxy_mean"].to_numpy(dtype=float)
+    y = seg["volatility"].to_numpy(dtype=float)
+    z = seg["n_windows_aq"].to_numpy(dtype=float)
+    pearson_r, pearson_p = _pearsonr_with_p(x, y)
+    partial_r, partial_p = _partial_corr_1ctrl(x, y, z)
+
+    apply_paper_style()
+    fig, ax = plt.subplots(figsize=(6.5, 3.2))
+
+    colors = {"High density": OKABE_ITO["blue"], "Low density": OKABE_ITO["vermillion"]}
+    linestyles = {"High density": "-", "Low density": "--"}
+    for grp, g in seg.groupby("density", sort=False):
+        gx = g["r_proxy_mean"].to_numpy(dtype=float)
+        gy = g["volatility"].to_numpy(dtype=float)
+        m = np.isfinite(gx) & np.isfinite(gy)
+        gx = gx[m]
+        gy = gy[m]
+        if gx.size < 3:
+            continue
+        c = colors.get(str(grp), OKABE_ITO["gray"])
+        ax.scatter(
+            gx,
+            gy,
+            s=46,
+            alpha=0.85,
+            c=c,
+            edgecolors="white",
+            linewidths=0.6,
+            zorder=3,
+        )
+        if gx.size >= 5 and float(np.nanstd(gx)) > 1e-6:
+            grid = np.linspace(float(np.min(gx)), float(np.max(gx)), 200)
+            mean, lo, hi = _bootstrap_fit_band(
+                gx,
+                gy,
+                grid,
+                n_boot=cfg.n_boot,
+                seed=cfg.seed + (0 if grp == "High density" else 17),
+            )
+            ax.plot(grid, mean, color=c, lw=2.2, linestyle=linestyles.get(str(grp), "-"), zorder=4)
+            ax.fill_between(grid, lo, hi, color=c, alpha=0.14, linewidth=0, zorder=2)
+
+    ax.set_xlabel(r"User-generated dominance $r_{\mathrm{proxy}}$")
+    ax.set_ylabel("Volatility")
+    ax.tick_params(direction="in", top=True, right=True)
+
+    handles = [
+        mpl.lines.Line2D(
+            [],
+            [],
+            marker="o",
+            linestyle=linestyles["High density"],
+            color=colors["High density"],
+            markersize=7,
+            markeredgecolor="white",
+            markeredgewidth=0.8,
+            lw=2.2,
+        ),
+        mpl.lines.Line2D(
+            [],
+            [],
+            marker="o",
+            linestyle=linestyles["Low density"],
+            color=colors["Low density"],
+            markersize=7,
+            markeredgecolor="white",
+            markeredgewidth=0.8,
+            lw=2.2,
+        ),
+    ]
+    fig.legend(
+        handles,
+        ["High density", "Low density"],
+        loc="lower center",
+        bbox_to_anchor=(0.5, 0.02),
+        frameon=False,
+        ncol=2,
+        handlelength=2.0,
+        columnspacing=1.2,
+        handletextpad=0.6,
+    )
+    fig.subplots_adjust(left=0.14, right=0.98, bottom=0.30, top=0.98)
+
+    fig.savefig(out_pdf)
+    fig.savefig(out_png, dpi=300)
+    plt.close(fig)
+
+    print(
+        f"[S5:H2 4H] Pearson r={pearson_r:.6f}, p={pearson_p:.6g}; "
+        f"partial r={partial_r:.6f}, p={partial_p:.6g}; median n_windows_aq={cut:.0f}"
+    )
 
 
 def rolling_ac1_window(w: np.ndarray) -> float:
@@ -646,6 +764,7 @@ def main() -> None:
     fig_time_series(cfg, out_pdf=out["pdf"] / "s5_time_series_overview.pdf", out_png=out["png"] / "s5_time_series_overview.png")
     fig_scatter_h1_h2(cfg, out_pdf=out["pdf"] / "s5_scatter_h1_h2.pdf", out_png=out["png"] / "s5_scatter_h1_h2.png")
     fig_eventstudy_h4(cfg, out_pdf=out["pdf"] / "s5_eventstudy_h4.pdf", out_png=out["png"] / "s5_eventstudy_h4.png")
+    fig_h2_density_4h(cfg, out_pdf=out["pdf"] / "s5_h2_density_4h.pdf", out_png=out["png"] / "s5_h2_density_4h.png")
     fig_h2_density_12h(cfg, out_pdf=out["pdf"] / "s5_h2_density_12h.pdf", out_png=out["png"] / "s5_h2_density_12h.png")
 
     print("[supp:S5] done")
