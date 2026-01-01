@@ -21,6 +21,5 @@ Option B (upload the whole `Essay/` folder):
 
 ## Notes
 
-- We use `Essay/figures/mixed_feedback_model.png` (a copy of `Mixed-feedback model.png`) to avoid LaTeX issues with spaces in filenames.
+- The mechanism slide uses `csdag.svg` (copied to `figures/csdag.svg`) via `\includesvg`; you must enable **shell escape** on Overleaf, otherwise compilation will fail (intended).
 - Main talk is designed for ~20 minutes; backup slides are included under `\\appendix`.
-

@@ -9,14 +9,17 @@
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\usepackage{svg}
 
 % Robust figure paths for either:
 % (a) Overleaf project root contains figures/ and figures_supp/, or
 % (b) this file lives under Essay/slides/ with figures in ../figures/.
 \IfFileExists{figures/fig0_framework.pdf}{%
   \graphicspath{{figures/}{figures_supp/}}%
+  \svgpath{{figures/}{figures_supp/}}%
 }{%
   \graphicspath{{../figures/}{../figures_supp/}}%
+  \svgpath{{../figures/}{../figures_supp/}}%
 }
 
 \title[Mixed-feedback transitions]{Phase Transitions in Collective Emotion:\\A Mixed-Feedback Framework Motivated by Media Dynamics}
@@ -38,6 +41,7 @@
 \begin{frame}{Motivation: abrupt shifts without commensurate shocks}
   \begin{itemize}
     \item Online collective emotion can remain stable for long periods and then change abruptly.
+    \item (e.g., during the COVID-19 pandemic, public discourse shifted rapidly between calm and panic phases without commensurate external triggers)
     \item Mixed media ecologies combine stabilizing and amplifying feedback, potentially creating endogenous instability.
     \item We want a mechanistic, testable framework linking media structure to resilience and early warning.
   \end{itemize}
@@ -46,6 +50,8 @@
 \begin{frame}{Roadmap: a theory-to-data evidence chain}
   \centering
   \includegraphics[width=0.95\linewidth]{fig0_framework.pdf}
+  \vspace{0.4em}
+  \small Theory (bifurcation, CSD) $\rightarrow$ Network validation $\rightarrow$ Parameter landscape $\rightarrow$ Empirical signatures
 \end{frame}
 
 \begin{frame}{Mixed-feedback mechanism (two competing channels)}
@@ -59,7 +65,7 @@
     \end{column}
     \begin{column}{0.45\textwidth}
       \centering
-      \includegraphics[width=\linewidth]{mixed_feedback_model.png}
+      \includesvg[width=\linewidth]{csdag}
     \end{column}
   \end{columns}
 \end{frame}
@@ -169,7 +175,7 @@
     \item A transition exists only when the collective sensitivity is sufficiently high.
   \end{itemize}
   \centering
-  \includegraphics[width=0.92\linewidth]{fig4a_chi_rc_landscape.pdf}
+  \includegraphics[height=0.62\textheight,keepaspectratio]{fig4a_chi_rc_landscape.pdf}
 \end{frame}
 
 \begin{frame}{Structural levers: information density and media ecology}
@@ -193,9 +199,10 @@
   \begin{itemize}
     \item Local reinforcement can shift the macroscopic boundary and bias branch selection.
     \item Interpretable as network-mediated amplification beyond the global environment.
+    \item ABM max-slope estimates of $r_c(\beta)$ shift downward as local coupling increases, consistent with network-mediated amplification.
   \end{itemize}
   \centering
-  \includegraphics[width=0.92\linewidth]{fig4d_beta_effect.pdf}
+  \includegraphics[height=0.60\textheight,keepaspectratio]{fig4d_beta_effect.pdf}
 \end{frame}
 
 \begin{frame}{From model to data: empirical proxies (high level)}
@@ -264,15 +271,18 @@
 \section*{Backup}
 
 \begin{frame}{Backup: H2 density diagnostics (4H vs 12H)}
+  \small 12H aggregation stabilizes within-segment estimates under missingness; 4H diagnostics are more sensitive to sparse coverage.\par
+  \vspace{0.3em}
   \centering
-  \includegraphics[width=0.92\linewidth]{s5_h2_density_4h.pdf}
-  \vspace{0.4em}
-  \includegraphics[width=0.92\linewidth]{s5_h2_density_12h.pdf}
+  \includegraphics[height=0.36\textheight,keepaspectratio]{s5_h2_density_4h.pdf}\par
+  \vspace{0.2em}
+  \includegraphics[height=0.36\textheight,keepaspectratio]{s5_h2_density_12h.pdf}
 \end{frame}
 
 \begin{frame}{Backup: activity relaxes faster than polarization under asymmetry}
+  \small Asymmetric simulations show $\tau_a/\tau_q\approx 0.70$, supporting direction--intensity coupling.
   \centering
-  \includegraphics[width=0.92\linewidth]{s2_tau_ratio.pdf}
+  \includegraphics[height=0.70\textheight,keepaspectratio]{s2_tau_ratio.pdf}
 \end{frame}
 
 \begin{frame}{Backup: empirical test summary}
@@ -302,4 +312,3 @@
 \end{frame}
 
 \end{document}
-

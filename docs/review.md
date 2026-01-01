@@ -1,296 +1,179 @@
-Reviewer Comments on Methods Section
-1. 关于开篇长复合句
-原句：
+是的，我感觉我需要把贡献弄得更加凝练和逻辑清晰一点，或者说，包装地更加合理一点，不一定要把所有贡献都弄到一点上，但也要层次递进的衔接。
 
-"Our strategy is theory-driven: we first build a minimal mechanistic model that captures the competition between stabilizing and amplifying feedback channels, derive analytic predictions for the bifurcation and its dynamical precursors, then test robustness in network simulations before confronting these predictions with empirical data. This sequence ensures that the statistical tests are grounded in well-defined theoretical signatures rather than exploratory pattern-finding."
+Thought for 4s
 
-意见： 您的直觉是对的。这个句子在Nature子刊中确实过于冗长（约45词），虽然语法上正确，但信息密度过高，读者需要在一个呼吸之内消化三个层次的动作。建议拆分为有节奏感的"动作链"，通过衔接词和句号分隔，同时保持逻辑递进：
 
-建议修改思路：
 
-Our strategy is theory-driven. We first build a minimal mechanistic model 
-that captures the competition between stabilizing and amplifying feedback 
-channels. From this model, we derive analytic predictions for the bifurcation 
-and its dynamical precursors. We then test robustness in network simulations 
-before confronting these predictions with empirical data. This sequence 
-ensures that our statistical tests are grounded in well-defined theoretical 
-signatures rather than exploratory pattern-finding.
-关键变化：
-
-冒号后的enumeration拆成独立语句
-加入 "From this model" 作为承上启下
-每个动作独立成句，符合子刊的"clear, digestible prose"风格
-2. 关于用户生成渠道两个regime的衔接缺失
-问题定位（第81-90行）： 直接从 $p^{\text{main}}(q)$ 跳到 "For the user-generated channel we use two regimes"，缺少动机说明——为什么需要两个regime？
-
-意见： 这是一个 逻辑断层。读者会困惑：symmetric regime是干什么的？asymmetric regime又是干什么的？两者的功能区分必须在公式出现之前交代清楚。
-
-建议添加过渡段（在第80-81行之间）：
-
-The user-generated channel, unlike mainstream media, can respond to 
-the current collective state in multiple ways. To separate analytic tractability 
-from empirical realism, we develop two complementary formulations. 
-The first, a symmetric validation regime, enforces directional symmetry 
-(q → −q) and allows closed-form derivation of the critical point. The second, 
-an asymmetric realistic regime, allows the channel to respond to overall 
-activity as well as direction, capturing the attention-driven amplification 
-observed on real platforms.
-关键信息：
+理解您的意思。让我帮您设计一个更凝练、层次更清晰的贡献表述框架：
 
-明确两个regime的目的不同（分析可验证 vs 实证现实）
-预告symmetric regime用于"closed-form derivation"
-预告asymmetric regime捕捉"attention-driven amplification"
-这样读者在看到公式4和公式5时，就已经知道它们各自的用途
-3. 关于 "we now" 的表达风格
-原句（第99行）：
-
-"With the model defined, we now derive the conditions under which..."
-
-意见： "We now" 在高影响因子期刊中并非禁忌，但确实偏口语化。子刊通常更偏好无主语的过渡或名词化结构。
-
-建议替换方案（3选1）：
-
-承上启下式： "The preceding definitions enable an analytic treatment of the conditions under which polarization becomes self-sustaining."
-直接陈述式： "We next derive the conditions..."（"next"比"now"更正式）
-被动强调式： "With the model defined, conditions for self-sustaining polarization can be derived analytically."
-推荐选项2，因为保持主动语态同时避免"now"的时间指涉感。
+建议的贡献包装结构
+主线逻辑：一个问题 → 一个机制 → 多层验证
+核心贡献（C0）：问题的重新定义
+将"集体情绪极化"问题从外部冲击驱动重新定义为内生结构失稳——即无需外部事件，仅靠媒体生态的渠道平衡变化就可以触发极化。
 
-4. 关于 Mean-Field Analysis Subsection 的理解门槛和逻辑跳跃
-问题1：η(t) 未解释
-
-第116-117行突然出现 $\eta(t)$，但没有任何说明。
-
-建议： 在公式10之后添加简短说明：
-
-"where η(t) represents stochastic fluctuations (e.g., finite-population noise 
-modeled as white noise with variance scaling as 1/N)."
-或者在正文中简化，将完整推导放入SM，并加reference：
-
-"The effective potential description (Eq. 10), including the noise term η(t) 
-and coefficient dependencies, is derived in full in Supplementary Materials S2."
-问题2：推导跳跃太大
-
-从动力学方程(6)到稳定性条件 $\chi\Gamma=1$ 到临界点公式(8)，中间步骤完全省略。这对于物理/数学背景强的读者可能可以接受，但对于行为科学或传播学背景的读者是黑箱。
-
-建议的处理方式：
-
-正文中添加简要路线图（在第109行之前）：
-
-The critical point emerges from a standard linear-stability analysis. 
-Linearizing Eq. (6) around q = 0 and computing when the effective 
-restoring coefficient changes sign yields the stability condition χΓ = 1, 
-where χ captures psychological sensitivity and Γ captures environmental 
-feedback (see Supplementary Materials S2 for full derivation). 
-Solving for r gives the analytic critical point:
-SM中需要补充的内容（Supplementary Materials S2建议结构）：
-
-写出完整的 $dq/dt$ 表达式
-展示 $\mathcal{S}(p)$ 的具体形式（binomial积分）
-推导 $\chi$ 的闭式表达（与k, φ, θ的关系）
-推导 $\Gamma$ 的表达式（与 $n_m$, $n_w$, $r$ 的关系）
-联立 $\chi\Gamma=1$ 求解 $r_c$
-Ginzburg-Landau展开的高阶项系数u的表达式
-问题3：最后一段突然引入ABM
-
-第121-122行关于relaxation time和autocorrelation的估计方法，实际上是ABM的内容，但被放在了"Mean-field analysis and critical point"这个subsection里。
-
-意见： 这确实是一个结构一致性问题。有两种处理方式：
-
-方案A（推荐）：将此段移到下一个subsection "Agent-based network simulations"
-
-在Mean-field subsection结尾添加一句过渡：
-"These predictions—bifurcation, bistability, and critical slowing down—are 
-derived under idealized mean-field assumptions; we next describe 
-agent-based simulations that test their robustness under networked 
-dynamics."
-然后在ABM subsection开头，先说明ABM的目的，再介绍时间尺度对齐方法。
-方案B：在Mean-field中保留但加衔接 如果您认为此内容与理论预测紧密相关，可以添加衔接：
-
-"These analytic predictions can be probed in discrete-time simulations, 
-which requires aligning time scales. We estimate the relaxation time τ 
-in the deterministic mean-field dynamics by..."
-我推荐方案A，因为：
-
-Mean-field subsection应聚焦于解析推导
-ABM时间尺度对齐是仿真的实现细节
-分开放置提高各subsection的内聚性
-汇总建议表
-问题	位置	建议操作	紧迫性
-长复合句	Line 59	拆分为3-4个短句	中
-Two regimes缺衔接	Line 81前	添加动机说明段落	高
-"we now"不正式	Line 99	改为"We next derive"	低
-$\eta(t)$未解释	Line 117后	添加噪声项说明或ref SM	高
-推导跳跃	Lines 99-113	正文加路线图+SM完整推导	高
-ABM内容错放	Lines 121-122	移至ABM subsection
-
-Reviewer Comments on Methods Section (Continued)
-5. 关于 2.3 Agent-based network simulations 的逻辑衔接问题
-整体问题诊断： 这个subsection目前读起来像是一份技术规格清单，而不是一个有叙事的方法论段落。每一句都在陈述"我们做了什么"，但缺少"为什么这么做"以及各部分之间的逻辑串联。
-
-具体问题逐条分析：
-
-问题1：开篇缺少subsection目标的概述
-
-原文直接跳入网络仿真的技术细节，没有告诉读者这个subsection要回答什么问题。
-
-建议添加开篇段落（替换当前第一句）：
-
-Agent-based simulations serve two purposes in our analysis: first, to verify 
-that the mean-field predictions (bifurcation, bistability, critical slowing down) 
-survive under realistic network structure and finite-size fluctuations; second, 
-to systematically map how structural parameters—psychological thresholds, 
-information density, media ecology, and local coupling—shift the effective 
-transition boundary. The mean-field analysis assumes well-mixed populations; 
-we relax this assumption by simulating microscopic dynamics on ER and BA 
-networks with size N and average degree ⟨k⟩.
-问题2：技术细节堆积，缺少功能分组
-
-原文目前的结构：
-
-一段话里包含了：网络类型、更新方式、时间单位、local coupling定义、Q的定义、对称性问题、Binder cumulant、参数扫描细节
-这种"一锅炖"的写法使读者无法区分仿真设计（怎么跑）和分析方法（怎么评估）。
-
-建议拆分为逻辑模块：
-
-**仿真设计段落：**
-We implement microscopic dynamics on Erdős–Rényi (ER) and Barabási–Albert 
-(BA) networks with size N and average degree ⟨k⟩. Updates are asynchronous: 
-each time step updates a fraction f of nodes; we report time in both steps 
-and sweeps (one sweep = N/f updates). To capture local reinforcement 
-effects, we introduce a coupling parameter β that mixes the global signal 
-p_env with information from each node's immediate neighbors.
-**观测量定义段落：**
-We denote finite-size network polarization by Q, corresponding to the 
-mean-field order parameter q. Under the symmetric regime, trajectories 
-select either polarized branch with equal probability, and the signed 
-mean ⟨Q⟩ cancels by symmetry. To recover a meaningful transition signal, 
-we therefore track |Q| or align trajectory signs by flipping to a common 
-reference branch before averaging.
-**转折过渡段落：**
-Standard approaches for estimating critical points—such as susceptibility 
-peaks—are unstable in finite-size systems. We therefore employ Binder 
-cumulant crossings, which provide a more robust finite-size estimator:
-[Equation 11]
-**参数扫描段落：**
-To map the parameter landscape (Fig. 5), we systematically vary...
-问题3：Binder cumulant公式的引入缺乏动机
-
-原文直接说"We estimate finite-size transition points using Binder cumulant crossings"，但没有解释：
-
-为什么不用更简单的方法（如susceptibility peaks）？
-Binder cumulant的物理意义是什么？
-建议添加简短解释：
-
-Finite-size effects blur sharp transitions, making transition-point estimation 
-challenging. The Binder cumulant U₄ is designed to exhibit a universal 
-crossing point across system sizes at criticality, providing a more robust 
-estimator than susceptibility peaks (which require larger systems to stabilize):
-问题4：最后一段参数扫描的描述过于Dense
-
-原文：
-
-"To map the parameter landscape in Fig. 5, we compute the sensitivity χ(φ, θ, k) on a grid φ, θ ∈ [0.1, 0.9] (step 0.01) and evaluate rc via Eq. (9) where a transition exists (χ > 2). For simulation-based sweeps around the baseline (φ, θ) = (0.54, 0.46), we scan k ∈ {10, 20, 50, 100, 200, 500}, nw/nm ∈ [0.1, 2.0] (40 values), and β ∈ {0, 0.02, 0.05, 0.1, 0.2}..."
-
-这段纯粹是技术参数的罗列。虽然需要报告这些细节，但应该：
-
-先说明扫描的目的（回答什么科学问题）
-再列出参数范围
-建议重写：
-
-To characterize which structural conditions promote fragility, we map the 
-parameter landscape as follows. First, we compute the analytic sensitivity 
-χ(φ, θ, k) on a dense grid (φ, θ ∈ [0.1, 0.9], step 0.01) and evaluate rc via 
-Eq. (9) wherever a transition exists (χ > 2). Second, to validate these 
-predictions and assess finite-size corrections, we conduct simulation-based 
-sweeps around a baseline configuration (φ, θ) = (0.54, 0.46), systematically 
-varying: information density k ∈ {10, 20, 50, 100, 200, 500}, media ecology 
-ratio nw/nm ∈ [0.1, 2.0], and local coupling β ∈ {0, 0.02, 0.05, 0.1, 0.2}. 
-For each parameter combination, we sample r on a 201-point grid in [0, 1] 
-and estimate rc as the r value at which median |Q|(r) exhibits maximal slope; 
-95% confidence intervals are obtained by bootstrap resampling across seeds.
-6. 关于 2.4 Empirical data and operational proxies 的问题
-问题1：时间窗口不一致（严重！）
-
-您提到实际使用了4H和12H两种窗口，但Methods只描述了4H。我查看了Results部分：
-
-Table 2 caption明确说"under the primary 4H aggregation"
-但如果某些分析使用了12H，这必须在Methods中交代
-建议修改： 在描述窗口聚合的段落后添加：
-
-We define two aggregation scales to balance temporal resolution against 
-sampling density. The primary analysis uses 4-hour (4H) windows, providing 
-finer resolution for capturing rapid dynamics. As a robustness check, we also 
-test 12-hour (12H) aggregation, which increases the number of posts per 
-window but sacrifices temporal granularity. Results are reported for the 
-4H primary analysis unless otherwise noted.
-同时，Table 2的caption应明确这是4H结果，并在正文或SM中报告12H的sensitivity analysis。
-
-问题2：符号一致性问题
-
-Methods定义	Results使用	问题
-$Q = X_H - X_L$	$Q = X_H - X_L$	✓ 一致
-activity $a = X_H + X_L$	activity $a$	✓ 一致
-$r_{\text{proxy}}$	$r_{\text{proxy}}$	✓ 一致
-jump intensity = 95th percentile of $|d|Q|/dt|$	$\text{jump}_{q95}$ of $|d|Q|/dt|$	⚠️ 轻微不一致
-建议： 在Methods中定义时就使用完整符号，或在Results中首次出现时加括号说明：
-
-"jump intensity (denoted jump_q95, the 95th percentile of |d|Q|/dt|)"
-问题3：逻辑衔接问题
-
-原文开篇：
-
-"Having established the theoretical benchmarks, we now describe the empirical data..."
-
-这个衔接太笼统。应该明确说明：
-
-理论预测了什么？
-为什么需要经验验证？
-经验验证面临什么挑战（导致我们需要构建proxies）？
-建议重写开篇：
-
-The preceding theoretical and simulation analyses predict specific statistical 
-signatures: (i) elevated activity should precede and predict polarization 
-jumps, and (ii) greater user-generated dominance should correlate with 
-higher polarization volatility. Testing these predictions in real-world data 
-requires mapping the model's latent variables to observable proxies—a 
-nontrivial step given that collective "states" (H/M/L) are not directly 
-recorded. We describe the data sources and proxy construction below.
-问题4：Government accounts的处理需要更多justification
-
-原文：
-
-"treating government accounts as part of the mainstream channel"
-
-这个决定需要解释为什么：
-
-Government accounts typically share the stabilizing orientation of mainstream 
-media during public crises and are therefore grouped with the mainstream 
-channel in computing r_proxy.
-问题5：Segment构建的逻辑不清晰
-
-原文：
-
-"For statistical testing, we group consecutive 4H windows into weekly segments and use segments with sufficient valid windows as analysis units."
-
-问题：
-
-为什么是weekly？（有理论依据还是任意选择？）
-"sufficient valid windows"的阈值是多少？
-建议添加说明：
-
-We group consecutive windows into weekly segments (28 windows under 4H 
-aggregation) to provide enough temporal variation within each segment for 
-computing derivative-based statistics while maintaining sufficient sample 
-sizes for correlation analysis. Segments with fewer than 7 valid windows 
-(25% coverage) are excluded. [或具体使用的阈值]
-汇总建议表（Methods Section - Part 2）
-问题	Subsection	建议操作	紧迫性
-缺少subsection目标概述	2.3 ABM	添加开篇段落	高
-技术细节无分组	2.3 ABM	拆分为4个逻辑段落	高
-Binder cumulant无动机	2.3 ABM	添加一句解释	中
-参数扫描描述过dense	2.3 ABM	先说目的再列参数	中
-时间窗口不一致	2.4 Empirical	添加4H+12H双窗口说明	紧急
-jump符号轻微不一致	2.4 Empirical	统一或加括号说明	低
-开篇衔接太笼统	2.4 Empirical	明确预测→挑战→proxies	高
-Government accounts无justification	2.4 Empirical	添加一句解释	中
-Segment阈值未说明	2.4 Empirical	说明weekly原因+阈值	中
+这是立题的价值——改变了问题的提问方式。
+
+理论贡献（C1）：混合反馈机制
+提出一个将稳定化（负反馈） 与放大化（正反馈） 渠道竞争形式化的最小模型，通过单一控制参数 $r$ 刻画渠道平衡，并推导出解析临界点 $r_c$。
+
+这是机制的核心——回答"为什么会突变"。
+
+方法贡献（C2）：方向-强度分离与可观测预测
+$(q, a)$ 分解使得模型可解析，并派生出临界减速这一先于极化的早期预警信号，将活动升高从"极化的结果"重新解释为"极化的结构性先兆"。
+
+这是从机制到观测的桥梁——回答"如何检测脆弱性"。
+
+验证贡献（C3）：跨尺度证据链
+在网络仿真中验证了有限尺寸和异质拓扑下的鲁棒性；在真实社交媒体数据中检验了两个统计签名（活动↔跳跃强度，用户生成主导↔波动性）。
+
+这是机制的落地——回答"理论是否在现实中成立"。
+
+包装后的一句话总结
+层次	表述
+立题	极化可以是内生的结构失稳，而非外部冲击
+机制	混合反馈竞争 + 单参数控制
+桥梁	方向-强度分离 → 早期预警
+验证	理论 → ABM → 实证
+这个框架的逻辑是：
+
+C0 是立意（为什么这个问题值得研究）
+C1 是答案（核心机制）
+C2 是推论（从机制派生的可观测预测）
+C3 是证据（对推论的验证）
+每一层都回答上一层自然引出的问题，形成递进链条。
+
+
+
+Thought for 6s
+
+
+
+
+
+我理解您的意思了。您在指出两层局限性：
+
+外部冲击视角的双重局限
+第一层：本体论假设
+外部冲击视角隐含地假设系统本身是稳定的——极化只能由外部扰动触发。这忽略了系统可能通过结构演变内生地丧失韧性。
+
+第二层：认识论困难（您新提出的）
+外部冲击（如政策变化、突发事件）与受众情绪反应之间存在多重中介链条——新闻框架、平台算法、社会网络扩散、个体心理加工……这些中介过程难以观测和分离，导致因果机制难以识别。
+
+逻辑衔接：为什么转向"信息环境"
+将这两层局限性连接起来，您的论点可以是：
+
+与其追溯难以观测的外部事件→受众反应链条，不如直接研究受众所处的信息环境——这是一个更近端、更可观测、更可调控的变量。信息环境不是事件本身，而是事件如何被呈现、放大、竞争的结构。渠道平衡（稳定化 vs. 放大化）正是这种结构的一个可操作化的参数。
+
+完整逻辑链
+步骤	内容	论证作用
+1	既有研究聚焦外部冲击驱动的级联	定位主流范式
+2a	局限1：假设系统本身稳定	本体论盲点
+2b	局限2：外部事件与受众之间中介链条复杂、难以识别因果	认识论困难
+3	转向信息环境：更近端、更可观测、更可调控	方法论优势
+4	渠道平衡作为结构参数 → 内生失稳机制	本文贡献
+一段话表述（草稿）
+既有研究多将集体情绪突变归因于外部事件的传播与级联 [Granovetter 1978; Watts 2002; Centola 2010]。然而，这一视角存在双重局限：本体论上，它假设系统本身是稳定的，极化仅由外部扰动触发，忽略了系统可能内生地丧失韧性；认识论上，外部事件与受众反应之间存在多重中介过程（媒体框架、算法推荐、网络扩散、个体心理），使得因果链条难以识别。本文采取不同视角：与其追溯外部事件的下游效应，不如直接研究受众所处的信息环境结构——这是一个更近端、更可观测、且在原则上可调控的变量。我们将信息环境形式化为稳定化与放大化渠道的竞争，并引入渠道平衡参数 $r$，从而可以分析何时以及为何系统会在无显著外部事件的情况下自发失稳。
+
+
+Option B（结构重写）
+做法：将 Para 2 和 Para 3 合并重组，按照我们讨论的逻辑链条重新排列：
+
+步骤	内容	对应现有内容
+1	既有研究：阈值/级联模型关注外部事件如何触发极化	从 Para 2 提取
+2	局限1：假设系统本身稳定，忽略内生失稳	新增
+3	局限2：外部事件→受众链条中介复杂，因果难识别	新增
+4	转向：信息环境是更近端、可观测、可调控的变量	从 Para 3 提取并改写
+5	本文：将信息环境形式化为渠道竞争，引入控制参数	保留 Para 5-6
+这样做的好处是逻辑链条更清晰，但需要重新组织语句顺序，工作量更大。
+
+我的建议
+如果您觉得当前 Introduction 的"叙事节奏"是顺畅的，只是缺少"为什么要研究信息环境而非外部事件"的显式说明，那 Option A 足够——它不打乱现有结构，只是补上逻辑缺口。
+
+如果您觉得当前结构本身就有点"绕"（先讲建模局限、再讲信息环境、再讲COVID、再讲我们的模型），想要一个更直接的"问题→局限→我们的视角"递进，那 Option B 更合适。
+
+您倾向哪个方向？
+
+我觉得采取optionB吧，我需要更加清晰的逻辑链条。你讲了para2-3重构，那么其他para需要调整吗？你review一下。
+
+已更新 implementation_plan.md，包含完整的 Option B 重写指导。
+
+核心结论
+段落	处理方式
+Para 1	保留
+Para 2-3-4	合并重构为 2 段（核心改动）
+Para 5	保留，可加过渡词 "To address this gap..."
+Para 6-7	保留
+Abstract	已经对齐，无需改动
+Discussion	可选择性呼应"external shock → info environment"框架
+新 Para 2-3 逻辑
+Para 2-new：既有工作 → 局限1（假设系统稳定） → 局限2（因果链难追溯）
+
+Para 3-new：转向信息环境 → 渠道竞争结构 → COVID例证 → 现有框架的缺口（未参数化渠道平衡）
+
+
+Option B: Introduction Restructure Guide
+Overview
+Restructure Introduction Para 2-4 to follow a clearer "external shock → limitations → proximal environment" logic. Para 1, 5-6 are largely fine.
+
+Paragraph-by-Paragraph Analysis
+Para 1 (Line 45) — ✓ Keep as-is
+"Collective emotions can remain stable... A central challenge is therefore to identify structural conditions..."
+
+Verdict: Good hook. Sets up the research question. No change needed.
+
+Para 2-3-4 (Lines 47-52) — Restructure
+Current structure:
+
+Para 2: Modeling limitations (single-axis, no analytic parameter)
+Para 3: Information environment (echo chambers, cocoons)
+Para 4: COVID-19 illustration
+Problem: The logic is "modeling issues → info environment → COVID example" — this doesn't clearly state why we shift from external shocks to information environment.
+
+New structure (merge into 2 paragraphs):
+
+New Para	Content	Source
+2-new	(a) Existing work: threshold/cascade models focus on external events triggering cascades [citations]. (b) Limitation 1: assumes system is stable until shocked. (c) Limitation 2: external events are distal — many mediating processes make causal chains hard to trace.	Extract from Para 2; add new sentences
+3-new	(a) Shift focus to information environment: more proximal, observable, actionable. (b) Online info environment has stabilizing + amplifying channels. (c) COVID-19 as empirical illustration. (d) Existing frameworks (risk amplification, echo chambers, contagion) describe mechanisms but don't parameterize channel balance.	Merge Para 3 + 4; reframe
+Para 5 (Lines 54-55) — ✓ Keep, minor adjustment
+"Here we develop a minimal mixed-feedback model..."
+
+Verdict: Good. Clearly states our model.
+
+Optional tweak: Add one opening phrase linking to previous para, e.g., "To address this gap, we develop..."
+
+Para 6 (Lines 56-57) — ✓ Keep as-is
+"This framework yields testable predictions across multiple scales..."
+
+Verdict: Good. Lists predictions and validation strategy.
+
+Para 7 (Lines 58) — ✓ Keep as-is
+"We confront the theoretical signatures with large-scale online discussions..."
+
+Verdict: Good. Links to empirical validation.
+
+Summary of Changes
+Para	Action
+1	Keep
+2-3-4	Restructure into 2 new paragraphs with clearer logic
+5	Keep, optionally add linking phrase
+6	Keep
+7	Keep
+Abstract & Discussion
+Abstract (Line 39)
+Verdict: Already well-aligned. The phrase "even without commensurate external shocks" captures the key point. No change needed.
+
+Discussion (Lines 363-376)
+Verdict: Currently discusses complementarity with prior work. After restructuring Introduction, you may want to:
+
+In first paragraph, echo the "external shock → information environment" framing
+Optionally add one sentence about why information environment focus is valuable
+Suggested location: Line 365-366, after "...loss of resilience that produces bistability", add something like:
+
+"Crucially, this instability can arise from structural shifts in channel balance rather than from external shocks, suggesting that fragility may precede polarization events."
+
+Recommended Next Steps
+Draft 2-new paragraph following the logic: existing work → limitation 1 → limitation 2
+Draft 3-new paragraph following: proximal shift → info environment structure → COVID illustration → gap
+Adjust Para 5 opening phrase
+Optionally adjust Discussion first paragraph
+Review for consistency

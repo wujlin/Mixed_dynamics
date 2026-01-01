@@ -4,6 +4,7 @@ Fig 4c：媒体生态 n_w/n_m 对临界点 r_c 的影响（theory vs ABM）—�
 PI 指示：
 - 理论参考线（baseline ratio=0.5）用灰色点线，不进 legend，caption 说明。
 - 无网格、Times、PDF。
+ - 若 theory 与 ABM 过于接近，优先保证 theory 线可见（避免被 marker 遮挡），并用 shade band 表示 95% CI。
 
 运行：
   /home/wujlin/miniconda3/envs/emotion/bin/python notebooks/make_fig4c_media_ratio.py
@@ -21,6 +22,10 @@ import matplotlib as mpl
 
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
+from matplotlib.legend_handler import HandlerTuple  # noqa: E402
+from matplotlib.patches import Patch  # noqa: E402
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,23 +68,25 @@ def main() -> None:
     theory_color = "#0072B2"
     abm_color = "#D55E00"
 
-    ax.plot(ratio, rc_theory, color=theory_color, label="Theory", zorder=2)
-    yerr = np.vstack([rc_est - rc_lo, rc_hi - rc_est])
-    ax.errorbar(
-        ratio,
-        rc_est,
-        yerr=yerr,
-        fmt="o",
-        color=abm_color,
-        ecolor=abm_color,
-        elinewidth=1.4,
-        capsize=3.0,
-        markerfacecolor="white",
-        markeredgecolor=abm_color,
-        markeredgewidth=1.2,
-        label="ABM (95% CI)",
-        zorder=3,
-    )
+    # Theory：主图只显示理论曲线（ABM CI 在该尺度下不可见，改用 inset 展示残差与 CI）
+    ax.plot(ratio, rc_theory, color=theory_color, label="Theory", zorder=4)
+
+    # 方案 A：不画 ABM 均值点/线，避免与 theory 线“争抢视觉空间”
+
+    # CI 在该尺度下非常窄：用 inset 展示 ABM-theory 的残差与 95% CI（更可读、也不改变主图信息）
+    delta_est = rc_est - rc_theory
+    delta_lo = rc_lo - rc_theory
+    delta_hi = rc_hi - rc_theory
+    axins = inset_axes(ax, width="46%", height="34%", loc="upper right", borderpad=0.8)
+    axins.axhline(0.0, color="gray", linewidth=1.0, alpha=0.6, zorder=1)
+    axins.fill_between(ratio, delta_lo, delta_hi, color=abm_color, alpha=0.22, linewidth=0.0, zorder=2)
+    axins.plot(ratio, delta_est, color=abm_color, linewidth=1.4, zorder=3)
+    axins.set_xlim(float(np.min(ratio)), float(np.max(ratio)))
+    pad = max(2e-3, float(np.max(np.abs(np.r_[delta_lo, delta_hi])) * 1.3))
+    axins.set_ylim(-pad, pad)
+    axins.tick_params(direction="in", top=True, right=True, labelsize=8)
+    axins.set_xlabel("")
+    axins.set_ylabel(r"$\Delta r_c$", fontsize=9)
 
     ax.set_xlabel(r"$n_w/n_m$")
     ax.set_ylabel(r"$r_c$")
@@ -88,6 +95,10 @@ def main() -> None:
     ax.tick_params(direction="in", top=True, right=True)
     add_panel_label(ax, "c")
     handles, labels = ax.get_legend_handles_labels()
+    abm_line = Line2D([0], [0], color=abm_color, linewidth=1.6)
+    abm_band = Patch(facecolor=abm_color, edgecolor="none", alpha=0.22)
+    handles.append((abm_line, abm_band))
+    labels.append("ABM (inset: mean +/- 95% CI)")
     fig.legend(
         handles,
         labels,
@@ -98,6 +109,7 @@ def main() -> None:
         handlelength=2.0,
         columnspacing=1.2,
         handletextpad=0.6,
+        handler_map={tuple: HandlerTuple(ndivide=None, pad=0.3)},
     )
     fig.subplots_adjust(left=0.22, right=0.96, bottom=0.34, top=0.96)
 
