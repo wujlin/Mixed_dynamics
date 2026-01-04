@@ -136,4 +136,4 @@ The model must output a single JSON object with the following fields:
 
 ## Validation protocol
 
-We compared LLM-assigned labels to manual ratings on a manually rated subset (`n=3,000`). We report overall exact-match agreement (accuracy) between LLM and human labels as 83%.
+We compared LLM-assigned labels to manual ratings on a manually rated subset (`n=5,000`). Exact-match accuracy was 85% for arousal labels (Cohen's κ=0.79) and 87% for risk labels (κ=0.82).

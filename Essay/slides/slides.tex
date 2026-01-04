@@ -11,20 +11,14 @@
 \usepackage{graphicx}
 \usepackage{svg}
 
-% Robust figure paths for either:
-% (a) Overleaf project root contains figures/ and figures_supp/, or
-% (b) this file lives under Essay/slides/ with figures in ../figures/.
-\IfFileExists{figures/fig0_framework.pdf}{%
-  \graphicspath{{figures/}{figures_supp/}}%
-  \svgpath{{figures/}{figures_supp/}}%
-}{%
-  \graphicspath{{../figures/}{../figures_supp/}}%
-  \svgpath{{../figures/}{../figures_supp/}}%
-}
+% Figures live in ../figures (main) and ../figures_supp (supplementary) relative
+% to this slides.tex. Missing files should fail loudly (no fallback).
+\graphicspath{{../figures/}{../figures_supp/}}
+\svgpath{{../figures/}{../figures_supp/}}
 
-\title[Mixed-feedback transitions]{Phase Transitions in Collective Emotion:\\A Mixed-Feedback Framework Motivated by Media Dynamics}
-\author{Author A}
-\institute{Internal discussion with partners}
+\title[Competing channels]{Competing feedback channels drive\\phase transitions in collective~emotion}
+\author[Li et al.]{Juan Li\inst{1} \and Jinlin Wu\inst{2} \and Zhihang Liu\inst{3}}
+\institute{\inst{1} Lanzhou University \and \inst{2} HKUST (Guangzhou) \and \inst{3} CUHK}
 \date{\today}
 
 \begin{document}
@@ -34,7 +28,7 @@
   \vspace{0.6em}
   \small
   \begin{block}{One-sentence takeaway}
-    Channel balance controls collective emotional resilience: mixed feedback yields a direction--intensity transition, and elevated activity can act as a detectable precursor.
+    Media channel balance controls collective resilience; elevated activity signals approaching instability.
   \end{block}
 \end{frame}
 
@@ -42,6 +36,7 @@
   \begin{itemize}
     \item Online collective emotion can remain stable for long periods and then change abruptly.
     \item (e.g., during the COVID-19 pandemic, public discourse shifted rapidly between calm and panic phases without commensurate external triggers)
+    \item Existing external-shock models assume stability until perturbed; we focus on endogenous fragility driven by channel structure.
     \item Mixed media ecologies combine stabilizing and amplifying feedback, potentially creating endogenous instability.
     \item We want a mechanistic, testable framework linking media structure to resilience and early warning.
   \end{itemize}
@@ -51,7 +46,7 @@
   \centering
   \includegraphics[width=0.95\linewidth]{fig0_framework.pdf}
   \vspace{0.4em}
-  \small Theory (bifurcation, CSD) $\rightarrow$ Network validation $\rightarrow$ Parameter landscape $\rightarrow$ Empirical signatures
+  \small Theory (bifurcation) $\rightarrow$ Parameter landscape $\rightarrow$ Network robustness $\rightarrow$ Dynamical precursors (CSD) $\rightarrow$ Empirical signatures
 \end{frame}
 
 \begin{frame}{Mixed-feedback mechanism (two competing channels)}
@@ -117,6 +112,42 @@
   \includegraphics[width=0.95\linewidth]{fig1c_sym_asym_qa.pdf}
 \end{frame}
 
+\begin{frame}{Parameter landscape: where is the system fragile?}
+  \begin{itemize}
+    \item The critical boundary $r_c$ depends on psychological thresholds and response sensitivity.
+    \item A transition exists only when the collective sensitivity is sufficiently high.
+  \end{itemize}
+  \centering
+  \includegraphics[height=0.56\textheight,keepaspectratio]{fig4a_chi_rc_landscape.pdf}
+\end{frame}
+
+\begin{frame}{Structural levers: information density and media ecology}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.50\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{fig4b_k_effect.pdf}
+      \vspace{0.2em}
+      \small Information density reshapes sensitivity and shifts $r_c$.
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{fig4c_media_ratio.pdf}
+      \vspace{0.2em}
+      \small Greater user-generated dominance lowers $r_c$ (more fragile).
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Structural levers: local coupling}
+  \begin{itemize}
+    \item Local reinforcement can shift the macroscopic boundary and bias branch selection.
+    \item Interpretable as network-mediated amplification beyond the global environment.
+    \item ABM max-slope estimates of $r_c(\beta)$ shift downward as local coupling increases, consistent with network-mediated amplification.
+  \end{itemize}
+  \centering
+  \includegraphics[height=0.54\textheight,keepaspectratio]{fig4d_beta_effect.pdf}
+\end{frame}
+
 \begin{frame}{Network validation: bifurcation persists beyond mean-field}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.50\textwidth}
@@ -169,42 +200,6 @@
   \includegraphics[width=0.92\linewidth]{fig3c_csd_timeseries.pdf}
 \end{frame}
 
-\begin{frame}{Parameter landscape: where is the system fragile?}
-  \begin{itemize}
-    \item The critical boundary $r_c$ depends on psychological thresholds and response sensitivity.
-    \item A transition exists only when the collective sensitivity is sufficiently high.
-  \end{itemize}
-  \centering
-  \includegraphics[height=0.62\textheight,keepaspectratio]{fig4a_chi_rc_landscape.pdf}
-\end{frame}
-
-\begin{frame}{Structural levers: information density and media ecology}
-  \begin{columns}[T,onlytextwidth]
-    \begin{column}{0.50\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{fig4b_k_effect.pdf}
-      \vspace{0.2em}
-      \small Information density reshapes sensitivity and shifts $r_c$.
-    \end{column}
-    \begin{column}{0.50\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{fig4c_media_ratio.pdf}
-      \vspace{0.2em}
-      \small Greater user-generated dominance lowers $r_c$ (more fragile).
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Structural levers: local coupling}
-  \begin{itemize}
-    \item Local reinforcement can shift the macroscopic boundary and bias branch selection.
-    \item Interpretable as network-mediated amplification beyond the global environment.
-    \item ABM max-slope estimates of $r_c(\beta)$ shift downward as local coupling increases, consistent with network-mediated amplification.
-  \end{itemize}
-  \centering
-  \includegraphics[height=0.60\textheight,keepaspectratio]{fig4d_beta_effect.pdf}
-\end{frame}
-
 \begin{frame}{From model to data: empirical proxies (high level)}
   \small
   \begin{center}
@@ -253,16 +248,17 @@
 \begin{frame}{Takeaways \& call-to-action}
   \begin{block}{Core contributions (what is new)}
     \begin{itemize}
+      \item Reframes polarization as endogenous structural instability driven by channel balance, moving beyond external-shock explanations.
       \item A minimal mixed-feedback mechanism with a single control parameter linking media ecology to resilience.
       \item Direction--intensity decomposition connecting transitions to observable precursors (activity).
-      \item A multi-level evidence chain: theory $\rightarrow$ network validation $\rightarrow$ parameter landscape $\rightarrow$ empirical signatures.
+      \item Multi-level evidence chain: theory $\rightarrow$ parameter landscape $\rightarrow$ network robustness $\rightarrow$ dynamical precursors $\rightarrow$ empirical signatures.
     \end{itemize}
   \end{block}
   \begin{block}{Decisions / help needed}
     \begin{itemize}
-      \item Narrative check: is the evidence chain convincing and easy to follow for a non-expert reader/editor?
-      \item Empirical robustness: any preferred alternative density controls or subset definitions?
-      \item Submission strategy: confirm target journal shortlist (Nature sub-journal track).
+      \item Results structure: keep ``parameter landscape $\rightarrow$ network robustness $\rightarrow$ CSD'' order?
+      \item Empirical H2: keep 12-hour aggregation as primary (4H shown as density-sensitive diagnostic)?
+      \item Submission strategy: prioritize Nature Human Behaviour vs Nature Communications?
     \end{itemize}
   \end{block}
 \end{frame}
@@ -271,12 +267,23 @@
 \section*{Backup}
 
 \begin{frame}{Backup: H2 density diagnostics (4H vs 12H)}
-  \small 12H aggregation stabilizes within-segment estimates under missingness; 4H diagnostics are more sensitive to sparse coverage.\par
-  \vspace{0.3em}
-  \centering
-  \includegraphics[height=0.36\textheight,keepaspectratio]{s5_h2_density_4h.pdf}\par
-  \vspace{0.2em}
-  \includegraphics[height=0.36\textheight,keepaspectratio]{s5_h2_density_12h.pdf}
+  \begin{block}{Key point}
+    \small 12H aggregation stabilizes within-segment estimates under missingness; 4H diagnostics are more sensitive to sparse coverage.
+  \end{block}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.50\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{s5_h2_density_4h.pdf}\par
+      \vspace{0.2em}
+      \scriptsize 4H aggregation
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \centering
+      \includegraphics[width=\linewidth]{s5_h2_density_12h.pdf}\par
+      \vspace{0.2em}
+      \scriptsize 12H aggregation
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Backup: activity relaxes faster than polarization under asymmetry}
@@ -307,7 +314,7 @@
   \begin{itemize}
     \item Model: \texttt{Qwen/Qwen3-8B} served via vLLM (OpenAI-compatible API).
     \item Structured prompt + fixed JSON schema; temperature $=0.1$, max\_tokens $=512$.
-    \item Human validation subset ($n=3{,}000$): 83\% exact-match agreement (overall accuracy).
+    \item Human validation subset ($n=5{,}000$): arousal accuracy 85\% ($\kappa=0.79$), risk accuracy 87\% ($\kappa=0.82$).
   \end{itemize}
 \end{frame}
 

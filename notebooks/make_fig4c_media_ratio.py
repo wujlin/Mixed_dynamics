@@ -23,8 +23,6 @@ import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from matplotlib.lines import Line2D  # noqa: E402
-from matplotlib.legend_handler import HandlerTuple  # noqa: E402
-from matplotlib.patches import Patch  # noqa: E402
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes  # noqa: E402
 
 
@@ -96,9 +94,8 @@ def main() -> None:
     add_panel_label(ax, "c")
     handles, labels = ax.get_legend_handles_labels()
     abm_line = Line2D([0], [0], color=abm_color, linewidth=1.6)
-    abm_band = Patch(facecolor=abm_color, edgecolor="none", alpha=0.22)
-    handles.append((abm_line, abm_band))
-    labels.append("ABM (inset: mean +/- 95% CI)")
+    handles.append(abm_line)
+    labels.append(r"ABM (inset: mean $\pm$ 95% CI)")
     fig.legend(
         handles,
         labels,
@@ -109,7 +106,6 @@ def main() -> None:
         handlelength=2.0,
         columnspacing=1.2,
         handletextpad=0.6,
-        handler_map={tuple: HandlerTuple(ndivide=None, pad=0.3)},
     )
     fig.subplots_adjust(left=0.22, right=0.96, bottom=0.34, top=0.96)
 

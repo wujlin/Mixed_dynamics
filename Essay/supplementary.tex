@@ -8,6 +8,7 @@
 \usepackage{float}
 \usepackage{placeins}
 \usepackage{array}
+\usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{hyperref}
@@ -26,13 +27,19 @@
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thetable}{S\arabic{table}}
 
-\title{Supplementary Materials for:\\Phase Transitions in Collective Emotion: A Theoretical Framework Motivated by Media Dynamics During the COVID-19 Pandemic}
-\author[1]{Author A (TBD)}
-\affil[1]{Affiliation TBD}
+\title{Supplementary Materials for:\\Competing feedback channels drive phase transitions in collective~emotion}
+\author[1]{Juan Li}
+\author[2]{Jinlin Wu\thanks{Corresponding authors: \href{mailto:jwu923@connect.hkust-gz.edu.cn}{\nolinkurl{jwu923@connect.hkust-gz.edu.cn}}; \href{mailto:zhihangliu@cuhk.edu.hk}{\nolinkurl{zhihangliu@cuhk.edu.hk}}.}}
+\author[3]{Zhihang Liu\textsuperscript{*}}
+\affil[1]{School of Journalism and Communication, Lanzhou University, Lanzhou 730000, China}
+\affil[2]{Urban Governance and Design Thrust, The Hong Kong University of Science and Technology (Guangzhou), Guangzhou 511400, China}
+\affil[3]{Institute of Space and Earth Information Science, The Chinese University of Hong Kong, Shatin, Hong Kong, China}
 \date{}
 
 \begin{document}
-\maketitle
+{\renewcommand{\thefootnote}{\fnsymbol{footnote}}\setcounter{footnote}{0}\maketitle}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\setcounter{footnote}{0}
 
 \renewcommand{\contentsname}{Supplementary Contents}
 \setcounter{tocdepth}{2}
@@ -42,7 +49,7 @@
 
 \section*{Guide to this Supplementary Materials}
 \addcontentsline{toc}{section}{Guide to this Supplementary Materials}
-This document provides supporting details that cannot be fully developed in the main text due to space constraints. It is organized to mirror the main-text workflow and results: S1--S2 extend the \emph{Materials and Methods}, and S3--S6 provide additional diagnostics for the \emph{Results}. The main text cites these materials as ``Supplementary Materials S\#'' and ``Supplementary Fig.~S\#''.
+Core results are reported in the main text; this supplement provides supporting methodological details and auxiliary analyses. Sections S1--S2 expand the \emph{Materials and Methods}, and Sections S3--S6 provide supporting figures referenced from the \emph{Results}. The main text cites these materials as ``Supplementary Materials S\#'' and ``Supplementary Fig.~S\#''.
 
 \noindent\textbf{Contents overview.}
 \begin{itemize}
@@ -53,12 +60,87 @@ This document provides supporting details that cannot be fully developed in the 
   \end{itemize}
   \item \textbf{Supplementary Results}
   \begin{itemize}
-    \item \textbf{S3} Additional theory and network-validation diagnostics.
-    \item \textbf{S4} Additional critical-slowing-down diagnostics.
-    \item \textbf{S5} Additional parameter-landscape analyses.
-    \item \textbf{S6} Additional empirical analyses and robustness checks.
+    \item \textbf{S3} Network validation details and order-parameter conventions.
+    \item \textbf{S4} Early-warning signal analysis for critical slowing down.
+    \item \textbf{S5} Parameter effects on the critical boundary.
+    \item \textbf{S6} Empirical analysis details and density diagnostics.
   \end{itemize}
 \end{itemize}
+\vspace{0.4em}
+\noindent\textbf{Quick reference (main text $\leftrightarrow$ supplement).}
+\begin{center}
+  \footnotesize
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Main text & Supplementary location \\
+    \midrule
+    Methods: LLM annotation & S1 \\
+    Methods: mean-field derivations & S2 \\
+    Results: direction--intensity coupling & Fig.~\ref{fig:supp:tau-ratio} (S3) \\
+    Results: robustness across networks & Figs.~\ref{fig:supp:signed-vs-abs-q}--\ref{fig:supp:susceptibility-fss} (S3) \\
+    Results: critical slowing down & Figs.~\ref{fig:supp:ews-ac-var}--\ref{fig:supp:abm-multilag-ac} (S4) \\
+    Results: parameter landscape & Figs.~\ref{fig:supp:symmetric-diagonal}--\ref{fig:supp:param-importance} (S5) \\
+    Results: empirical signatures & Figs.~\ref{fig:supp:time-series-overview}--\ref{fig:supp:h2-density-12h} (S6) \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+\noindent\textbf{Notation.}
+Supplementary Table~\ref{tab:supp:notation} summarizes the main symbols used throughout the paper, together with baseline values and ranges where applicable.
+\begin{table}[H]
+  \centering
+  \caption{Notation and baseline values.}
+  \label{tab:supp:notation}
+  \footnotesize
+  \begin{tabularx}{\textwidth}{@{}lYY@{}}
+    \toprule
+    Symbol & Meaning & Baseline / definition \\
+    \midrule
+    \multicolumn{3}{@{}l}{\textbf{Model state and environment}} \\
+    \addlinespace[0.2em]
+    $H,M,L$ & high/medium/low arousal states & --- \\
+    $\rho_H,\rho_M,\rho_L$ & population fractions in $H,M,L$ & --- \\
+    $q$ & polarization direction ($q=\rho_H-\rho_L$) & $q\in[-1,1]$ \\
+    $a$ & activity / moderate-buffer depletion ($a=\rho_H+\rho_L=1-\rho_M$) & $a\in[0,1]$; in data $a=X_H+X_L$ \\
+    $Q$ & observed polarization order parameter & ABM: analog of $q$; data: $Q=X_H-X_L$ \\
+    $p_{\text{env}}$ & perceived risk probability in the mixed environment & weighted mixture of channel risks (Section~S2) \\
+    \addlinespace[0.35em]
+    \multicolumn{3}{@{}l}{\textbf{Model parameters}} \\
+    \addlinespace[0.2em]
+    $\phi$ & high-arousal threshold & 0.54 \\
+    $\theta$ & low-arousal threshold & 0.46 \\
+    $k$ & signals sampled per update (information density) & 50 (baseline); scanned 10--500 \\
+    $n_m$ & mainstream channel strength & 10 \\
+    $n_w$ & user-generated channel strength & 5 \\
+    $n_w/n_m$ & media ratio (user-generated vs.\ mainstream strength) & 0.5 (baseline); scanned 0.2--2.0 \\
+    $r$ & channel-balance control parameter & varied in $[0,1]$ \\
+    $\beta$ & local coupling strength (ABM) & 0 (baseline); varied up to 0.2 \\
+    \addlinespace[0.35em]
+    \multicolumn{3}{@{}l}{\textbf{Simulation settings and diagnostics}} \\
+    \addlinespace[0.2em]
+    $N$ & population size & varies by figure \\
+    $\langle k\rangle$ & network average degree & 50 (unless stated otherwise) \\
+    $f$ & update fraction per step & 0.1; 1 sweep $=N$ updates $=1/f$ steps \\
+    $U_4(r;N)$ & Binder cumulant used for finite-size scaling & $1-\langle Q^4\rangle/(3\langle Q^2\rangle^2)$ \\
+    \addlinespace[0.35em]
+    \multicolumn{3}{@{}l}{\textbf{Theory quantities}} \\
+    \addlinespace[0.2em]
+    $\chi$ & psychological sensitivity of collective response & $\chi=\left.\frac{d\mathcal{S}}{dp}\right|_{p=1/2}$ \\
+    $\Gamma(r)$ & feedback gradient of $p_{\text{env}}$ around $q=0$ & defined in Section~S2 \\
+    $r_c$ & critical point (stability boundary) & defined in Section~S2 \\
+    $\tau$ & relaxation time near criticality & $\tau\sim 1/|r_c-r|$ as $r\to r_c^-$ \\
+    $\mathrm{AC}_1$ & lag-1 autocorrelation & computed from steady-state $Q(t)$ \\
+    \addlinespace[0.35em]
+    \multicolumn{3}{@{}l}{\textbf{Empirical proxies}} \\
+    \addlinespace[0.2em]
+    $X_H,X_M,X_L$ & fractions of posts labeled $H/M/L$ within a time window & --- \\
+    $r_{\text{proxy}}$ & user-generated dominance proxy &
+    $n_{\text{wemedia}}/(n_{\text{wemedia}}+n_{\text{mainstream}}+n_{\text{government}})$ \\
+    $\sigma_Q$ & volatility within a segment & $\sigma_Q=\mathrm{std}(Q)$ \\
+    $\text{jump}_{q95}$ & jump intensity within a segment & 95th percentile of $|\Delta Q/\Delta t|$ \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 \FloatBarrier
 
 \section*{Supplementary Methods}
@@ -72,92 +154,31 @@ This document provides supporting details that cannot be fully developed in the 
 \section{LLM annotation protocol}
 \label{supp:s1-llm}
 
-This note documents the LLM-based annotation pipeline used to label Weibo posts for emotional arousal and risk content.
+We annotate Weibo posts along two dimensions---emotional arousal and risk content---using \texttt{Qwen/Qwen3-8B} \citep{Qwen3_8B}. Prompts are structured and enforce a fixed JSON output schema to improve reproducibility.
 
-\subsection{Model and infrastructure}
+\subsection{Annotation setup}
+We serve the model via a local OpenAI-compatible API. Inference uses temperature $=0.1$ and max\_tokens $=512$.
 
+\subsection{Label definitions}
+\noindent\textbf{Emotional arousal (\texttt{emotion\_class}).}
 \begin{itemize}
-  \item Model: \texttt{Qwen/Qwen3-8B}.
-  \item Serving: vLLM via an OpenAI-compatible Chat Completions API.
-  \item Client: \texttt{openai} Python client, enforcing a single JSON object output using \texttt{response\_format=\{"type":"json\_object"\}}.
+  \item \textbf{H}: strong emotional activation (anger, panic/fear, sarcasm/insults, highly emotional accusations).
+  \item \textbf{M}: neutral or informational content (calm discussion, explanations, supportive messages).
+  \item \textbf{L}: negative but low-intensity emotions (worry, confusion, helplessness, sadness).
 \end{itemize}
 
-\subsection{Inference settings}
-
+\noindent\textbf{Risk content (\texttt{risk\_class}).}
 \begin{itemize}
-  \item Temperature: 0.1
-  \item Max tokens: 512
+  \item \textbf{risk}: conveys negative health impacts of COVID-19/long COVID (symptoms, severity, sequelae, warnings).
+  \item \textbf{norisk}: emphasizes recovery/controllability or reassurance, criticizes fear-mongering, or is unrelated to health risks.
 \end{itemize}
 
-\subsection{Annotation tasks}
-
-Each post is labeled along two dimensions:
-\begin{itemize}
-  \item Emotional arousal (\texttt{emotion\_class}): \texttt{H} (high), \texttt{M} (medium/neutral), \texttt{L} (low).
-  \item Risk content (\texttt{risk\_class}): \texttt{risk} vs.\ \texttt{norisk}.
-\end{itemize}
-
-\subsection{Prompt template and output schema}
-
-We use a structured prompt that defines label criteria and requires the model to output a single JSON object (no additional text). The implementation is in \texttt{src/empirical/llm\_annotator.py} and is invoked by \texttt{scripts/run\_new\_annotation.py}.
-
-\subsubsection{System prompt (English translation for readability)}
-
-\begin{verbatim}
-You are an expert in social media content analysis. Your task is to label each Weibo post
-along two dimensions: emotional arousal and risk content. Output exactly one JSON object
-and nothing else (no chain-of-thought, no markdown).
-
-Emotion arousal (emotion_class):
-- H (high arousal): strong emotions (anger, fear/panic, sarcasm, insults, highly emotional accusations).
-- M (medium/neutral): factual or calm discussion, neutral reposts/comments, supportive messages, explanations.
-- L (low arousal): negative but not intense emotions (anxiety, worry, confusion, helplessness, sadness).
-
-Risk content (risk_class):
-Core rule: does the post convey that COVID-19/long COVID has negative health impacts?
-- risk: describes symptoms/health changes, emphasizes severity/long-term/irreversibility, warns about risks,
-        reports cases/studies of sequelae, questions "no sequelae" claims, or raises risk-focused questions.
-- norisk: emphasizes recovery/controllability, reassuring official explanations, criticizes fear-mongering,
-          success stories stressing recovery, or content unrelated to long-COVID health risks.
-
-Edge cases:
-- Very short/hashtag-only posts with no substance: default to M + norisk, confidence 0.5.
-- Light tone does not imply norisk: joking symptom descriptions are still risk.
-
-Output JSON format (and only this):
-{"emotion_class": "H"|"M"|"L",
- "emotion_confidence": 0.0-1.0,
- "risk_class": "risk"|"norisk",
- "risk_confidence": 0.0-1.0,
- "reasoning": "brief justification"}
-\end{verbatim}
-
-\subsubsection{User prompt}
-
-\begin{verbatim}
-Please analyze the following Weibo post:
-
----
-{text}
----
-
-Return the classification result in JSON format as specified.
-\end{verbatim}
-
-\subsubsection{Output fields}
-
-The model must output a single JSON object with the following fields:
-\begin{itemize}
-  \item \texttt{emotion\_class}: one of \texttt{H}, \texttt{M}, \texttt{L}.
-  \item \texttt{emotion\_confidence}: a float in $[0,1]$.
-  \item \texttt{risk\_class}: one of \texttt{risk}, \texttt{norisk}.
-  \item \texttt{risk\_confidence}: a float in $[0,1]$.
-  \item \texttt{reasoning}: a short justification string.
-\end{itemize}
+\subsection{Prompt structure and JSON output}
+The prompt specifies the above criteria, forbids any free-form text beyond a single JSON object, and requests confidence scores in $[0,1]$. Output fields are:
+\texttt{emotion\_class}, \texttt{emotion\_confidence}, \texttt{risk\_class}, \texttt{risk\_confidence}, and a brief \texttt{reasoning} string.
 
 \subsection{Validation}
-
-We compared LLM-assigned labels to manual ratings on a manually rated subset ($n=3{,}000$). Overall exact-match agreement (accuracy) between LLM and human labels was 83\%.
+We compared LLM-assigned labels to manual ratings on a manually rated subset ($n=5{,}000$). Exact-match accuracy was 85\% for arousal labels (Cohen's $\kappa=0.79$) and 87\% for risk labels ($\kappa=0.82$).
 
 % -------------------------
 % S2: Mean-field derivations
@@ -166,6 +187,7 @@ We compared LLM-assigned labels to manual ratings on a manually rated subset ($n
 \label{supp:s2-mean-field}
 
 This note provides the derivations omitted from the main text for the mean-field critical point and the Ginzburg--Landau form.
+\noindent Notation and baseline values are summarized in Supplementary Table~\ref{tab:supp:notation}.
 
 \subsection{Mean-field update and collective response}
 
@@ -186,7 +208,7 @@ which is the mean-field form used in the main text.
 
 \subsection{Linear stability and analytic critical point}
 
-In the symmetric validation regime,
+In the symmetric regime,
 \begin{equation}
 p^{\text{main}}(q)=\frac{1-q}{2},\qquad p^{\text{we}}(q)=\frac{1+q}{2}.
 \end{equation}
@@ -245,24 +267,24 @@ The noise term $\eta(t)$ represents stochastic fluctuations induced by finite po
 
 \section*{Supplementary Results}
 \addcontentsline{toc}{section}{Supplementary Results}
-\noindent Sections S3--S6 provide additional figures and robustness checks that support the main-text results, organized in the same order as the Results section.
+\noindent Sections S3--S6 provide supporting figures and auxiliary analyses that complement the main-text Results and document conventions used throughout.
 \FloatBarrier
 
 % -------------------------
-% S3: Additional theory and network-validation diagnostics
+% S3: Network validation details
 % -------------------------
-\section{Additional theory and network-validation diagnostics}
+\section{Network validation details and order-parameter conventions}
 \label{supp:s3-theory-network}
 
-This note provides robustness checks supporting the theoretical and network-validation results in the main text. The additional analyses below clarify the order-parameter conventions used to visualize the transition, validate that the activity variable carries independent dynamical information under realistic asymmetry, and motivate the finite-size estimator used to locate the transition in sparse networks.
+This section clarifies the order-parameter conventions used to visualize the transition, reports the activity--polarization relaxation-time comparison under asymmetry, and documents finite-size diagnostics used to locate the transition in sparse networks.
 
 \subsection{Order parameter under symmetric branch selection}
-In the symmetric validation regime, different realizations can select either the $+q^\ast$ or $-q^\ast$ branch with approximately equal probability. As a result, the signed mean $\langle Q\rangle$ cancels even when the bifurcation exists, while $|Q|$ (or sign-aligned $Q$) recovers the transition curve used in the main text.
+In the symmetric regime, different realizations can select either the $+q^\ast$ or $-q^\ast$ branch with approximately equal probability. As a result, the signed mean $\langle Q\rangle$ cancels even when the bifurcation exists, while $|Q|$ (or sign-aligned $Q$) recovers the transition curve used in the main text.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s2_signed_vs_abs_q.pdf}
-  \caption{Signed vs.\ magnitude order parameters under symmetric branch selection. In the symmetric regime, independent realizations select either the $+q^\ast$ or $-q^\ast$ branch with (approximately) equal probability, so the signed mean $\langle Q\rangle$ cancels even when a bifurcation exists. Using $|Q|$ (or aligning signs across realizations before averaging) recovers the expected transition curve used in the main-text figures.}
+  \caption{Signed mean $\langle Q\rangle$ versus magnitude $|Q|$ under symmetric branch selection. In the symmetric regime, trajectories select $\pm q^\ast$ with equal probability, so $\langle Q\rangle$ cancels while $|Q|$ reveals the transition.}
   \label{fig:supp:signed-vs-abs-q}
 \end{figure}
 
@@ -272,7 +294,7 @@ The main text interprets activity as an observable proxy for the depletion of th
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s2_tau_ratio.pdf}
-  \caption{Relaxation-time ratio between activity and polarization. We estimate characteristic relaxation times $\tau_a$ and $\tau_q$ from post-perturbation decay in representative simulations. Under activity-coupled asymmetry, activity typically relaxes faster than polarization ($\tau_a/\tau_q<1$; baseline mean $\approx 0.70$), indicating that activity is not a passive slow variable and motivating joint tracking of $(q,a)$.}
+  \caption{Relaxation-time ratio between activity and polarization under activity-coupled asymmetry. Estimated relaxation times satisfy $\tau_a/\tau_q<1$ (baseline mean $\approx 0.70$), so activity relaxes faster than polarization.}
   \label{fig:supp:tau-ratio}
 \end{figure}
 
@@ -282,24 +304,24 @@ To estimate the transition point in finite sparse networks, we use Binder cumula
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s2_binder_fss.pdf}
-  \caption{Finite-size scaling via Binder cumulant crossings. Binder cumulant curves $U_4(r;N)$ for increasing system sizes cross near the critical region and provide a stable estimator for the effective transition point in finite-$N$ simulations.}
+  \caption{Finite-size scaling via Binder cumulant crossings. Curves $U_4(r;N)$ for multiple system sizes cross near the critical region, providing a stable finite-size estimator of the transition.}
   \label{fig:supp:binder-fss}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s2_susceptibility_fss.pdf}
-  \caption{Susceptibility-based estimators can be unstable at finite size. Susceptibility peaks may shift non-monotonically with $N$ and can exhibit pseudo-peaks or peak-splitting in finite simulations, motivating the use of Binder crossings as the primary estimator in the main text.}
+  \caption{Susceptibility peak locations across system sizes. Peaks can shift non-monotonically and exhibit finite-size artifacts compared with Binder crossings.}
   \label{fig:supp:susceptibility-fss}
 \end{figure}
 
 % -------------------------
-% S4: Additional critical-slowing-down diagnostics
+% S4: CSD early-warning analysis
 % -------------------------
-\section{Additional critical-slowing-down diagnostics}
+\section{Early-warning signal analysis for critical slowing down}
 \label{supp:s4-csd}
 
-This note provides additional diagnostics for critical slowing down (CSD) beyond the main-text panels. These analyses emphasize the main narrative point that CSD provides a leading indicator measurable before the transition is crossed.
+This section reports additional early-warning indicators for critical slowing down beyond the main-text panels.
 
 \subsection{Early-warning statistics across the control parameter}
 Approaching the critical point from below, the restoring force weakens and the dynamics become more persistent. This manifests as rising short-lag autocorrelation and variance, which are standard early-warning statistics in the critical-transition literature.
@@ -307,7 +329,7 @@ Approaching the critical point from below, the restoring force weakens and the d
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s3_ews_ac_var.pdf}
-  \caption{Early-warning signals from autocorrelation and variance. As $r$ approaches $r_c$ from below, the polarization dynamics exhibit increasing persistence (higher short-lag autocorrelation) and elevated variance, consistent with the weakening restoring force predicted by mean-field theory.}
+  \caption{Early-warning indicators across the control parameter. Short-lag autocorrelation and variance increase as $r$ approaches $r_c$ from below.}
   \label{fig:supp:ews-ac-var}
 \end{figure}
 
@@ -317,25 +339,27 @@ To confirm that the persistence increase is not an artifact of choosing a partic
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s3_abm_multilag_ac.pdf}
-  \caption{Multi-lag autocorrelation in ABM trajectories. Autocorrelation increases near criticality across multiple lags, supporting the interpretation of rising persistence as a CSD signature rather than a lag-specific plotting choice.}
+  \caption{Multi-lag autocorrelation in ABM trajectories. Autocorrelation increases near criticality across multiple lags.}
   \label{fig:supp:abm-multilag-ac}
 \end{figure}
 
 % -------------------------
-% S5: Additional parameter-landscape analyses
+% S5: Parameter effects on the critical boundary
 % -------------------------
-\section{Additional parameter-landscape analyses}
+\section{Parameter effects on the critical boundary}
 \label{supp:s5-parameter}
 
-This note provides additional figures supporting the parameter-landscape results in the main text. The goal is to clarify how structural parameters move the critical boundary and to close potential reviewer questions about finite-size artifacts and symmetry assumptions.
+This section provides supporting figures for the parameter-landscape results, clarifying how structural parameters move the critical boundary and documenting checks related to symmetry and finite-size effects.
+
+\noindent\textbf{Parameter scans and estimators.} The main-text landscape figures evaluate the mean-field critical point on a dense $(\phi,\theta)$ grid over the feasible region $\theta<0.5<\phi$. Simulation-based sweeps vary information density $k\in\{10,20,50,100,200,500\}$, media ratio $n_w/n_m\in[0.1,2.0]$ (40 values), and local coupling $\beta\in\{0,0.02,0.05,0.1,0.2\}$. For each configuration we sample $r$ on a 201-point grid in $[0,1]$ and estimate $r_c$ from the maximum slope of the median $|Q|(r)$ across seeds, with 95\% confidence intervals obtained by bootstrap resampling.
 
 \subsection{Symmetry validation}
-The analytic critical point is derived in a symmetric validation regime. Along the symmetry constraint, the theoretical constructions satisfy neutrality conditions used in the derivation, supporting the internal consistency of the landscape map.
+The analytic critical point is derived in the symmetric regime. Along the symmetry constraint, the theoretical constructions satisfy neutrality conditions used in the derivation, supporting the internal consistency of the landscape map.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s4_symmetric_diagonal.pdf}
-  \caption{Symmetry diagnostics in the theory-validation regime. Along the symmetric constraint, the theoretical constructions satisfy the expected neutrality conditions used to derive the analytic critical point and the landscape map.}
+  \caption{Symmetry diagnostics in the symmetric regime along the analytic constraint in $(\phi,\theta)$.}
   \label{fig:supp:symmetric-diagonal}
 \end{figure}
 
@@ -345,7 +369,7 @@ The main text reports a non-monotonic $k$ effect on the estimated transition poi
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s4_k_effect_split.pdf}
-  \caption{Decomposing the information-density effect. We report additional diagnostics separating how $k$ shapes sensitivity $\chi$ and, through $\chi$, the predicted critical point $r_c$.}
+  \caption{Decomposing the information-density effect into sensitivity $\chi(k)$ and the induced shift in $r_c(k)$.}
   \label{fig:supp:k-effect-split}
 \end{figure}
 
@@ -355,7 +379,7 @@ At very large information density ($k=500$), discrete-threshold effects and fini
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s4_k500_finite_size.pdf}
-  \caption{Finite-size closure for $k=500$. Apparent discrepancies at high information density are resolved by local scanning and finite-size extrapolation, supporting the interpretation that the deviation is a finite-$N$ effect rather than a violation of the analytic prediction.}
+  \caption{Finite-size closure for $k=500$ via local scanning and extrapolation.}
   \label{fig:supp:k500-finite-size}
 \end{figure}
 
@@ -365,26 +389,36 @@ Beyond the well-mixed benchmark, local coupling can introduce reinforcement that
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s4_beta_branch_bias.pdf}
-  \caption{Branch-selection bias induced by local coupling. When local coupling $\beta>0$ is introduced, branch selection can become biased, yielding an effective transition behavior that differs from the symmetric well-mixed benchmark.}
+  \caption{Branch-selection bias induced by local coupling $\beta>0$.}
   \label{fig:supp:beta-branch-bias}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s4_beta_q_a.pdf}
-  \caption{Joint $(q,a)$ effects under local coupling. Local coupling shifts the macroscopic boundary and modifies the relationship between polarization and activity, illustrating how topology and local reinforcement jointly determine proximity to criticality.}
+  \caption{Joint $(q,a)$ behavior under local coupling, showing how polarization and activity co-vary as the boundary shifts.}
   \label{fig:supp:beta-q-a}
 \end{figure}
 
+\subsection{Parameter importance and interaction}
+To summarize the magnitude of boundary shifts across parameters, we compare the full scan range $\Delta r_c=\max(r_c)-\min(r_c)$ (normalized by the baseline $r_c$). We also show a theory-level interaction: higher sensitivity $\chi(k)$ amplifies the leverage of media ecology on $r_c$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.92\linewidth]{fig_supp_param_importance.pdf}
+  \caption{Parameter-importance summary and theory interaction. (a) Range of $r_c$ across parameter sweeps (line: min--max; tick: baseline), annotated by $\Delta r_c/r_{c,\mathrm{base}}$. (b) Theory prediction of $r_c(n_w/n_m)$ for representative $k$ values (vertical dotted line: baseline ratio).}
+  \label{fig:supp:param-importance}
+\end{figure}
+
 % -------------------------
-% S6: Additional empirical analyses and robustness checks
+% S6: Empirical analysis details and density diagnostics
 % -------------------------
-\section{Additional empirical analyses and robustness checks}
+\section{Empirical analysis details and density diagnostics}
 \label{supp:s6-empirical}
 
-This note provides additional empirical figures supporting the main-text empirical section. The main narrative purpose is to make explicit the empirical constraints---non-uniform sampling density and missing windows---and to show that the two empirical signatures are assessed with diagnostics aligned to the theory: activity as a precursor of jump intensity and media composition as a driver of volatility.
+This section provides supporting empirical figures, focusing on sampling-density constraints and on diagnostics aligned to the theoretical signatures.
 
-\noindent\textbf{Dataset convention.} For compact visualization, we label the three empirical subsets as Dataset A (official-media topic set), Dataset B (high-density discussion set used for the primary empirical tests), and Dataset C (their merged sample). These labels are used only in Supplementary figures.
+\noindent\textbf{Empirical subsets.} We use the same subset naming as in the main text: the \emph{pooled dataset} (all eligible segments) and the \emph{high-density subset} (segments with sufficient within-window coverage for stable $r_{\text{proxy}}$ estimation). When shown for context only, we also report a topic-focused \emph{single-topic subset}.
 
 \subsection{Time-series overview and segmentation rationale}
 We summarize the window-level proxies used in the main text and highlight missingness patterns. This motivates segment-based aggregation and density-aware diagnostics used in subsequent panels.
@@ -392,7 +426,7 @@ We summarize the window-level proxies used in the main text and highlight missin
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s5_time_series_overview.pdf}
-  \caption{Time-series overview across datasets (Dataset A/B/C as defined above). We show the 4-hour aggregates used to compute window-level proxies $(Q,a,r_{\text{proxy}})$, highlighting the non-uniform sampling density and the resulting need for segment-based aggregation in the main-text analyses.}
+  \caption{Time-series overview and sampling density. We show the 4-hour aggregates used to compute window-level proxies $(Q,a,r_{\text{proxy}})$, highlighting non-uniform sampling density and missing windows that motivate segment-based aggregation in the main-text analyses.}
   \label{fig:supp:time-series-overview}
 \end{figure}
 
@@ -402,7 +436,7 @@ To connect directly to the theoretical mechanism, we evaluate two segment-level 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s5_scatter_h1_h2.pdf}
-  \caption{Scatter diagnostics for empirical signatures under the primary 4-hour aggregation across datasets (Dataset A/B/C as defined above). We show the segment-level associations for the activity--jump and media-dominance--volatility tests, including density-stratified views used to diagnose sampling-coverage confounds.}
+  \caption{Scatter diagnostics for empirical signatures under the primary 4-hour aggregation. We show segment-level associations for the activity--jump and media-dominance--volatility tests, including density-stratified views used to diagnose sampling-coverage confounds.}
   \label{fig:supp:scatter-h1-h2}
 \end{figure}
 
@@ -412,7 +446,7 @@ We additionally assess early-warning behavior by aligning autocorrelation/varian
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.92\linewidth]{s5_eventstudy_h4.pdf}
-  \caption{Additional details for event-aligned early-warning analysis (Dataset A/B/C as defined above). We report event-aligned trajectories for autocorrelation and variance indicators under the primary 4-hour aggregation and illustrate how higher-frequency aggregation (e.g., 2H/1H) can become infeasible due to continuity requirements, motivating the limitations statement in the main text.}
+  \caption{Event-aligned early-warning diagnostics under realistic missingness. We report event-aligned trajectories for autocorrelation and variance indicators under the primary 4-hour aggregation and illustrate how higher-frequency aggregation can become infeasible due to continuity requirements.}
   \label{fig:supp:eventstudy-h4}
 \end{figure}
 
@@ -432,7 +466,7 @@ The media-dominance--volatility association is sensitive to sampling density and
     \includegraphics[width=\linewidth]{s5_h2_density_12h.pdf}
     \caption{}
   \end{subfigure}
-  \caption{Density diagnostics for the media-dominance--volatility signature under two aggregation scales (Dataset B / batch3). \textbf{Top:} 4-hour aggregation, showing a positive raw association (Pearson $r=0.265$, $p=0.00434$) that attenuates after controlling for segment sampling density (partial $r=0.078$, $p=0.411$; median split at 28 windows). \textbf{Bottom:} 12-hour aggregation, yielding a stronger positive association that remains significant after density control (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; partial $r=0.386$, $p=8.79\times 10^{-6}$; median split at 14 windows). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
+  \caption{Density diagnostics for the media-dominance--volatility signature under two aggregation scales (high-density subset). \textbf{Top:} 4-hour aggregation (Pearson $r=0.265$, $p=0.00434$) attenuates after controlling for segment sampling density (partial $r=0.078$, $p=0.411$). \textbf{Bottom:} 12-hour aggregation yields a stronger association (Pearson $r=0.429$, $p=6.03\times 10^{-7}$) that remains significant after density control (partial $r=0.386$, $p=8.79\times 10^{-6}$). Solid/dashed lines show groupwise linear fits with 95\% bootstrap bands.}
   \label{fig:supp:h2-density-12h}
 \end{figure}
 

@@ -3,17 +3,198 @@
 本文件用于记录我们在本项目论文写作（理论 + 仿真 + 经验验证）中反复踩过的坑，目的是：
 - 降低“可复现性不清/口径漂移/定义缺失”带来的编辑与审稿风险
 - 让每一段文字都能被读者在第一次阅读时评估（定义清楚、逻辑可追、证据可核）
+- **培养科学叙事思维，避免技术报告式写作**
 
 建议用法：每写完一个段落或一张图，就对照文末的 Checklist 自检一次。
 
 ---
 
-## 0. 直接对应 npj Complexity 编辑意见的“硬约束”
+## 0. 高水平期刊写作的底层思维
+
+### 0.1 问题驱动 vs 验证驱动（最核心的思维转换）
+
+**症状**：文章读起来像"我们做了A，验证了B，又验证了C"，而不是"我们发现了X，这意味着Y"。
+
+**诊断方法**：
+- 数一数文章中"validate/confirm/test"出现了多少次
+- Results的每一节是在"证明模型work"还是在"回答一个科学问题"
+- 读者读完能记住的是"你的方法"还是"你的发现"
+
+**纠正**：
+| 验证驱动（❌） | 问题驱动（✓） |
+|---|---|
+| "We validate the prediction" | "We find that X" |
+| "Network simulations confirm" | "The mechanism persists under" |
+| "We test whether..." | "We show that..." / "X reveals..." |
+| Results按方法排序 | Results按科学问题递进 |
+
+### 0.2 叙事主线 vs 技术清单
+
+**症状**：每一节都是独立的技术展示，读者读完不知道"so what"。
+
+**诊断方法**：
+- 删除所有section标题后，文章是否仍有逻辑流？
+- 每节开头是否在回答"为什么读者应该关心这一节"？
+- 每节结尾是否有take-home message（而不是下一节的预告）？
+
+**叙事主线模板**：
+```
+问题：什么结构条件决定集体脆弱性？
+↓
+机制：媒体生态平衡决定稳定性边界（3.1）
+↓
+深化：什么因素移动这个边界？（3.2 Parameter Landscape）
+↓
+确认：这个机制是否普遍？（3.3 Network Robustness）
+↓
+延伸：能否提前检测？（3.4 CSD）
+↓
+验证：数据支持吗？（3.5 Empirical）
+```
+
+### 0.3 信息层次与重点突出
+
+**症状**：核心发现被埋在技术细节中，读者找不到重点。
+
+**原则**：
+- **核心发现**：在Abstract、Intro末尾、Results关键位置明确陈述
+- **支撑细节**：在正文中简述，细节移到Methods或SI
+- **技术债务**：完全移到SI（代码路径、API参数、具体grid）
+
+**自检**：读者只看Abstract、每节第一句、每节最后一句，能否理解核心贡献？
+
+---
+
+## 0.5 各部分的常见问题模式
+
+### Title
+
+**常见问题**：
+- 太长（>15词）
+- 使用defensive语言（"A framework for..."、"Towards..."）
+- 没有点明核心发现或机制
+
+**好的Title特征**：
+- 10-15词
+- 点明核心机制或发现
+- Assertive语气
+
+**示例对比**：
+| ❌ 有问题 | ✓ 改进 |
+|---|---|
+| "A Theoretical Framework for Understanding Phase Transitions in Collective Emotion Motivated by Media Dynamics" | "Channel balance controls collective emotional resilience in mixed media ecologies" |
+| "Towards Early Warning of Collective Polarization" | "Elevated activity signals approaching collective instability" |
+
+### Abstract
+
+**常见问题**：
+- 没有明确的问题陈述
+- 核心发现被压缩成从句
+- 使用验证语言（"We validate..."）
+
+**Abstract结构模板**：
+```
+1. 现象/问题（1-2句）
+2. Gap/为什么难（1句）
+3. 我们的approach（1句）
+4. 核心发现1（1-2句）——最重要的
+5. 核心发现2（1句）
+6. 实证支持（1句）
+7. Take-home/implications（1句）
+```
+
+### Introduction
+
+**常见问题**：
+- P1没有stakes（为什么读者应该关心）
+- 文献综述太散，没有聚焦到一个clear gap
+- 预告Results时使用"验证清单"式写法
+- "To address this gap"等defensive开头
+
+**Introduction结构模板**：
+```
+P1: 现象 + 挑战 + Stakes
+P2: 文献1（cascade/threshold models）→ 它们的局限
+P3: 文献2（echo chamber/contagion）→ 聚焦到gap
+P4: 我们的approach（assertive开头："We formalize..."）
+P5: 核心发现预告（用发现语言，不是验证清单）
+P6: 全文roadmap（可选）
+```
+
+### Results
+
+**常见问题**：
+- 按方法顺序排列，而不是按科学问题递进
+- 每节开头是技术描述，而不是问题陈述
+- 每节结尾是下一节的预告（显式过渡），而不是take-home
+- Robustness check和核心发现混在一起
+
+**Results排序原则**：
+1. 核心机制/核心发现放前面
+2. "什么因素影响核心机制"紧随其后
+3. Robustness check作为独立section（或整合到相关section末尾）
+4. 实证验证放最后
+
+**过渡句处理**：
+| ❌ 显式过渡 | ✓ 隐式过渡 |
+|---|---|
+| "We next test whether..." | （直接开始下一节，读者自然想知道） |
+| "We return to this in Section X" | （删除，或改写为take-home） |
+| "Having established X, we now..." | （删除，用下一节开头的问题自然引入） |
+
+### Discussion
+
+**常见问题**：
+- 第一段重述"我们做了什么"（重复Introduction）
+- 与prior work的比较占太多篇幅
+- Practical implications太薄
+- Limitations是"清单"而不是"指向future directions"
+- Conclusion太平淡，没有升华
+
+**Discussion结构模板**：
+```
+P1: 核心发现的interpretation（不是summary）
+P2: 与prior work的关键区别（压缩，只说最重要的）
+P3: Theoretical significance（深化，不是重复）
+P4: Practical implications（具体，可操作）
+P5: Limitations → Future directions（配对，不是清单）
+P6: Conclusion（升华，big picture）
+```
+
+### Methods
+
+**常见问题**：
+- 把Results的发现放在Methods里（如$r_c$公式的推导结果）
+- 第一句是Results预告（"We test whether..."）
+- 技术细节过多（应该在SI）
+
+**Methods原则**：
+- Methods说"怎么做"，Results说"发现什么"
+- 开头给strategy overview，帮助读者理解各subsection的关系
+- 具体参数grid、代码细节移到SI
+
+### Supplementary Materials
+
+**常见问题**：
+- Section编号与正文不对应
+- 标题使用defensive语言（"Additional diagnostics"）
+- Figure captions重复正文的解释
+- 引入新的命名convention（如Dataset A/B/C）
+
+**SI原则**：
+- Section编号与正文Results一一对应
+- 标题用描述性语言，不用"Additional"
+- Figure captions假设读者已读过正文
+- 命名与正文保持一致
+
+---
+
+## 0.7 直接对应 npj Complexity 编辑意见的"硬约束"
 
 编辑团队的典型质疑点（我们必须在正文中主动回答）：
 1) **主流媒体数据也来自社交媒体**：必须明确它同样来自 Weibo，只是账号类型不同（来自账号 registry/规则识别）。  
 2) **主流媒体/官媒体量不清**：必须报告各类账号的样本量（至少在用于检验的标注语料中）。  
-3) **经验指标定义不清**：像 “Emotion High”“risk”等必须给操作性定义（公式/计数规则/窗口定义）。  
+3) **经验指标定义不清**：像 "Emotion High""risk"等必须给操作性定义（公式/计数规则/窗口定义）。  
 4) **图表难评估**：轴标签、单位、图例、误差条/置信区间、字体大小必须可读。  
 5) **模型规则/方程不清**：仿真更新规则、均值场方程（或关键动力学方程）必须写在 Methods/Model 中，而不是只靠代码或 notebook。
 
@@ -124,6 +305,15 @@
 
 ## 7) 最终自检 Checklist（可复制粘贴到每次改稿的 TODO）
 
+### Narrative / Structure（叙事与结构）
+- [ ] Title：10-15词，assertive，点明核心机制或发现
+- [ ] Abstract：有明确问题陈述，核心发现突出，无验证语言
+- [ ] Introduction：有stakes，gap聚焦，发现预告（非验证清单）
+- [ ] Results：按科学问题递进排列，非按方法顺序
+- [ ] 过渡句：删除所有"We next..."、"We return to..."等显式过渡
+- [ ] Discussion：开头是interpretation（非summary），有具体implications
+- [ ] Keywords：反映核心贡献，非supplementary内容
+
 ### Data / Operationalization
 - [ ] 明确说明：主流媒体数据也来自 Weibo（不是外部媒体库）
 - [ ] 账号分类给出输入字段、规则、排除项（并报告体量）
@@ -144,4 +334,44 @@
 - [ ] 轴/图例/单位/字体可读
 - [ ] 有误差条/CI 或有合理解释
 - [ ] 图注能独立解释“算什么 + 看到什么”
+- [ ] Figure captions描述性，不重复正文解释
 
+### References
+- [ ] 数量适当（Nature子刊通常30-50篇）
+- [ ] 覆盖核心领域：opinion dynamics, polarization, hybrid media
+- [ ] 方法学引用完整：网络模型、统计方法
+- [ ] 无unused条目（bib文件与正文一致）
+
+### Supplementary Materials
+- [ ] Section编号与正文Results对应
+- [ ] 标题不使用"Additional"等defensive语言
+- [ ] 命名与正文一致（无Dataset A/B/C等新convention）
+- [ ] 有Parameter Table列出所有参数及baseline值
+
+---
+
+## 8) 词汇替换速查表
+
+### 验证语言 → 发现语言
+| ❌ 避免 | ✓ 使用 |
+|---|---|
+| validate | identify / reveal / show |
+| confirm | find / demonstrate |
+| test whether | show that / find that |
+| is consistent with predictions | reveals / indicates |
+| we next test | （删除，直接开始下一节） |
+
+### Defensive语言 → Assertive语言
+| ❌ 避免 | ✓ 使用 |
+|---|---|
+| To address this gap | We formalize / We show |
+| A theoretical framework for | （直接说核心发现） |
+| We attempt to | We |
+| may potentially | can / does |
+
+### 结构词替换
+| ❌ 过度使用 | ✓ 替代方案 |
+|---|---|
+| First, Second, Third | 用段落主题句自然分隔 |
+| In this section, we | （删除，直接说内容） |
+| As mentioned above | （删除或用具体引用） |
