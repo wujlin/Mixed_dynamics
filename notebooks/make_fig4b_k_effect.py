@@ -65,10 +65,10 @@ def main() -> None:
     abm_color = "#D55E00"  # vermillion
 
     # χ(k)：左轴（仅理论）
-    ax_chi.plot(k_list, chi_theory, color=chi_color, marker="o", zorder=3)
+    ax_chi.plot(k_list, chi_theory, color=chi_color, marker="o", label=r"$\chi$ (theory)", zorder=3)
 
     # r_c(k)：右轴（理论 + ABM 95% CI）
-    ax_rc.plot(k_list, rc_theory, color=rc_color, linestyle="--", marker="s", label="Theory", zorder=2)
+    ax_rc.plot(k_list, rc_theory, color=rc_color, linestyle="--", marker="s", label=r"$r_c$ (theory)", zorder=2)
     yerr = np.vstack([rc_est - rc_lo, rc_hi - rc_est])
     ax_rc.errorbar(
         k_list,
@@ -87,26 +87,28 @@ def main() -> None:
 
     ax_chi.set_xlabel(r"Sample size $k$")
     ax_chi.set_ylabel(r"$\chi$")
-    ax_rc.set_ylabel(r"$r_c$")
+    ax_rc.set_ylabel(r"$r_c$", labelpad=6)
     ax_chi.tick_params(direction="in", top=True)
     ax_rc.tick_params(direction="in", top=True, right=True)
     add_panel_label(ax_chi, "b", dx=-55.0)
 
-    handles, labels = ax_rc.get_legend_handles_labels()
+    h_chi, l_chi = ax_chi.get_legend_handles_labels()
+    h_rc, l_rc = ax_rc.get_legend_handles_labels()
+    handles, labels = (h_chi + h_rc), (l_chi + l_rc)
     fig.legend(
         handles,
         labels,
         loc="lower center",
         bbox_to_anchor=(0.5, 0.02),
         frameon=False,
-        ncol=2,
+        ncol=3,
         handlelength=2.0,
         columnspacing=1.2,
         handletextpad=0.6,
     )
 
     # twin y-axis 需要给右侧 ylabel 预留空间，避免被裁剪
-    fig.subplots_adjust(left=0.25, right=0.88, bottom=0.34, top=0.96)
+    fig.subplots_adjust(left=0.25, right=0.82, bottom=0.34, top=0.96)
 
     out_pdf = ROOT / "Essay" / "figures" / "fig4b_k_effect.pdf"
     out_pdf.parent.mkdir(parents=True, exist_ok=True)

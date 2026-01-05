@@ -11,10 +11,12 @@
 \usepackage{graphicx}
 \usepackage{svg}
 
-% Figures live in ../figures (main) and ../figures_supp (supplementary) relative
-% to this slides.tex. Missing files should fail loudly (no fallback).
-\graphicspath{{../figures/}{../figures_supp/}}
-\svgpath{{../figures/}{../figures_supp/}}
+% Figures may be referenced from two common Overleaf layouts:
+% - Project root contains `Essay/` (compile from root): `Essay/figures/`
+% - Project root is `Essay/` (compile from `slides/`): `../figures/`
+% Keep both so missing files fail loudly (no fallback).
+\graphicspath{{../figures/}{../figures_supp/}{Essay/figures/}{Essay/figures_supp/}}
+\svgpath{{../figures/}{../figures_supp/}{Essay/figures/}{Essay/figures_supp/}}
 
 \title[Competing channels]{Competing feedback channels drive\\phase transitions in collective~emotion}
 \author[Li et al.]{Juan Li\inst{1} \and Jinlin Wu\inst{2} \and Zhihang Liu\inst{3}}

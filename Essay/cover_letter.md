@@ -1,26 +1,15 @@
 Dear Editor,
 
-We are pleased to submit our manuscript entitled "[建议的新标题]" 
+We are pleased to submit our manuscript entitled "Competing feedback channels drive phase transitions in collective emotion" 
 for consideration as an Article in Nature Human Behaviour.
 
-Collective emotional escalation—where public outrage persists for weeks 
-rather than dissipating—poses significant challenges for crisis 
-communication and social stability. Yet we lack quantitative frameworks 
-to predict when such escalation will occur. Our study addresses this gap 
-by introducing a phase-transition perspective on collective emotion.
+Collective emotions can remain stable for long periods and then shift abruptly, producing rapid polarization and surges of activity. Such endogenous shifts—sometimes occurring without commensurate external shocks—pose significant challenges for crisis communication and platform governance. A central puzzle is why a seemingly stable collective emotional climate can collapse so suddenly. Event-driven cascade models often assume stability until the system is perturbed, and related accounts do not formalize when amplifying feedback overwhelms stabilizing feedback and the system loses resilience.
 
-Our central finding is that the balance between traditional and social 
-media exposure—a quantity we term "channel balance" (r)—controls whether 
-collective emotion remains resilient or becomes susceptible to runaway 
-dynamics. We derive an analytical expression for the critical threshold 
-r_c and show that it depends on group-level characteristics (activity 
-rate, decay rate, media influence), explaining heterogeneous responses 
-across communities.
+Our core insight is that fragility can build endogenously and is shaped by information architecture. We formalize a mixed information ecology in which stabilizing mainstream channels compete with amplifying user-generated channels. A single control parameter—the channel balance ($r$)—sets a stability boundary: beyond a critical point $r_c$, the neutral state destabilizes into self-sustaining polarization. Separating polarization direction from intensity further clarifies why elevated activity signals heightened fragility: stabilizing feedback can weaken and the moderate buffer can deplete before a polarized direction is selected. Mapping the parameter landscape identifies the largest leverage points—media ecology and local coupling—both capable of shifting the stability boundary substantially across realistic ranges.
 
-We validate these predictions empirically using fine-grained emotion 
-trajectories from four critical events during the COVID-19 pandemic in 
-China. The framework identifies three actionable intervention levers: 
-exposure mixing, activity monitoring, and algorithmic damping.
+We support this argument with a theory-to-data evidence chain. Analytically, mean-field analysis yields a closed-form critical boundary $r_c$ and a phase-transition picture of resilience loss. Agent-based simulations on Erdős–Rényi and Barabási–Albert networks show that the instability mechanism is robust to network structure and finite-size fluctuations. Empirically, in large-scale Weibo discussions during and after the COVID-19 pandemic, the predicted statistical signatures appear in data: segments with elevated activity exhibit larger polarization jumps, and, under sufficiently dense temporal sampling, greater user-generated dominance covaries with higher polarization volatility.
+
+We believe these results are of broad interest because they reframe abrupt collective shifts from an event-driven story to a structural-vulnerability perspective. Methodologically, the direction–intensity decomposition yields operational monitoring variables that separate engagement intensity from directional imbalance. Practically, the parameter landscape suggests intervention levers at the level of feedback architecture—exposure mixing, activity monitoring, and algorithmic damping—that complement content-level moderation.
 
 This work contributes to the growing literature on collective behavior 
 and information ecosystems. We believe it will be of interest to 
@@ -34,4 +23,4 @@ is not under consideration by another journal.
 Thank you for considering our submission.
 
 Sincerely,
-[Authors]
+Juan Li, Jinlin Wu, Zhihang Liu
