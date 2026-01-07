@@ -8,18 +8,24 @@
   “可被读取的 supplementary.aux” 放在项目里（作为源文件）并保持更新。
 
 用法：
-  /home/wujlin/miniconda3/envs/emotion/bin/python scripts/generate_supplementary_aux.py
+  python scripts/generate_supplementary_aux.py
+
+  # 指定输入/输出（例如 NC 打包目录）
+  python scripts/generate_supplementary_aux.py \\
+    --supp-tex Essay_nc/supplementary.tex \\
+    --out-aux Essay_nc/supplementary.aux
 """
 
 from __future__ import annotations
 
+import argparse
 import re
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SUPP_TEX = ROOT / "Essay" / "supplementary.tex"
-OUT_AUX = ROOT / "Essay" / "supplementary.aux"
+DEFAULT_SUPP_TEX = ROOT / "Essay" / "supplementary.tex"
+DEFAULT_OUT_AUX = ROOT / "Essay" / "supplementary.aux"
 
 
 def _iter_figure_blocks(text: str) -> list[str]:
@@ -38,11 +44,32 @@ def _iter_figure_blocks(text: str) -> list[str]:
     return blocks
 
 
-def main() -> None:
-    if not SUPP_TEX.exists():
-        raise SystemExit(f"未找到：{SUPP_TEX}")
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="从 supplementary.tex 生成可被主文读取的 supplementary.aux。")
+    parser.add_argument(
+        "--supp-tex",
+        type=Path,
+        default=DEFAULT_SUPP_TEX,
+        help=f"supplementary.tex 路径（默认：{DEFAULT_SUPP_TEX}）",
+    )
+    parser.add_argument(
+        "--out-aux",
+        type=Path,
+        default=DEFAULT_OUT_AUX,
+        help=f"输出 supplementary.aux 路径（默认：{DEFAULT_OUT_AUX}）",
+    )
+    return parser.parse_args()
 
-    text = SUPP_TEX.read_text(encoding="utf-8", errors="ignore")
+
+def main() -> None:
+    args = _parse_args()
+    supp_tex = args.supp_tex
+    out_aux = args.out_aux
+
+    if not supp_tex.exists():
+        raise SystemExit(f"未找到：{supp_tex}")
+
+    text = supp_tex.read_text(encoding="utf-8", errors="ignore")
     blocks = _iter_figure_blocks(text)
 
     labels: list[str] = []
@@ -63,8 +90,9 @@ def main() -> None:
         fig_no = f"S{idx}"
         lines.append(rf"\newlabel{{{lab}}}{{{{{fig_no}}}{{0}}{{}}{{figure.{fig_no}}}{{}}}}")
 
-    OUT_AUX.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"[ok] wrote {OUT_AUX} with {len(labels)} figure labels")
+    out_aux.parent.mkdir(parents=True, exist_ok=True)
+    out_aux.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"[ok] wrote {out_aux} with {len(labels)} figure labels")
 
 
 if __name__ == "__main__":
