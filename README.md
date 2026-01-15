@@ -8,20 +8,11 @@
 
 ---
 
-## 📄 Paper
+## 📄 About
 
-**Title**: Competing feedback channels drive phase transitions in collective emotion
+This repository contains the code and data for a research project on phase transitions in collective emotion on social media platforms.
 
-**Authors**: Juan Li¹, Jinlin Wu²*, Zhihang Liu³*
-
-**Affiliations**:
-- ¹ School of Journalism and Communication, Lanzhou University
-- ² Urban Governance and Design Thrust, HKUST (Guangzhou)
-- ³ Institute of Space and Earth Information Science, CUHK
-
-**Status**: Submitted to *Nature Communications* / *npj Complexity*
-
-**Preprint**: [Coming soon]
+**Preprint**: Coming soon
 
 ---
 
@@ -314,17 +305,18 @@ black src/ scripts/ notebooks/*.py
 
 ## 📜 Citation
 
-If you use this code or data in your research, please cite:
+If you use this code or data in your research, please cite this repository:
 
 ```bibtex
-@article{li2026mixed,
-  title={Competing feedback channels drive phase transitions in collective emotion},
-  author={Li, Juan and Wu, Jinlin and Liu, Zhihang},
-  journal={[Journal name]},
+@software{mixed_dynamics,
+  title={Mixed Feedback Dynamics in Collective Emotion},
+  author={{Mixed Dynamics Team}},
   year={2026},
-  note={Under review}
+  url={https://github.com/wujlin/Mixed_dynamics}
 }
 ```
+
+A paper describing this work is in preparation.
 
 ---
 
@@ -341,11 +333,7 @@ Contributions are welcome! Please:
 
 ## 📧 Contact
 
-**Corresponding Authors**:
-- **Jinlin Wu**: jwu923@connect.hkust-gz.edu.cn
-- **Zhihang Liu**: zhihangliu@cuhk.edu.hk
-
-For questions about the code or data, please open an issue on GitHub or contact the corresponding authors.
+For questions about the code or data, please open an issue on GitHub.
 
 ---
 
@@ -357,8 +345,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-This study was funded by the National Social Science Foundation of China (Grant No. 24AXW005). The funder played no role in study design, data collection, analysis, or manuscript writing.
-
 We thank the developers of:
 - [NumPy](https://numpy.org/), [SciPy](https://scipy.org/), [NetworkX](https://networkx.org/) (core scientific computing)
 - [Matplotlib](https://matplotlib.org/), [Seaborn](https://seaborn.pydata.org/) (visualization)
@@ -368,7 +354,6 @@ We thank the developers of:
 
 ## 🗺️ Roadmap
 
-- [ ] Release preprint (arXiv)
 - [ ] Publish de-identified empirical data
 - [ ] Add interactive demo (Jupyter widgets / Streamlit)
 - [ ] Extend to multi-platform comparisons (Weibo vs Twitter vs Reddit)
