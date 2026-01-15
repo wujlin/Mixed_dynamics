@@ -10,6 +10,7 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{lineno} % Line numbers for peer review
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
 \usepackage{xr-hyper}
@@ -31,20 +32,15 @@
 \newcolumntype{C}{>{\centering\arraybackslash}X}
 \captionsetup[subfigure]{labelformat=empty,skip=0pt}
 
-\title{Competing feedback channels drive phase transitions in collective~emotion}
-\author[1]{Juan Li}
-\author[2]{Jinlin Wu\textsuperscript{*}}
-\author[3]{Zhihang Liu\textsuperscript{*}}
-\affil[1]{School of Journalism and Communication, Lanzhou University, Lanzhou 730000, China}
-\affil[2]{Urban Governance and Design Thrust, The Hong Kong University of Science and Technology (Guangzhou), Guangzhou 511400, China}
-\affil[3]{Institute of Space and Earth Information Science, The Chinese University of Hong Kong, Shatin, Hong Kong, China}
-\date{}
-
 \begin{document}
-\maketitle
+\linenumbers % Enable line numbers for peer review
+
+% Custom title for double-blind review
 \begin{center}
-  \footnotesize \textsuperscript{*}Correspondence: \href{mailto:jwu923@connect.hkust-gz.edu.cn}{\nolinkurl{jwu923@connect.hkust-gz.edu.cn}}; \href{mailto:zhihangliu@cuhk.edu.hk}{\nolinkurl{zhihangliu@cuhk.edu.hk}}
+{\LARGE\bfseries Competing feedback channels drive phase transitions in collective~emotion}
 \end{center}
+
+\vspace{1em}
 
 \begin{abstract}
 Sudden polarization can emerge on social platforms even without commensurate external shocks. We propose that such fragility builds endogenously in mixed information ecologies, where stabilizing mainstream channels compete with amplifying user-generated channels. A minimal mixed-feedback model identifies a critical channel-balance boundary beyond which the neutral state destabilizes into self-sustaining polarization. Mapping the parameter landscape shows how vulnerability shifts with response sensitivity, media ecology, and local coupling, and explains why elevated activity signals heightened fragility: the moderate buffer can deplete before a polarized direction is selected. Agent-based simulations show that these patterns persist under networked interactions. In large-scale online discussions, segments with elevated activity exhibit larger polarization jumps, and, under sufficiently dense temporal sampling, greater user-generated dominance covaries with higher polarization volatility. Managing channel balance---through exposure mixing or algorithmic adjustment---may complement content moderation in preserving collective resilience.
@@ -225,7 +221,7 @@ Representative steady-state trajectories provide an intuitive view: far from cri
   \label{fig:csd}
 \end{figure}
 
-\subsection{Activity and media composition mark fragility in social-media data}
+\subsection{Empirical signatures in social-media data}
 \label{sec:empirical-signatures}
 The theory implies two observable signatures in social-media data. From the direction--intensity mechanism (Section~\ref{sec:direction-intensity-bifurcation}), segments with elevated activity exhibit larger polarization jumps (reflecting moderate-buffer depletion). From the parameter landscape (Section~\ref{sec:parameter-landscape}), greater user-generated dominance covaries with higher volatility (reflecting reduced resilience).
 
@@ -233,8 +229,9 @@ In the pooled dataset, segments with higher mean activity show larger jump inten
 
 User-generated dominance is positively associated with polarization volatility in the high-density subset (Pearson $r=0.429$, $p=6.03\times 10^{-7}$; Fig.~\ref{fig:empirical}b). The association is robust to controls for segment sampling density (Supplementary Fig.~\ref{fig:supp:h2-density-12h}), linking channel-balance shifts toward amplifying sources to reduced resilience.
 
-Together, the segment-level associations connect moderate-buffer depletion and channel balance to heightened fragility. The activity--jump pattern links elevated activity to larger polarization jumps, while the media-dominance--volatility pattern links shifts in channel balance to reduced resilience. Supplementary Figs.~\ref{fig:supp:scatter-h1-h2}--\ref{fig:supp:eventstudy-h4} report additional diagnostics across datasets and event-aligned analyses under realistic missingness.
+Representative time series illustrate these patterns at the segment level: the high-activity segment exhibits larger polarization swings than its low-activity counterpart (Fig.~\ref{fig:empirical}c), and the high-$r_{\text{proxy}}$ segment shows greater fluctuation amplitude than the low-$r_{\text{proxy}}$ segment (Fig.~\ref{fig:empirical}d).
 
+Together, these associations reveal two complementary dimensions of collective fragility. The activity--jump link (Fig.~\ref{fig:empirical}a,c) captures how the system \emph{approaches} instability: as the moderate buffer depletes, the remaining population becomes increasingly susceptible to abrupt directional shifts. The media-composition--volatility link (Fig.~\ref{fig:empirical}b,d) captures how information architecture \emph{sets} the resilience boundary: when amplifying channels dominate, even moderate perturbations produce larger fluctuations. Both signatures are consistent with the mixed-feedback mechanism: fragility emerges not from extreme content alone, but from structural conditions---depleted buffers and skewed channel balance---that erode the system's capacity to absorb shocks. Supplementary Figs.~\ref{fig:supp:scatter-h1-h2}--\ref{fig:supp:eventstudy-h4} report additional diagnostics across datasets and event-aligned analyses under realistic missingness.
 \begin{figure}[H]
   \centering
   \begin{subfigure}[b]{0.48\linewidth}
@@ -260,7 +257,7 @@ Together, the segment-level associations connect moderate-buffer depletion and c
     \includegraphics[width=\linewidth]{figures/fig5d_h2_example_timeseries.pdf}
     \caption{}
   \end{subfigure}
-  \caption{Empirical signatures at the segment level. (a) Activity $a$ versus jump intensity $\text{jump}_{q95}$ in the pooled dataset (see Methods for definitions). (b) $r_{\text{proxy}}$ versus volatility in the high-density subset (12-hour aggregation); color indicates segment sampling density (median split). (c) Representative high- and low-activity segments; vertical dashed lines mark the maximal single-step change in $|Q|$ within each segment. The high-activity segment (blue) exhibits larger polarization swings. (d) Representative high- and low-$r_{\text{proxy}}$ segments; $Q$ is shown after subtracting the segment mean to facilitate volatility comparison. The high-$r_{\text{proxy}}$ segment (orange) exhibits greater fluctuation amplitude.}
+  \caption{Empirical signatures at the segment level. (a) Activity $a$ versus jump intensity $\text{jump}_{q95}$ in the pooled dataset (see Methods for definitions). (b) $r_{\text{proxy}}$ versus volatility in the high-density subset (12-hour aggregation); color indicates segment sampling density (median split). (c) Representative high-activity (blue) and low-activity (gray) segments; vertical dashed lines mark the maximal single-step change in $|Q|$ within each segment. (d) Representative high-$r_{\text{proxy}}$ (orange) and low-$r_{\text{proxy}}$ (gray) segments; $Q$ is shown after subtracting the segment mean to facilitate volatility comparison.}
   \label{fig:empirical}
 \end{figure}
 
@@ -384,16 +381,19 @@ For segment-level analyses, we group consecutive windows into weekly segments an
 We thank our collaborators and partners for helpful discussions.
 
 \section*{Author contributions}
-J.L., J.W., and Z.L. conceived the study. J.W. and Z.L. developed the model and conducted theoretical and simulation analyses. J.L. contributed to empirical interpretation and manuscript refinement. All authors wrote and approved the manuscript.
+% Author contributions statement removed for double-blind peer review
 
 \section*{Competing interests}
 The authors declare no competing interests.
+
+\section*{Materials \& Correspondence}
+% Contact information removed for double-blind peer review
 
 \section*{Data availability}
 The data that support the findings of this study are available from the corresponding authors upon reasonable request.
 
 \section*{Code availability}
-The code that supports the findings of this study is available at \url{https://github.com/wujlin/Mixed_dynamics}.
+% Code repository link removed for double-blind peer review. Upon acceptance, the code will be made publicly available.
 
 \bibliographystyle{unsrt}
 \bibliography{references}

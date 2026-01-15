@@ -1,47 +1,109 @@
+# ============================================
 # Python
+# ============================================
 __pycache__/
 *.py[cod]
 *.so
 .Python
 *.egg-info/
+dist/
+build/
 
-# 数据标注（大文件，不同步）
-outputs/annotations/
-
-# 数据集（大文件）
-dataset/
-
-# 环境
+# ============================================
+# 环境配置
+# ============================================
 .env
 .venv/
 venv/
+env/
 
-# secrets / cookies（不入库）
+# ============================================
+# IDE / Editor
+# ============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================
+# Jupyter
+# ============================================
+.ipynb_checkpoints/
+
+# ============================================
+# 数据集（隐私保护 + 大文件）
+# ============================================
+# 原始数据集（包含用户信息）
+dataset/
+data/raw/
+# 标注数据（大文件）
+outputs/annotations/
+# LLM 验证数据（包含原始文本）
+outputs/llm_validation/
+# 用户元数据
+*user_meta*.csv
+*user_info*.csv
+*uid*.csv
+
+# ============================================
+# Secrets / Cookies（隐私保护）
+# ============================================
 secrets/
 cookies*.json
 data/config/cookies*.json
 data/config/*cookies*.json
 data/config/*token*.json
 data/config/*secrets*.json
+*.key
+*.pem
 
-# IDE
-.idea/
-.vscode/
-*.swp
+# ============================================
+# 论文相关（版权保护）
+# ============================================
+# Essay 文件夹（投稿前的工作版本）
+Essay/
+# Essay_nc 文件夹（投稿版本）
+Essay_nc/
+# 编译好的论文 PDF
+Manuscript*.pdf
+Manuscript*.docx
+# 论文 ZIP 包
+*.zip
+# 提交材料
+submit_materials/
+# 投稿指南
+*submission-guide*.pdf
+*editorial-policy*.pdf
 
-# Jupyter
-.ipynb_checkpoints/
+# 但保留 references.bib（公开引用）
+!references.bib
 
-# 本地写作训练（不入库）
-docs/writing_drills.md
-
-# 论文制图预览（不入库）
+# ============================================
+# 图表输出（生成文件）
+# ============================================
 outputs/figs/
+outputs/tmp*.pdf
+outputs/tmp*.png
 
-# LLM 人工一致性验证（包含文本，不入库）
-outputs/llm_validation/
+# ============================================
+# 开发文档（内部使用）
+# ============================================
+AGENTS.md
+DEVELOPMENT.md
+docs/progress.md
+docs/review.md
+docs/email_*.md
+docs/*_live.md
+docs/*_report.md
+docs/batch*_analysis.md
+docs/writing_drills.md
+docs/writing_pitfalls.md
 
-# LaTeX 构建产物（不入库）
+# ============================================
+# LaTeX 构建产物
+# ============================================
 *.aux
 *.log
 *.out
@@ -51,6 +113,17 @@ outputs/llm_validation/
 *.fls
 *.fdb_latexmk
 *.synctex.gz
+*.nav
+*.snm
+*.vrb
 
-# Overleaf 跨文档引用需要的“可读取”aux（作为源文件维护）
-!Essay/supplementary.aux
+# Overleaf 跨文档引用需要的 aux（例外保留）
+!supplementary.aux
+
+# ============================================
+# 临时文件
+# ============================================
+*.tmp
+*.temp
+*_backup.*
+*_old.*

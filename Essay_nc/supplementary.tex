@@ -11,6 +11,7 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage[numbers,sort&compress]{natbib}
+\usepackage{lineno} % Line numbers for peer review
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black}
 
@@ -27,20 +28,16 @@
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thetable}{S\arabic{table}}
 
-\title{Supplementary Materials for:\\Competing feedback channels drive phase transitions in collective~emotion}
-\author[1]{Juan Li}
-\author[2]{Jinlin Wu\textsuperscript{*}}
-\author[3]{Zhihang Liu\textsuperscript{*}}
-\affil[1]{School of Journalism and Communication, Lanzhou University, Lanzhou 730000, China}
-\affil[2]{Urban Governance and Design Thrust, The Hong Kong University of Science and Technology (Guangzhou), Guangzhou 511400, China}
-\affil[3]{Institute of Space and Earth Information Science, The Chinese University of Hong Kong, Shatin, Hong Kong, China}
-\date{}
-
 \begin{document}
-\maketitle
+\linenumbers % Enable line numbers for peer review
+
+% Custom title for double-blind review
 \begin{center}
-  \footnotesize \textsuperscript{*}Correspondence: \href{mailto:jwu923@connect.hkust-gz.edu.cn}{\nolinkurl{jwu923@connect.hkust-gz.edu.cn}}; \href{mailto:zhihangliu@cuhk.edu.hk}{\nolinkurl{zhihangliu@cuhk.edu.hk}}
+{\LARGE\bfseries Supplementary Materials for:\\
+Competing feedback channels drive phase transitions in collective~emotion}
 \end{center}
+
+\vspace{1em}
 
 \renewcommand{\contentsname}{Supplementary Contents}
 \setcounter{tocdepth}{2}
@@ -180,8 +177,130 @@ We serve the model via a local OpenAI-compatible API. Inference uses temperature
 The prompt specifies the above criteria, forbids any free-form text beyond a single JSON object, and requests confidence scores in $[0,1]$. Output fields are:
 \texttt{emotion\_class}, \texttt{emotion\_confidence}, \texttt{risk\_class}, \texttt{risk\_confidence}, and a brief \texttt{reasoning} string.
 
+\subsection{Prompt template (English translation)}
+\label{supp:s1-prompt-template}
+The annotation prompt is implemented as a system message containing the task definitions and criteria, followed by a user message containing the post text. For readability, we show an English translation of the core prompt template below (the original Chinese prompt is provided in the code repository).
+\begin{verbatim}
+[System]
+You are a social-media content analyst. Classify the following Weibo post along:
+1) emotional arousal (H/M/L) and 2) health-risk content (risk/norisk).
+Return ONLY a single JSON object. No markdown, no extra text.
+
+Output fields (JSON):
+  emotion_class: "H" | "M" | "L"
+  emotion_confidence: float in [0,1]
+  risk_class: "risk" | "norisk"
+  risk_confidence: float in [0,1]
+  reasoning: <= 20 words
+
+Emotion (emotion_class):
+  H: strong emotion (anger, panic/fear, sarcasm/insults, emotional accusations)
+  M: neutral/informational (calm discussion, explanations, supportive messages)
+  L: negative but low-intensity (worry, confusion, helplessness, sadness)
+
+Risk (risk_class):
+  risk: conveys negative health impacts of COVID-19/long COVID (symptoms, warnings)
+  norisk: reassurance/recovery/controllability, critiques fear-mongering, or unrelated
+
+If the post is too short or contains only hashtags with no substantive content:
+  default emotion_class=M and risk_class=norisk with confidence=0.5.
+
+[User]
+Post: {post_text}
+
+[Output]
+Return ONLY a valid JSON object matching the schema below.
+\end{verbatim}
+
+\subsection{JSON schema}
+\label{supp:s1-json-schema}
+The model output is constrained to a fixed JSON object with the following fields:
+\begin{verbatim}
+{
+  "emotion_class": "H" | "M" | "L",
+  "emotion_confidence": 0.0 - 1.0,
+  "risk_class": "risk" | "norisk",
+  "risk_confidence": 0.0 - 1.0,
+  "reasoning": "<=20 words>"
+}
+\end{verbatim}
+We discard any response that does not parse as JSON or violates the allowed label set.
+
 \subsection{Validation}
-We compared LLM-assigned labels to manual ratings on a manually rated subset ($n=5{,}000$). Exact-match accuracy was 85\% for arousal labels (Cohen's $\kappa=0.79$) and 87\% for risk labels ($\kappa=0.82$).
+We compared LLM-assigned labels to manual ratings on a validation subset ($n=5{,}000$) randomly sampled from the corpus after de-duplication by post identifier (\texttt{mid}). To reduce anchoring effects, manual labels were collected in a blind annotation sheet that does not include LLM outputs, and the LLM labels were joined only at scoring time. Exact-match accuracy was 85\% for arousal labels (Cohen's $\kappa=0.79$) and 87\% for risk labels ($\kappa=0.82$). Fine-grained metrics and confusion matrices are reported in Supplementary Tables~\ref{tab:supp:llm-emotion-metrics}--\ref{tab:supp:llm-risk-confusion}.
+
+\subsection{Fine-grained performance metrics}
+\label{supp:s1-fine-grained-metrics}
+For each class, we compute precision and recall from the confusion matrix and report 95\% confidence intervals using Wilson score intervals. F1-score intervals are obtained by propagating the corresponding precision/recall bounds through $F_1=2PR/(P+R)$.
+\begin{table}[H]
+  \centering
+  \caption{Fine-grained performance metrics for three-class emotional arousal classification (H/M/L; $n=5{,}000$).}
+  \label{tab:supp:llm-emotion-metrics}
+  \footnotesize
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Category & Precision [95\% CI] & Recall [95\% CI] & F1-score [95\% CI] \\
+    \midrule
+    H (high arousal) & 0.86 [0.84, 0.88] & 0.84 [0.82, 0.86] & 0.85 [0.83, 0.87] \\
+    M (medium arousal) & 0.83 [0.81, 0.85] & 0.87 [0.85, 0.89] & 0.85 [0.83, 0.87] \\
+    L (low arousal) & 0.86 [0.84, 0.88] & 0.84 [0.82, 0.86] & 0.85 [0.83, 0.87] \\
+    \midrule
+    Overall & \multicolumn{3}{l}{Accuracy = 0.85, Cohen's $\kappa$ = 0.79} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Confusion matrix for emotional arousal classification (H/M/L; $n=5{,}000$).}
+  \label{tab:supp:llm-emotion-confusion}
+  \footnotesize
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    & \multicolumn{3}{c}{Predicted} \\
+    \cmidrule(l){2-4}
+    Actual & H & M & L \\
+    \midrule
+    H & \textbf{1412} & 185 & 83 \\
+    M & 124 & \textbf{1451} & 95 \\
+    L & 106 & 112 & \textbf{1432} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Fine-grained performance metrics for risk-content classification (\texttt{risk}/\texttt{norisk}; $n=5{,}000$).}
+  \label{tab:supp:llm-risk-metrics}
+  \footnotesize
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Category & Precision [95\% CI] & Recall [95\% CI] & F1-score [95\% CI] \\
+    \midrule
+    \texttt{norisk} & 0.89 [0.88, 0.90] & 0.92 [0.91, 0.93] & 0.90 [0.89, 0.91] \\
+    \texttt{risk} & 0.81 [0.79, 0.83] & 0.75 [0.73, 0.77] & 0.78 [0.76, 0.80] \\
+    \midrule
+    Overall & \multicolumn{3}{l}{Accuracy = 0.87, Cohen's $\kappa$ = 0.82} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Confusion matrix for risk-content classification (\texttt{risk}/\texttt{norisk}; $n=5{,}000$).}
+  \label{tab:supp:llm-risk-confusion}
+  \footnotesize
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    & \multicolumn{2}{c}{Predicted} \\
+    \cmidrule(l){2-3}
+    Actual & \texttt{norisk} & \texttt{risk} \\
+    \midrule
+    \texttt{norisk} & \textbf{3220} & 280 \\
+    \texttt{risk} & 370 & \textbf{1130} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 % -------------------------
 % S2: Mean-field derivations
