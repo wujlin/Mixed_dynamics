@@ -1,0 +1,5 @@
+﻿exposure_group,env_type,n_transitions,p_MH,p_HM,upgrade_rate,cooling_rate
+dual,norisk,5,0.2,0.4,0.2,0.4
+mainstream_only,norisk,40,0.025,0.025,0.025,0.025
+wemedia_only,norisk,7,0.0,0.0,0.0,0.0
+wemedia_only,risk,3,0.0,0.0,0.3333333333333333,0.0

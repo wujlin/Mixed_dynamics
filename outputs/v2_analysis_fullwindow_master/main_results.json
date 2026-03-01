@@ -1,0 +1,104 @@
+{
+  "comparisons": [
+    {
+      "pair": "dual_vs_mainstream_only",
+      "status": "no_match",
+      "treated_n": 9,
+      "control_n": 35
+    },
+    {
+      "pair": "dual_vs_wemedia_only",
+      "status": "ok",
+      "treated_n": 9,
+      "control_n": 62,
+      "caliper": 0.048708621069883655,
+      "matched_treated_n": 3,
+      "matched_control_n": 9,
+      "covariates_used": [
+        "n_total_interactions",
+        "active_days",
+        "n_posts",
+        "month_2021-08",
+        "month_2022-01",
+        "month_2022-03",
+        "month_2022-04",
+        "month_2022-06",
+        "month_2022-07",
+        "month_2022-08",
+        "month_2022-09",
+        "month_2022-10",
+        "month_2022-11",
+        "month_2022-12",
+        "month_2023-01",
+        "month_2023-02",
+        "month_2023-03",
+        "month_2023-04",
+        "month_2023-05",
+        "month_2023-06",
+        "month_2023-07",
+        "month_2023-08",
+        "month_2023-09",
+        "month_2023-10",
+        "month_2023-11",
+        "month_2023-12"
+      ],
+      "outcomes": {
+        "upgrade": {
+          "treated_mean": 0.23333333333333334,
+          "control_mean": 0.0,
+          "att_mean_diff": 0.2333333333333333,
+          "mannwhitney_p": 0.005052429074933671,
+          "cohen_d": 1.5140665972204503,
+          "cliffs_delta": 0.6666666666666666
+        },
+        "cooling": {
+          "treated_mean": 0.06666666666666668,
+          "control_mean": 0.0,
+          "att_mean_diff": 0.06666666666666667,
+          "mannwhitney_p": 0.07579623602289194,
+          "cohen_d": 0.9428090415820634,
+          "cliffs_delta": 0.3333333333333333
+        },
+        "stable": {
+          "treated_mean": 0.5,
+          "control_mean": 0.5555555555555556,
+          "att_mean_diff": -0.055555555555555504,
+          "mannwhitney_p": 0.8109141729808764,
+          "cohen_d": -0.1151824567441814,
+          "cliffs_delta": -0.07407407407407407
+        }
+      }
+    }
+  ],
+  "sample_info": {
+    "n_users_transition_sample_all_groups": 1104,
+    "group_counts_all_groups": {
+      "no_media": 998,
+      "wemedia_only": 62,
+      "mainstream_only": 35,
+      "dual": 9
+    },
+    "n_users_transition_sample": 106,
+    "group_counts": {
+      "wemedia_only": 62,
+      "mainstream_only": 35,
+      "dual": 9
+    },
+    "psm_groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "month_fe": "first_post_month",
+    "study_window": {
+      "start": "2015-05-04 00:00:00",
+      "end": "2024-08-30 23:59:59"
+    },
+    "annotation_sources": [
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl"
+    ],
+    "min_posts": 2,
+    "psm_ratio": 3,
+    "psm_caliper_mult": 0.2
+  }
+}

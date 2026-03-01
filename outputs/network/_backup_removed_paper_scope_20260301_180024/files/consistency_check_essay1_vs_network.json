@@ -1,0 +1,47 @@
+{
+  "essay1_text_reference": {
+    "dataset_statement": "/mnt/e/newdesktop/emotion_dynamics/Essay_Physical/Essay_ncs/main_manuscript.tex:408",
+    "r_proxy_definition": "/mnt/e/newdesktop/emotion_dynamics/Essay_Physical/Essay_ncs/main_manuscript.tex:414",
+    "government_merge_note": "/mnt/e/newdesktop/emotion_dynamics/Essay_Physical/Essay_ncs/main_manuscript.tex:417"
+  },
+  "computed_distributions": {
+    "essay_like_all_user_level_3class": {
+      "ordinary": {
+        "count": 48081,
+        "ratio": 0.877855
+      },
+      "wemedia": {
+        "count": 5605,
+        "ratio": 0.102335
+      },
+      "mainstream": {
+        "count": 1085,
+        "ratio": 0.01981
+      }
+    },
+    "network_nodes_3class": {
+      "ordinary": {
+        "count": 62361,
+        "ratio": 0.942978
+      },
+      "wemedia": {
+        "count": 3472,
+        "ratio": 0.052501
+      },
+      "mainstream": {
+        "count": 299,
+        "ratio": 0.004521
+      }
+    }
+  },
+  "mid_alignment": {
+    "master_ann": 17604,
+    "master_data": 17604,
+    "batch3_ann": 73456,
+    "batch3_data": 73435,
+    "batch3_ann_not_in_data": 21,
+    "union_ann_master_batch3": 91060,
+    "union_matched_for_recompute": 91039
+  },
+  "conclusion": "not_consistent_under_same_measure; likely due different analysis object and filtering scope"
+}

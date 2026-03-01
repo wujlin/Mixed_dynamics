@@ -1,0 +1,4 @@
+﻿pair,covariate,smd_before,smd_after
+dual_vs_wemedia_only,n_total_interactions,-0.3449492931584128,6.940220937885671
+dual_vs_wemedia_only,active_days,0.35273781075132926,0.0
+dual_vs_wemedia_only,n_posts,0.3505458990021222,0.0

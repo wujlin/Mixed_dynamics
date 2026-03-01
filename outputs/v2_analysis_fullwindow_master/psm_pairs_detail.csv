@@ -1,0 +1,10 @@
+﻿treated_id,control_id,dist,treat_upgrade,ctrl_upgrade,treat_cooling,ctrl_cooling,treat_stable,ctrl_stable,pair
+25,9,0.000339134761202467,0.5,0.0,0.0,0.0,0.5,1.0,dual_vs_wemedia_only
+25,70,0.005591865487707376,0.5,0.0,0.0,0.0,0.5,1.0,dual_vs_wemedia_only
+25,68,0.007188179638619868,0.5,0.0,0.0,0.0,0.5,1.0,dual_vs_wemedia_only
+24,11,0.016927246827760936,0.2,0.0,0.2,0.0,0.0,1.0,dual_vs_wemedia_only
+24,34,0.02150823102701671,0.2,0.0,0.2,0.0,0.0,1.0,dual_vs_wemedia_only
+24,7,0.02532011991686349,0.2,0.0,0.2,0.0,0.0,0.0,dual_vs_wemedia_only
+48,30,0.0027937483834819254,0.0,0.0,0.0,0.0,1.0,0.0,dual_vs_wemedia_only
+48,21,0.0033183909445692883,0.0,0.0,0.0,0.0,1.0,0.0,dual_vs_wemedia_only
+48,31,0.004784016304067912,0.0,0.0,0.0,0.0,1.0,0.0,dual_vs_wemedia_only

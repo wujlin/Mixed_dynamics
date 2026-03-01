@@ -1,0 +1,71 @@
+{
+  "paper_scope_inputs": {
+    "master_csv": "/mnt/e/newdesktop/emotion_dynamics/dataset/Topic_data/merged_topic_official.csv",
+    "master_ann": "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl",
+    "batch3_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/intermediate/to_annotate_batch3_clean.csv",
+    "batch3_ann": "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/batches/batch_03_expanded/new_batch3.jsonl"
+  },
+  "paper_scope_sizes": {
+    "master_rows_matched": 17604,
+    "batch3_rows_matched": 73435,
+    "all_rows_union_matched": 91039,
+    "paper_user_count": 54771
+  },
+  "paper_scope_distributions": {
+    "post_5class": {
+      "public": 61338,
+      "mainstream": 10645,
+      "wemedia": 10450,
+      "other": 7843,
+      "government": 763
+    },
+    "post_3class": {
+      "ordinary": 69181,
+      "mainstream": 11408,
+      "wemedia": 10450
+    },
+    "user_5class": {
+      "public": 45423,
+      "wemedia": 5577,
+      "other": 2683,
+      "mainstream": 802,
+      "government": 286
+    },
+    "user_3class": {
+      "ordinary": 48106,
+      "wemedia": 5577,
+      "mainstream": 1088
+    }
+  },
+  "network_projection": {
+    "full_edge_weighted_rows": 73039,
+    "paper_scope_edge_rows": 8502,
+    "paper_scope_node_rows": 6027,
+    "paper_scope_node_3class": {
+      "ordinary": 5297,
+      "wemedia": 564,
+      "mainstream": 166
+    }
+  },
+  "bi_stats_paper_scope": {
+    "n_users_with_media_links": 1354,
+    "mean": 0.04656429242839879,
+    "median": 0.0,
+    "std": 0.20535944122320543,
+    "p10": 0.0,
+    "p90": 0.0,
+    "pct_eq_0": 0.94903988183161,
+    "pct_eq_1": 0.03988183161004431
+  },
+  "outputs": {
+    "edge_weighted_paper_scope_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/edge_weighted_paper_scope.csv",
+    "node_attributes_paper_scope_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/node_attributes_paper_scope.csv",
+    "bi_values_paper_scope_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/bi_values_paper_scope.csv",
+    "bi_distribution_paper_scope_png": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/fig_bi_distribution_paper_scope.png",
+    "paper_scope_report_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/paper_scope_report.json",
+    "paper_post_distribution_5class_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/paper_post_distribution_5class.csv",
+    "paper_post_distribution_3class_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/paper_post_distribution_3class.csv",
+    "paper_user_distribution_5class_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/paper_user_distribution_5class.csv",
+    "paper_user_distribution_3class_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/network/repost_user_network_paper_scope/paper_user_distribution_3class.csv"
+  }
+}

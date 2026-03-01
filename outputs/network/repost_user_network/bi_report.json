@@ -1,0 +1,64 @@
+{
+  "inputs": {
+    "network_dir": "outputs/network/repost_user_network",
+    "edge_file": "outputs/network/repost_user_network/edge_weighted.csv",
+    "topic_dir": "dataset/Topic_data",
+    "user_info_csv": "dataset/User_data/USER_INFO_1.csv",
+    "connection_mode": "out"
+  },
+  "verify_lookup_stats": {
+    "topic_rows": 166629,
+    "topic_unique_users": 65190,
+    "topic_verify_conflict_users": 447,
+    "user_info_rows": 69673,
+    "user_info_unique_users": 57136,
+    "user_info_verify_conflict_users": 0,
+    "verify_lookup_users": 118554
+  },
+  "node_stats": {
+    "n_nodes_in_edge_file": 66132,
+    "verify_typ_known_nodes": 65205,
+    "verify_typ_known_ratio": 0.9859825802939576,
+    "user_type_raw_counts": {
+      "public": 61529,
+      "wemedia": 3472,
+      "other": 832,
+      "mainstream": 233,
+      "government": 66
+    },
+    "node_type_3class_counts": {
+      "ordinary": 62361,
+      "wemedia": 3472,
+      "mainstream": 299
+    }
+  },
+  "exposure_group_stats": {
+    "n_source_users_total": 63659,
+    "n_media_exposed": 15175,
+    "n_no_media_exposure": 48484,
+    "pct_media_exposed": 0.23837949072401388,
+    "pct_no_media_exposure": 0.7616205092759861
+  },
+  "bi_stats": {
+    "n_users_with_media_links": 15175,
+    "mean": 0.013527446743262228,
+    "median": 0.0,
+    "std": 0.11288434610195155,
+    "p10": 0.0,
+    "p90": 0.0,
+    "pct_eq_0": 0.9854365733113674,
+    "pct_ge_0_5": 0.014299835255354202,
+    "pct_eq_1": 0.011795716639209225
+  },
+  "outputs": {
+    "node_attributes_csv": "outputs/network/repost_user_network/node_attributes.csv",
+    "bi_values_csv": "outputs/network/repost_user_network/bi_values.csv",
+    "bi_distribution_fig": "outputs/network/repost_user_network/fig_bi_distribution.png",
+    "report_json": "outputs/network/repost_user_network/bi_report.json"
+  },
+  "definition_note": {
+    "n_m_definition": "出边连接到的 mainstream/government 目标账号去重数量",
+    "n_w_definition": "出边连接到的 wemedia 目标账号去重数量",
+    "three_class_mapping": "mainstream<=mainstream+government; wemedia<=wemedia; ordinary<=public+other"
+  }
+}

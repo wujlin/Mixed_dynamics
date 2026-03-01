@@ -1,0 +1,2 @@
+﻿treated_id,treat_upgrade,ctrl_upgrade,treat_cooling,ctrl_cooling,treat_stable,ctrl_stable,diff_upgrade,diff_cooling,diff_stable,pair
+6,0.0,0.3333333333333333,0.0,0.0,1.0,0.3333333333333333,-0.3333333333333333,0.0,0.6666666666666667,dual_vs_wemedia_only

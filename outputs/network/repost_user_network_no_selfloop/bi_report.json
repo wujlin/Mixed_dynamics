@@ -1,0 +1,57 @@
+{
+  "inputs": {
+    "network_dir": "outputs/network/repost_user_network_no_selfloop",
+    "edge_file": "outputs/network/repost_user_network_no_selfloop/edge_weighted.csv",
+    "topic_dir": "dataset/Topic_data",
+    "user_info_csv": "dataset/User_data/USER_INFO_1.csv",
+    "connection_mode": "out"
+  },
+  "verify_lookup_stats": {
+    "topic_rows": 166629,
+    "topic_unique_users": 65190,
+    "topic_verify_conflict_users": 447,
+    "user_info_rows": 69673,
+    "user_info_unique_users": 57136,
+    "user_info_verify_conflict_users": 0,
+    "verify_lookup_users": 118554
+  },
+  "node_stats": {
+    "n_nodes_in_edge_file": 65736,
+    "verify_typ_known_nodes": 64809,
+    "verify_typ_known_ratio": 0.9858981380065718,
+    "user_type_raw_counts": {
+      "public": 61198,
+      "wemedia": 3411,
+      "other": 829,
+      "mainstream": 232,
+      "government": 66
+    },
+    "node_type_3class_counts": {
+      "ordinary": 62027,
+      "wemedia": 3411,
+      "mainstream": 298
+    }
+  },
+  "bi_stats": {
+    "n_users_with_media_links": 15080,
+    "mean": 0.013413727077520178,
+    "median": 0.0,
+    "std": 0.11237625323187833,
+    "p10": 0.0,
+    "p90": 0.0,
+    "pct_eq_0": 0.9855437665782494,
+    "pct_ge_0_5": 0.014190981432360743,
+    "pct_eq_1": 0.011671087533156498
+  },
+  "outputs": {
+    "node_attributes_csv": "outputs/network/repost_user_network_no_selfloop/node_attributes.csv",
+    "bi_values_csv": "outputs/network/repost_user_network_no_selfloop/bi_values.csv",
+    "bi_distribution_fig": "outputs/network/repost_user_network_no_selfloop/fig_bi_distribution.png",
+    "report_json": "outputs/network/repost_user_network_no_selfloop/bi_report.json"
+  },
+  "definition_note": {
+    "n_m_definition": "出边连接到的 mainstream/government 目标账号去重数量",
+    "n_w_definition": "出边连接到的 wemedia 目标账号去重数量",
+    "three_class_mapping": "mainstream<=mainstream+government; wemedia<=wemedia; ordinary<=public+other"
+  }
+}

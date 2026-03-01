@@ -1,0 +1,27 @@
+{
+  "assumption": "若 media-exposed 用户在 Topic_data 的帖子全部完成标注，PSM 三组的可达样本上限（min_posts=2）",
+  "all_time": {
+    "n_users_ge2": 1017,
+    "group_counts": {
+      "wemedia_only": 481,
+      "mainstream_only": 458,
+      "dual": 78
+    }
+  },
+  "oct2022_feb2023": {
+    "n_users_ge2": 214,
+    "group_counts": {
+      "mainstream_only": 97,
+      "wemedia_only": 94,
+      "dual": 23
+    }
+  },
+  "dec2022": {
+    "n_users_ge2": 57,
+    "group_counts": {
+      "mainstream_only": 29,
+      "wemedia_only": 22,
+      "dual": 6
+    }
+  }
+}

@@ -1,0 +1,4 @@
+﻿treated_id,control_id,dist,treat_upgrade,ctrl_upgrade,treat_cooling,ctrl_cooling,treat_stable,ctrl_stable,pair
+6,3,0.008798475537604183,0.0,1.0,0.0,0.0,1.0,0.0,dual_vs_wemedia_only
+6,7,0.008798475537604183,0.0,0.0,0.0,0.0,1.0,1.0,dual_vs_wemedia_only
+6,8,0.01240803235070434,0.0,0.0,0.0,0.0,1.0,0.0,dual_vs_wemedia_only

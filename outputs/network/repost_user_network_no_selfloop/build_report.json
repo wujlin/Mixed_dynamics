@@ -1,0 +1,127 @@
+{
+  "inputs": {
+    "topic_dir": "dataset/Topic_data",
+    "repost_csv": "dataset/Repost/REPOST.csv",
+    "map_source": "topic_plus_repost"
+  },
+  "topic_direct_stats": {
+    "files_scanned": 27,
+    "files_with_direct_cols": 26,
+    "rows_direct_raw": 155220,
+    "rows_direct_valid": 13500,
+    "rows_direct_dedup_by_mid": 12775
+  },
+  "mid_user_map_stats": {
+    "files_scanned": 27,
+    "files_with_mid_user_cols": 27,
+    "rows_mid_user_raw": 166629,
+    "rows_mid_user_valid": 166629,
+    "map_size_final": 179161,
+    "mid_conflicts_count": 325,
+    "mid_conflict_examples": [
+      [
+        "4864296112101232",
+        2
+      ],
+      [
+        "4864328945894758",
+        2
+      ],
+      [
+        "4864378455983625",
+        2
+      ],
+      [
+        "4864384767104592",
+        2
+      ],
+      [
+        "4864388789961433",
+        2
+      ],
+      [
+        "4864476082602494",
+        2
+      ],
+      [
+        "4864623478571421",
+        2
+      ],
+      [
+        "4864696320788910",
+        2
+      ],
+      [
+        "4864705724160836",
+        2
+      ],
+      [
+        "4864742122326553",
+        2
+      ],
+      [
+        "4864891633271530",
+        2
+      ],
+      [
+        "4865102039484344",
+        2
+      ],
+      [
+        "4865115227165043",
+        2
+      ],
+      [
+        "4865206985168711",
+        2
+      ],
+      [
+        "4865381174349797",
+        2
+      ],
+      [
+        "4865545600763135",
+        2
+      ],
+      [
+        "4865548229284442",
+        2
+      ],
+      [
+        "4865552910649343",
+        2
+      ],
+      [
+        "4866084425962946",
+        2
+      ],
+      [
+        "4866206920088481",
+        2
+      ]
+    ]
+  },
+  "repost_mapping_stats": {
+    "rows_raw": 69673.0,
+    "rows_dedup_by_mid": 68510.0,
+    "mapped_rows": 68510.0,
+    "mapped_ratio": 1.0,
+    "unresolved_rows": 0.0,
+    "unresolved_unique_origin_mid": 0.0
+  },
+  "network_stats": {
+    "edge_detail_rows": 79966,
+    "edge_weighted_rows": 72391,
+    "node_count": 65736,
+    "topic_direct_rows_in_network": 11908,
+    "repost_mapped_rows_in_network": 68058,
+    "drop_self_loops": true,
+    "self_loop_removed_rows": 1319
+  },
+  "outputs": {
+    "edge_detail_csv": "outputs/network/repost_user_network_no_selfloop/edge_detail.csv",
+    "edge_weighted_csv": "outputs/network/repost_user_network_no_selfloop/edge_weighted.csv",
+    "node_degree_csv": "outputs/network/repost_user_network_no_selfloop/node_degree.csv",
+    "unresolved_origin_mid_csv": "outputs/network/repost_user_network_no_selfloop/unresolved_origin_mid.csv"
+  }
+}

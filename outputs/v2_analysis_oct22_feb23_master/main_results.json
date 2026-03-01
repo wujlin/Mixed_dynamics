@@ -1,0 +1,47 @@
+{
+  "comparisons": [
+    {
+      "pair": "dual_vs_mainstream_only",
+      "status": "no_match",
+      "treated_n": 3,
+      "control_n": 23
+    },
+    {
+      "pair": "dual_vs_wemedia_only",
+      "status": "no_match",
+      "treated_n": 3,
+      "control_n": 27
+    }
+  ],
+  "sample_info": {
+    "n_users_transition_sample_all_groups": 661,
+    "group_counts_all_groups": {
+      "no_media": 608,
+      "wemedia_only": 27,
+      "mainstream_only": 23,
+      "dual": 3
+    },
+    "n_users_transition_sample": 53,
+    "group_counts": {
+      "wemedia_only": 27,
+      "mainstream_only": 23,
+      "dual": 3
+    },
+    "psm_groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "month_fe": "first_post_month",
+    "study_window": {
+      "start": "2022-10-01 00:00:00",
+      "end": "2023-02-28 23:59:59"
+    },
+    "annotation_sources": [
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl"
+    ],
+    "min_posts": 2,
+    "psm_ratio": 3,
+    "psm_caliper_mult": 0.2
+  }
+}
