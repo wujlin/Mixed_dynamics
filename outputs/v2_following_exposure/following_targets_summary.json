@@ -1,0 +1,16 @@
+{
+  "inputs": {
+    "topic_csv": "/mnt/e/newdesktop/emotion_dynamics/dataset/Topic_data/merged_topic_official.csv",
+    "annotations": "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl"
+  },
+  "counts": {
+    "topic_rows_with_uid": 6195,
+    "unique_uid": 4790,
+    "uid_with_annotation": 4790,
+    "uid_without_annotation": 0
+  },
+  "outputs": {
+    "uid_user_map_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/following_targets_uid_user_map.csv",
+    "uid_priority_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/following_targets_uid_priority.csv"
+  }
+}

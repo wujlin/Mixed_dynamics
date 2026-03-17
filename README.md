@@ -51,6 +51,7 @@ emotion_dynamics/
 │   ├── 02_clean_data.py     # Data cleaning & deduplication
 │   ├── 03_llm_annotation.py # LLM-based arousal annotation
 │   ├── 04_build_timeseries.py # Construct time-series proxies
+│   ├── repo_hygiene/        # Repository maintenance helpers
 │   └── ...
 │
 ├── notebooks/                # Analysis notebooks & figure generation
@@ -77,14 +78,20 @@ emotion_dynamics/
 │   └── data/                # Cached simulation results (.npz)
 │
 ├── docs/                     # Documentation
+│   ├── architecture/
+│   │   └── CODE_STRUCTURE.md # Detailed code architecture
 │   ├── code_data_structure.md
 │   ├── dataset_description.md
+│   ├── repo_hygiene/        # Repo cleanup and publication hygiene
 │   ├── visual_style_guide.md
 │   └── vllm_qwen_setup.md
 │
+├── legacy/                   # Archived drafts and historical materials
+│   ├── HSSC/                # Early manuscript versions
+│   └── ...
+│
 ├── requirements.txt          # Python dependencies
 ├── README.md                 # This file
-├── CODE_STRUCTURE.md         # Detailed code architecture
 └── LICENSE                   # MIT License
 ```
 
@@ -298,7 +305,7 @@ black src/ scripts/ notebooks/*.py
 
 1. Implement in `src/` with docstrings (NumPy style)
 2. Add unit tests in `tests/`
-3. Update `CODE_STRUCTURE.md` if adding new modules
+3. Update `docs/architecture/CODE_STRUCTURE.md` if adding new modules
 4. Run tests and ensure all pass
 
 ---

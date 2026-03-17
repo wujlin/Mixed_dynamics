@@ -1,7 +1,7 @@
 """
 理论核心模块：计算心理敏感度 chi、临界点 rc、GL 参数以及有效势能。
 
-主要基于 DEVELOPMENT.md/Methods.md 中的 Phase 1 公式：
+主要基于 docs/internal/DEVELOPMENT.md 与 legacy/source_materials/Methods.md 中的 Phase 1 公式：
 - chi: 由微观二项分布在阈值边界处的概率质量给出响应函数斜率（Eq. 5 思路）。
 - rc: 稳定性判据 chi * Gamma = 1 导出的解析式 (Eq. 8)。
 - GL 参数: alpha = rc - r, u>0 控制饱和。

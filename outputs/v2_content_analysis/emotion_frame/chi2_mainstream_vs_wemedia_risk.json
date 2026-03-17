@@ -1,0 +1,30 @@
+{
+  "test": "chi2_emotion_distribution_mainstream_vs_wemedia_under_risk",
+  "contingency_table": {
+    "mainstream": {
+      "H": 78,
+      "M": 1811,
+      "L": 21
+    },
+    "wemedia": {
+      "H": 126,
+      "M": 628,
+      "L": 201
+    }
+  },
+  "chi2": 464.2908279996949,
+  "dof": 2,
+  "p_value": 1.5154014578701125e-101,
+  "expected": [
+    [
+      136.0,
+      1626.0,
+      148.0
+    ],
+    [
+      68.0,
+      813.0,
+      74.0
+    ]
+  ]
+}

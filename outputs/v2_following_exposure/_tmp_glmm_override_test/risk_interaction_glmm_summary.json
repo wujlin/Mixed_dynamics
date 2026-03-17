@@ -1,0 +1,124 @@
+{
+  "inputs": {
+    "analysis_dir": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_fullwindow_v2",
+    "groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "states": [
+      "H",
+      "M",
+      "L"
+    ],
+    "min_user_transitions": 1,
+    "max_gap_days": 7.0,
+    "time_fe": "quarter",
+    "alpha": 0.05,
+    "group_override": {
+      "enabled": true,
+      "path": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_fullwindow_v2/user_exposure.csv",
+      "key_col": "user_name",
+      "group_col": "exposure_group",
+      "n_users_in_override": 90187
+    }
+  },
+  "data_info": {
+    "n_rows": 1106,
+    "n_users": 173,
+    "group_counts": {
+      "wemedia_only": 554,
+      "dual": 363,
+      "mainstream_only": 189
+    },
+    "env_counts": {
+      "risk": 566,
+      "norisk": 540
+    },
+    "group_env_counts": {
+      "dual|norisk": 164,
+      "dual|risk": 199,
+      "mainstream_only|norisk": 126,
+      "mainstream_only|risk": 63,
+      "wemedia_only|norisk": 250,
+      "wemedia_only|risk": 304
+    },
+    "next_state_counts": {
+      "M": 900,
+      "H": 140,
+      "L": 66
+    },
+    "gap_days": {
+      "mean": 1.7021417478735517,
+      "median": 1.0,
+      "p90": 4.79443287037037,
+      "max": 6.993055555555555
+    }
+  },
+  "model_info": [
+    {
+      "state": "H",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 1106,
+      "n_users": 173,
+      "prevalence": 0.12658227848101267,
+      "n_fixed_effects": 28,
+      "n_random_effects": 173
+    },
+    {
+      "state": "M",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 1106,
+      "n_users": 173,
+      "prevalence": 0.8137432188065099,
+      "n_fixed_effects": 28,
+      "n_random_effects": 173
+    },
+    {
+      "state": "L",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 1106,
+      "n_users": 173,
+      "prevalence": 0.059674502712477394,
+      "n_fixed_effects": 28,
+      "n_random_effects": 173
+    }
+  ],
+  "interaction_terms_total": 6,
+  "interaction_terms_significant": 2,
+  "significant_interactions": [
+    {
+      "state": "H",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": 0.7018656325343972,
+      "odds_ratio": 2.0175131367366474,
+      "z_value": 3.8623046942725203,
+      "p_value": 0.00011232235355707054
+    },
+    {
+      "state": "M",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.mainstream_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "mainstream_only",
+      "interaction_env": "risk",
+      "coef": 1.1482262935780536,
+      "odds_ratio": 3.1525961676000938,
+      "z_value": 2.2148112293361164,
+      "p_value": 0.026773024137937584
+    }
+  ],
+  "dual_side_check": {
+    "status": "skipped_due_group_override"
+  },
+  "outputs": {
+    "input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_input.csv",
+    "observed_rates_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_observed_rates.csv",
+    "coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_coefficients.csv",
+    "interactions_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_interactions.csv",
+    "dual_side_input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_dual_side_input.csv",
+    "dual_side_coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_dual_side_coefficients.csv",
+    "dual_side_effects_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_dual_side_effects.csv",
+    "summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_tmp_glmm_override_test/risk_interaction_glmm_summary.json"
+  }
+}

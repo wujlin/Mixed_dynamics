@@ -1,0 +1,98 @@
+{
+  "inputs": {
+    "input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/daily_risk_counts.csv",
+    "out_dir": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response",
+    "max_lag": 14,
+    "n_perm": 1000,
+    "alpha": 0.05,
+    "segment_split": "2022-03",
+    "burst_windows": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "block_size": 7,
+    "seed": 20260302
+  },
+  "sample": {
+    "n_days": 1425,
+    "date_min": "2020-03-25",
+    "date_max": "2024-02-17",
+    "mainstream_total": 278.0,
+    "wemedia_total": 667.0,
+    "nonzero_days_any": 317,
+    "nonzero_days_any_ratio": 0.22245614035087719
+  },
+  "ccf_summary": {
+    "n_days": 1425,
+    "n_perm": 1000,
+    "alpha": 0.05,
+    "max_lag": 14,
+    "peak_lag": 0,
+    "peak_ccf": 0.9735568333398544,
+    "sum_ccf_positive_lags": 0.1928154974724214,
+    "sum_ccf_negative_lags": 0.25011402398765076,
+    "sum_abs_ccf_positive_lags": 0.1928154974724214,
+    "sum_abs_ccf_negative_lags": 0.25011402398765076,
+    "asymmetry_abs_ratio_pos_over_neg": 0.770910380786731,
+    "n_significant_lags": 4
+  },
+  "ccf_segment_summary": {
+    "pre_spike": {
+      "n_days": 706,
+      "n_perm": 1000,
+      "alpha": 0.05,
+      "max_lag": 14,
+      "peak_lag": -5,
+      "peak_ccf": 0.22093434488169297,
+      "sum_ccf_positive_lags": -0.017802444961396994,
+      "sum_ccf_negative_lags": 0.29714048378081936,
+      "sum_abs_ccf_positive_lags": 0.31987269674771907,
+      "sum_abs_ccf_negative_lags": 0.573758539321306,
+      "asymmetry_abs_ratio_pos_over_neg": 0.5575040279593811,
+      "n_significant_lags": 2
+    },
+    "post_spike": {
+      "n_days": 688,
+      "n_perm": 1000,
+      "alpha": 0.05,
+      "max_lag": 14,
+      "peak_lag": -6,
+      "peak_ccf": 0.4752932291844337,
+      "sum_ccf_positive_lags": 4.602597495642726,
+      "sum_ccf_negative_lags": 4.893223972973115,
+      "sum_abs_ccf_positive_lags": 4.602597495642726,
+      "sum_abs_ccf_negative_lags": 4.893223972973115,
+      "asymmetry_abs_ratio_pos_over_neg": 0.9406063407406621,
+      "n_significant_lags": 29
+    }
+  },
+  "ccf_nonzero_day_robustness": {
+    "n_days": 317,
+    "n_perm": 1000,
+    "alpha": 0.05,
+    "max_lag": 14,
+    "peak_lag": 0,
+    "peak_ccf": 0.9759932045315425,
+    "sum_ccf_positive_lags": -0.03827475741814157,
+    "sum_ccf_negative_lags": 0.06352415429950055,
+    "sum_abs_ccf_positive_lags": 0.1054800707430596,
+    "sum_abs_ccf_negative_lags": 0.15390900095201862,
+    "asymmetry_abs_ratio_pos_over_neg": 0.6853404939971196,
+    "n_significant_lags": 3
+  },
+  "outputs": {
+    "ccf_values_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/ccf_values.csv",
+    "ccf_summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/ccf_summary.json",
+    "fig_ccf_with_ci": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/fig_ccf_with_ci.png",
+    "ccf_by_segment_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/ccf_by_segment.csv",
+    "fig_ccf_by_segment": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/fig_ccf_by_segment.png",
+    "event_coincidence_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/event_coincidence.csv",
+    "event_coincidence_summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/event_coincidence_summary.json",
+    "event_coincidence_sensitivity_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/event_coincidence_sensitivity.csv",
+    "event_coincidence_sensitivity_summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/event_coincidence_sensitivity_summary.json",
+    "fig_temporal_synchrony_combined": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/fig_temporal_synchrony_combined.png",
+    "ccf_values_nonzero_days_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_content_analysis/time_response/ccf_values_nonzero_days.csv"
+  }
+}

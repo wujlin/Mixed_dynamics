@@ -1,0 +1,10 @@
+{
+  "n_overlap_users": 1521,
+  "labels": [
+    "no_media",
+    "mainstream_only",
+    "wemedia_only",
+    "dual"
+  ],
+  "cohen_kappa": -0.020741272827279975
+}

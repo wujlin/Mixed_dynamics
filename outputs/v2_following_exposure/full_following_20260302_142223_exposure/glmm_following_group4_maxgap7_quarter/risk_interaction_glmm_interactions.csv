@@ -1,0 +1,7 @@
+﻿state,term,term_type,coef,std_err,z_value,p_value,odds_ratio,interaction_group,interaction_env
+H,"C(exposure_group, Treatment(reference='dual'))[T.no_media]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,0.6184365879248023,0.330794549091093,1.8695489076952698,0.061546485949752094,1.8560240419645468,no_media,risk
+H,"C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,0.0401050410684413,1.1186209404184477,0.035852217332386985,0.9714001963941705,1.040920107810314,wemedia_only,risk
+M,"C(exposure_group, Treatment(reference='dual'))[T.no_media]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,-0.7888290391776571,0.22522687967768318,-3.5023752063098845,0.00046112974306478094,0.454376541023012,no_media,risk
+M,"C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,-0.11557805359716328,1.0859663289198296,-0.10642876350699057,0.9152421726960311,0.8908510353954638,wemedia_only,risk
+L,"C(exposure_group, Treatment(reference='dual'))[T.no_media]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,0.94766634028989,0.25403052615139404,3.7305215032507997,0.00019108383281118968,2.579682528233642,no_media,risk
+L,"C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",interaction,-0.701901780946482,1.6013998663479592,-0.43830513271316196,0.6611651056924555,0.4956418047709544,wemedia_only,risk

@@ -1,0 +1,32 @@
+{
+  "inputs": {
+    "targets_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/following_targets_uid_priority.csv",
+    "edges_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_local_test_crawl_newcookie_v2_50/following_edges.csv",
+    "interaction_exposure_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_fullwindow_v2/user_exposure.csv"
+  },
+  "counts": {
+    "n_target_uids": 4790,
+    "n_edges_unique": 692,
+    "follow_group_counts": {
+      "no_media": 4752,
+      "wemedia_only": 26,
+      "dual": 12
+    }
+  },
+  "outputs": {
+    "following_exposure_by_uid_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_local_test_crawl_newcookie_v2_50_exposure/following_exposure_by_uid.csv",
+    "following_exposure_by_user_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_local_test_crawl_newcookie_v2_50_exposure/following_exposure_by_user.csv",
+    "confusion_matrix_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_local_test_crawl_newcookie_v2_50_exposure/group_confusion_matrix.csv",
+    "kappa_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/_local_test_crawl_newcookie_v2_50_exposure/group_kappa.json"
+  },
+  "agreement": {
+    "n_overlap_users": 1521,
+    "labels": [
+      "no_media",
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "cohen_kappa": 0.03174982095965583
+  }
+}

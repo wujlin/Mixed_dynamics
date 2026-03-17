@@ -1,0 +1,44 @@
+{
+  "n_entries": 26,
+  "issue_level_counts": {
+    "STYLE": 12,
+    "CRITICAL": 7,
+    "MEDIUM": 6,
+    "INFO": 1
+  },
+  "critical_keys": [
+    "zhou2023affective",
+    "yue2021passive",
+    "zhang2023softening",
+    "yao2021engaging",
+    "lu2024framing",
+    "kauk2025large",
+    "fan2024mining"
+  ],
+  "medium_keys": [
+    "dong2020public",
+    "price2022doomscrolling",
+    "yang2024fun",
+    "lu2022emotional",
+    "gao2023framing",
+    "schemer2021impact"
+  ],
+  "info_keys": [
+    "qwen2024qwen2"
+  ],
+  "style_keys": [
+    "chao2020media",
+    "gao2020mental",
+    "zhao2021information",
+    "witte1992fear",
+    "witte2000meta",
+    "kramer2014experimental",
+    "goldenberg2020digital",
+    "lu2021public",
+    "li2020datamining",
+    "tai2024examination",
+    "bermejo2025llms",
+    "cliff1993dominance"
+  ],
+  "classification_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/bib_validation/references_issue_classification.csv"
+}

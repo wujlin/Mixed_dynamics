@@ -1,0 +1,2 @@
+﻿source_uid,status,n_pages,n_edges,endpoint,error
+7777692564,fail,1,0,https://m.weibo.cn/api/container/getIndex?containerid=231093_-_selffollowed_-_{uid}&page={page},api_not_ok: ok=-100 msg=

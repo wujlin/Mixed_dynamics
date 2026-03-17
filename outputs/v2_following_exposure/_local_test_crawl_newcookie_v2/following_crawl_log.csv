@@ -1,0 +1,3 @@
+﻿source_uid,status,n_pages,n_edges,endpoint,error
+7777692564,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7623214127,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=

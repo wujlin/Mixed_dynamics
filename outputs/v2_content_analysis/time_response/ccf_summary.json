@@ -1,0 +1,14 @@
+{
+  "n_days": 1425,
+  "n_perm": 1000,
+  "alpha": 0.05,
+  "max_lag": 14,
+  "peak_lag": 0,
+  "peak_ccf": 0.9735568333398544,
+  "sum_ccf_positive_lags": 0.1928154974724214,
+  "sum_ccf_negative_lags": 0.25011402398765076,
+  "sum_abs_ccf_positive_lags": 0.1928154974724214,
+  "sum_abs_ccf_negative_lags": 0.25011402398765076,
+  "asymmetry_abs_ratio_pos_over_neg": 0.770910380786731,
+  "n_significant_lags": 4
+}

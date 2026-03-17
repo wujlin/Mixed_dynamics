@@ -1,0 +1,18 @@
+{
+  "inputs": {
+    "targets_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/following_targets_uid_priority.csv",
+    "rules": "/mnt/e/newdesktop/emotion_dynamics/data/config/weibo_following_crawler_rules.json",
+    "cookies": "/mnt/e/newdesktop/emotion_dynamics/config/weibo_cookie.json",
+    "endpoint": "https://weibo.com/ajax/friendships/friends?page={page}&uid={uid}"
+  },
+  "counts": {
+    "uids_total": 4790,
+    "uids_todo": 4790,
+    "ok": 4280,
+    "fail": 503
+  },
+  "outputs": {
+    "edges_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/full_following_20260302_142223/following_edges.csv",
+    "crawl_log_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_following_exposure/full_following_20260302_142223/following_crawl_log.csv"
+  }
+}

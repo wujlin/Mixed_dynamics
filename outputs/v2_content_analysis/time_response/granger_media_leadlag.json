@@ -1,0 +1,286 @@
+{
+  "params": {
+    "max_lag": 3,
+    "spike_z_threshold": 8.0,
+    "spike_exclude_mode": "month",
+    "rolling_window_days": 180,
+    "rolling_step_days": 30
+  },
+  "full_series": {
+    "n_days": 1425,
+    "mainstream_to_wemedia": [
+      {
+        "lag": 1,
+        "n_obs": 1424,
+        "F": 6.7315570915171214,
+        "p_value": 0.009569640475445174
+      },
+      {
+        "lag": 2,
+        "n_obs": 1423,
+        "F": 7.569962663011864,
+        "p_value": 0.0005368263172081944
+      },
+      {
+        "lag": 3,
+        "n_obs": 1422,
+        "F": 5.846208670622226,
+        "p_value": 0.0005745593140212835
+      }
+    ],
+    "wemedia_to_mainstream": [
+      {
+        "lag": 1,
+        "n_obs": 1424,
+        "F": 0.11065043314932523,
+        "p_value": 0.7394539035434835
+      },
+      {
+        "lag": 2,
+        "n_obs": 1423,
+        "F": 0.46449107369790404,
+        "p_value": 0.6285504474018782
+      },
+      {
+        "lag": 3,
+        "n_obs": 1422,
+        "F": 0.5402768906368001,
+        "p_value": 0.6547561547802272
+      }
+    ]
+  },
+  "spike_detection": {
+    "n_spike_days": 1,
+    "excluded_days": [],
+    "excluded_months": [
+      "2022-03"
+    ],
+    "max_wemedia_day": {
+      "date": "2022-03-14",
+      "wemedia_risk_count": 163.0,
+      "mainstream_risk_count": 114.0
+    }
+  },
+  "spike_excluded_series": {
+    "n_segments": 2,
+    "largest_segment": {
+      "segment_id": 1,
+      "start_date": "2020-03-25",
+      "end_date": "2022-02-28",
+      "n_days": 706,
+      "granger": {
+        "n_days": 706,
+        "mainstream_to_wemedia": [
+          {
+            "lag": 1,
+            "n_obs": 705,
+            "F": 2.813300889110934,
+            "p_value": 0.09393099352182865
+          },
+          {
+            "lag": 2,
+            "n_obs": 704,
+            "F": 1.5093622605029382,
+            "p_value": 0.221770454047864
+          },
+          {
+            "lag": 3,
+            "n_obs": 703,
+            "F": 1.0511907419236024,
+            "p_value": 0.3692608000621359
+          }
+        ],
+        "wemedia_to_mainstream": [
+          {
+            "lag": 1,
+            "n_obs": 705,
+            "F": 0.18146504445320846,
+            "p_value": 0.6702477926118467
+          },
+          {
+            "lag": 2,
+            "n_obs": 704,
+            "F": 0.32172400649291344,
+            "p_value": 0.7250055133259978
+          },
+          {
+            "lag": 3,
+            "n_obs": 703,
+            "F": 2.605400329398586,
+            "p_value": 0.05082479560102304
+          }
+        ]
+      }
+    },
+    "segments": [
+      {
+        "segment_id": 1,
+        "start_date": "2020-03-25",
+        "end_date": "2022-02-28",
+        "n_days": 706,
+        "granger": {
+          "n_days": 706,
+          "mainstream_to_wemedia": [
+            {
+              "lag": 1,
+              "n_obs": 705,
+              "F": 2.813300889110934,
+              "p_value": 0.09393099352182865
+            },
+            {
+              "lag": 2,
+              "n_obs": 704,
+              "F": 1.5093622605029382,
+              "p_value": 0.221770454047864
+            },
+            {
+              "lag": 3,
+              "n_obs": 703,
+              "F": 1.0511907419236024,
+              "p_value": 0.3692608000621359
+            }
+          ],
+          "wemedia_to_mainstream": [
+            {
+              "lag": 1,
+              "n_obs": 705,
+              "F": 0.18146504445320846,
+              "p_value": 0.6702477926118467
+            },
+            {
+              "lag": 2,
+              "n_obs": 704,
+              "F": 0.32172400649291344,
+              "p_value": 0.7250055133259978
+            },
+            {
+              "lag": 3,
+              "n_obs": 703,
+              "F": 2.605400329398586,
+              "p_value": 0.05082479560102304
+            }
+          ]
+        }
+      },
+      {
+        "segment_id": 2,
+        "start_date": "2022-04-01",
+        "end_date": "2024-02-17",
+        "n_days": 688,
+        "granger": {
+          "n_days": 688,
+          "mainstream_to_wemedia": [
+            {
+              "lag": 1,
+              "n_obs": 687,
+              "F": 10.589854092672653,
+              "p_value": 0.0011930711517413872
+            },
+            {
+              "lag": 2,
+              "n_obs": 686,
+              "F": 2.7465381011969843,
+              "p_value": 0.06486025420416597
+            },
+            {
+              "lag": 3,
+              "n_obs": 685,
+              "F": 10.155993254931747,
+              "p_value": 1.5020326672443574e-06
+            }
+          ],
+          "wemedia_to_mainstream": [
+            {
+              "lag": 1,
+              "n_obs": 687,
+              "F": 75.67135945914207,
+              "p_value": 0.0
+            },
+            {
+              "lag": 2,
+              "n_obs": 686,
+              "F": 28.999897154882802,
+              "p_value": 8.187894806610529e-13
+            },
+            {
+              "lag": 3,
+              "n_obs": 685,
+              "F": 16.758461313790608,
+              "p_value": 1.6390144796929462e-10
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "rolling_full": {
+    "n_windows": 42,
+    "share_sig_p_lt_0_05": [
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 1,
+        "share_sig": 0.047619047619047616
+      },
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 2,
+        "share_sig": 0.023809523809523808
+      },
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 3,
+        "share_sig": 0.16666666666666666
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 1,
+        "share_sig": 0.16666666666666666
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 2,
+        "share_sig": 0.16666666666666666
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 3,
+        "share_sig": 0.19047619047619047
+      }
+    ]
+  },
+  "rolling_spike_excluded": {
+    "n_windows": 35,
+    "share_sig_p_lt_0_05": [
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 1,
+        "share_sig": 0.0
+      },
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 2,
+        "share_sig": 0.05714285714285714
+      },
+      {
+        "direction": "mainstream_to_wemedia",
+        "lag": 3,
+        "share_sig": 0.2
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 1,
+        "share_sig": 0.2
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 2,
+        "share_sig": 0.17142857142857143
+      },
+      {
+        "direction": "wemedia_to_mainstream",
+        "lag": 3,
+        "share_sig": 0.2
+      }
+    ]
+  }
+}

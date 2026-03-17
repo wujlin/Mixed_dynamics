@@ -1,0 +1,11 @@
+﻿source_uid,status,n_pages,n_edges,endpoint,error
+7777692564,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7623214127,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+5633790578,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1156927893,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+2151695852,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+2476654694,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3884633681,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2698609471,ok,1,12,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3558146407,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3752888695,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},

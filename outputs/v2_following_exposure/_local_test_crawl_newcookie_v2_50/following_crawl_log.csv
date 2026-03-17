@@ -1,0 +1,51 @@
+﻿source_uid,status,n_pages,n_edges,endpoint,error
+7777692564,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7623214127,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+5633790578,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1156927893,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+2151695852,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+2476654694,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3884633681,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2698609471,ok,1,12,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3558146407,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3752888695,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1850227743,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+5208263666,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3562563130,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1731052070,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2114211640,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+3824896388,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+6334560403,ok,1,7,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2912162161,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2608093983,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2726417763,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+5449955969,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1348562270,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+1623806611,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1781866371,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+6569770363,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=用户不存在(20003) url=
+7764413993,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1444777537,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+5963835043,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7649710204,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1714498442,ok,1,17,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7314751821,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7746750422,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+7769422730,ok,1,11,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2072367177,ok,1,7,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7773175750,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1950111865,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2328007923,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+2814910975,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=用户不存在(20003) url=
+5967060279,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1580466847,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+1698825292,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+2125461727,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+5427461924,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+5727174489,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+5889073289,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+6087473533,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+7074131334,ok,1,20,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+1470407485,fail,1,0,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},api_not_ok: ok=0 msg=博主设置仅针对粉丝展示全部关注 url=
+1591398443,ok,1,19,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},
+5115198714,ok,1,18,https://weibo.com/ajax/friendships/friends?page={page}&uid={uid},

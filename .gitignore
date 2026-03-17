@@ -91,7 +91,7 @@ outputs/tmp*.png
 # 开发文档（内部使用）
 # ============================================
 AGENTS.md
-DEVELOPMENT.md
+docs/internal/
 docs/progress.md
 docs/review.md
 docs/email_*.md

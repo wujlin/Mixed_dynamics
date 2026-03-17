@@ -1,0 +1,124 @@
+{
+  "comparisons": [
+    {
+      "pair": "dual_vs_mainstream_only",
+      "status": "ok",
+      "treated_n": 23,
+      "control_n": 97,
+      "caliper": 0.049576372983865705,
+      "matched_treated_n": 7,
+      "matched_control_n": 21,
+      "covariates_used": [
+        "n_total_interactions",
+        "active_days",
+        "n_posts",
+        "month_2022-11",
+        "month_2022-12",
+        "month_2023-01",
+        "month_2023-02"
+      ],
+      "outcomes": {
+        "upgrade": {
+          "treated_mean": 0.14285714285714285,
+          "control_mean": 0.01927437641723356,
+          "att_mean_diff": 0.12358276643990929,
+          "mannwhitney_p": 0.5607971138328784,
+          "cohen_d": 0.47745611559265677,
+          "cliffs_delta": 0.061224489795918366
+        },
+        "cooling": {
+          "treated_mean": 0.17142857142857143,
+          "control_mean": 0.06689342403628118,
+          "att_mean_diff": 0.10453514739229026,
+          "mannwhitney_p": 0.25412945407453336,
+          "cohen_d": 0.3521328580244315,
+          "cliffs_delta": 0.14965986394557823
+        },
+        "stable": {
+          "treated_mean": 0.5428571428571429,
+          "control_mean": 0.8424036281179138,
+          "att_mean_diff": -0.299546485260771,
+          "mannwhitney_p": 0.018825799743931556,
+          "cohen_d": -0.7199351178388318,
+          "cliffs_delta": -0.3741496598639456
+        }
+      }
+    },
+    {
+      "pair": "dual_vs_wemedia_only",
+      "status": "ok",
+      "treated_n": 23,
+      "control_n": 94,
+      "caliper": 0.024756903626316135,
+      "matched_treated_n": 16,
+      "matched_control_n": 48,
+      "covariates_used": [
+        "n_total_interactions",
+        "active_days",
+        "n_posts",
+        "month_2022-11",
+        "month_2022-12",
+        "month_2023-01",
+        "month_2023-02"
+      ],
+      "outcomes": {
+        "upgrade": {
+          "treated_mean": 0.14375000000000002,
+          "control_mean": 0.08641774891774891,
+          "att_mean_diff": 0.057332251082251096,
+          "mannwhitney_p": 0.3642396507784337,
+          "cohen_d": 0.22292563343623337,
+          "cliffs_delta": 0.078125
+        },
+        "cooling": {
+          "treated_mean": 0.1875,
+          "control_mean": 0.0885551948051948,
+          "att_mean_diff": 0.0989448051948052,
+          "mannwhitney_p": 0.13002713154930212,
+          "cohen_d": 0.34038290787557246,
+          "cliffs_delta": 0.13671875
+        },
+        "stable": {
+          "treated_mean": 0.45,
+          "control_mean": 0.6781866281866282,
+          "att_mean_diff": -0.22818662818662816,
+          "mannwhitney_p": 0.014356091626466052,
+          "cohen_d": -0.5086826856939203,
+          "cliffs_delta": -0.2682291666666667
+        }
+      }
+    }
+  ],
+  "sample_info": {
+    "n_users_transition_sample_all_groups": 822,
+    "group_counts_all_groups": {
+      "no_media": 608,
+      "mainstream_only": 97,
+      "wemedia_only": 94,
+      "dual": 23
+    },
+    "n_users_transition_sample": 214,
+    "group_counts": {
+      "mainstream_only": 97,
+      "wemedia_only": 94,
+      "dual": 23
+    },
+    "psm_groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "month_fe": "first_post_month",
+    "study_window": {
+      "start": "2022-10-01 00:00:00",
+      "end": "2023-02-28 23:59:59"
+    },
+    "annotation_sources": [
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl",
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/batches/batch_v2_media_exposed/new_v2_media_exposed.jsonl"
+    ],
+    "min_posts": 2,
+    "psm_ratio": 3,
+    "psm_caliper_mult": 0.2
+  }
+}

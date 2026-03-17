@@ -1,0 +1,70 @@
+{
+  "study_window": {
+    "start": "2022-10-01 00:00:00",
+    "end": "2023-02-28 23:59:59"
+  },
+  "annotation_sources": [
+    "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl",
+    "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/batches/batch_v2_media_exposed/new_v2_media_exposed.jsonl"
+  ],
+  "series_diagnostics": {
+    "mainstream_risk": {
+      "std": 0.26868294174831736,
+      "n_unique": 61,
+      "is_constant": false,
+      "mean": 0.2178197320393631
+    },
+    "wemedia_risk": {
+      "std": 0.3452390577725116,
+      "n_unique": 44,
+      "is_constant": false,
+      "mean": 0.4318978048043579
+    },
+    "public_H": {
+      "std": 0.17923228073406222,
+      "n_unique": 84,
+      "is_constant": false,
+      "mean": 0.1741043949319393
+    }
+  },
+  "mainstream_risk_to_public_H": [
+    {
+      "lag": 1,
+      "n_obs": 150,
+      "F": 0.17176253392877344,
+      "p_value": 0.679154258966592
+    },
+    {
+      "lag": 2,
+      "n_obs": 149,
+      "F": 0.3452773275655543,
+      "p_value": 0.7086085128761452
+    },
+    {
+      "lag": 3,
+      "n_obs": 148,
+      "F": 0.11907635908744166,
+      "p_value": 0.9487675905987788
+    }
+  ],
+  "wemedia_risk_to_public_H": [
+    {
+      "lag": 1,
+      "n_obs": 150,
+      "F": 1.149109458697198,
+      "p_value": 0.2854923788947372
+    },
+    {
+      "lag": 2,
+      "n_obs": 149,
+      "F": 1.662559197165715,
+      "p_value": 0.1932724352594165
+    },
+    {
+      "lag": 3,
+      "n_obs": 148,
+      "F": 1.1040020568637974,
+      "p_value": 0.34969966441465505
+    }
+  ]
+}

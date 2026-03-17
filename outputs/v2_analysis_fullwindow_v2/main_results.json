@@ -1,0 +1,204 @@
+{
+  "comparisons": [
+    {
+      "pair": "dual_vs_mainstream_only",
+      "status": "ok",
+      "treated_n": 78,
+      "control_n": 458,
+      "caliper": 0.04060371412236038,
+      "matched_treated_n": 43,
+      "matched_control_n": 129,
+      "covariates_used": [
+        "n_total_interactions",
+        "active_days",
+        "n_posts",
+        "month_2020-02",
+        "month_2020-03",
+        "month_2020-04",
+        "month_2020-05",
+        "month_2020-07",
+        "month_2020-11",
+        "month_2021-01",
+        "month_2021-03",
+        "month_2021-08",
+        "month_2021-11",
+        "month_2022-01",
+        "month_2022-02",
+        "month_2022-03",
+        "month_2022-04",
+        "month_2022-05",
+        "month_2022-08",
+        "month_2022-09",
+        "month_2022-10",
+        "month_2022-11",
+        "month_2022-12",
+        "month_2023-01",
+        "month_2023-02",
+        "month_2023-03",
+        "month_2023-04",
+        "month_2023-05",
+        "month_2023-06",
+        "month_2023-07",
+        "month_2023-08",
+        "month_2023-09",
+        "month_2023-10",
+        "month_2023-11",
+        "month_2023-12",
+        "month_2024-01",
+        "month_2024-02",
+        "month_2024-03",
+        "month_2024-04",
+        "month_2024-05",
+        "month_2024-06",
+        "month_2024-07",
+        "month_2024-08",
+        "month_2024-09",
+        "month_2024-10",
+        "month_2024-11",
+        "month_2024-12",
+        "month_2025-01",
+        "month_2025-02",
+        "month_2025-05"
+      ],
+      "outcomes": {
+        "upgrade": {
+          "treated_mean": 0.14049221858060257,
+          "control_mean": 0.1323924934186052,
+          "att_mean_diff": 0.008099725161997367,
+          "mannwhitney_p": 0.1295225502086027,
+          "cohen_d": 0.03697168744965779,
+          "cliffs_delta": 0.09969352803317108
+        },
+        "cooling": {
+          "treated_mean": 0.12846723945576025,
+          "control_mean": 0.1400861959715489,
+          "att_mean_diff": -0.011618956515788644,
+          "mannwhitney_p": 0.9962481400793045,
+          "cohen_d": -0.047359026509843805,
+          "cliffs_delta": -0.000360555255092843
+        },
+        "stable": {
+          "treated_mean": 0.5306513615649404,
+          "control_mean": 0.5738333198451517,
+          "att_mean_diff": -0.04318195828021139,
+          "mannwhitney_p": 0.30391213052766985,
+          "cohen_d": -0.10383581361940543,
+          "cliffs_delta": -0.07157021813592933
+        }
+      }
+    },
+    {
+      "pair": "dual_vs_wemedia_only",
+      "status": "ok",
+      "treated_n": 78,
+      "control_n": 479,
+      "caliper": 0.029931370383159794,
+      "matched_treated_n": 55,
+      "matched_control_n": 165,
+      "covariates_used": [
+        "n_total_interactions",
+        "active_days",
+        "n_posts",
+        "month_2020-03",
+        "month_2020-11",
+        "month_2021-03",
+        "month_2021-08",
+        "month_2021-11",
+        "month_2022-01",
+        "month_2022-03",
+        "month_2022-04",
+        "month_2022-06",
+        "month_2022-07",
+        "month_2022-08",
+        "month_2022-09",
+        "month_2022-10",
+        "month_2022-11",
+        "month_2022-12",
+        "month_2023-01",
+        "month_2023-02",
+        "month_2023-03",
+        "month_2023-04",
+        "month_2023-05",
+        "month_2023-06",
+        "month_2023-07",
+        "month_2023-08",
+        "month_2023-09",
+        "month_2023-10",
+        "month_2023-11",
+        "month_2023-12",
+        "month_2024-01",
+        "month_2024-02",
+        "month_2024-03",
+        "month_2024-04",
+        "month_2024-05",
+        "month_2024-06",
+        "month_2024-07",
+        "month_2024-08",
+        "month_2024-09",
+        "month_2024-12",
+        "month_2025-01",
+        "month_2025-03",
+        "month_2025-05",
+        "month_2025-06"
+      ],
+      "outcomes": {
+        "upgrade": {
+          "treated_mean": 0.13700819137461778,
+          "control_mean": 0.15924382704417975,
+          "att_mean_diff": -0.022235635669561972,
+          "mannwhitney_p": 0.3571332291562834,
+          "cohen_d": -0.09899116125548608,
+          "cliffs_delta": 0.054325068870523414
+        },
+        "cooling": {
+          "treated_mean": 0.12341103986302777,
+          "control_mean": 0.16641951664068247,
+          "att_mean_diff": -0.04300847677765473,
+          "mannwhitney_p": 0.5897370101979644,
+          "cohen_d": -0.17002244537714484,
+          "cliffs_delta": -0.030964187327823692
+        },
+        "stable": {
+          "treated_mean": 0.5167594096982612,
+          "control_mean": 0.50375724940377,
+          "att_mean_diff": 0.013002160294491106,
+          "mannwhitney_p": 0.697112991960914,
+          "cohen_d": 0.03140334199139651,
+          "cliffs_delta": 0.024132231404958678
+        }
+      }
+    }
+  ],
+  "sample_info": {
+    "n_users_transition_sample_all_groups": 2013,
+    "group_counts_all_groups": {
+      "no_media": 998,
+      "wemedia_only": 479,
+      "mainstream_only": 458,
+      "dual": 78
+    },
+    "n_users_transition_sample": 1015,
+    "group_counts": {
+      "wemedia_only": 479,
+      "mainstream_only": 458,
+      "dual": 78
+    },
+    "psm_groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "month_fe": "first_post_month",
+    "study_window": {
+      "start": "2015-05-04 00:00:00",
+      "end": "2025-07-10 23:59:59"
+    },
+    "annotation_sources": [
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/master/long_covid_annotations_master.jsonl",
+      "/mnt/e/newdesktop/emotion_dynamics/outputs/annotations/batches/batch_v2_media_exposed/new_v2_media_exposed.jsonl"
+    ],
+    "min_posts": 2,
+    "psm_ratio": 3,
+    "psm_caliper_mult": 0.2
+  }
+}
