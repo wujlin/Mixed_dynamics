@@ -64,6 +64,14 @@ EMOTIONS = ["H", "M", "L"]
 TRANSITIONS = [f"{a}->{b}" for a in EMOTIONS for b in EMOTIONS]
 
 
+def _extra_topic_like_csvs() -> List[Path]:
+    extra = [
+        ROOT / "outputs/annotations/intermediate/to_annotate_batch3_clean.csv",
+        ROOT / "outputs/annotations/intermediate/to_annotate_v2_media_exposed.csv",
+    ]
+    return [p for p in extra if p.exists()]
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="运行 V2 PI 实验方案")
     p.add_argument("--network-dir", default="outputs/network/repost_user_network", help="网络结果目录")
@@ -82,6 +90,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--psm-caliper-mult", type=float, default=0.2, help="卡钳倍数（乘以 pscore 标准差）")
     p.add_argument("--bootstrap-iters", type=int, default=1000, help="Bootstrap 次数")
     p.add_argument("--seed", type=int, default=42, help="随机种子")
+    p.add_argument(
+        "--env-mode",
+        choices=["transition_window", "point_prev_day"],
+        default="transition_window",
+        help="转移环境定义：两帖之间窗口（推荐）或上一帖当天点测",
+    )
+    p.add_argument("--env-risk-threshold", type=float, default=0.5, help="风险环境判定阈值")
     return p.parse_args()
 
 
@@ -136,7 +151,7 @@ def _mode_by_count(df: pd.DataFrame, key_col: str, value_col: str) -> pd.DataFra
 def build_verify_lookup(topic_dir: Path, user_info_csv: Path) -> Dict[str, str]:
     # 1) topic verify_typ
     parts = []
-    for p in sorted(topic_dir.glob("*.csv")):
+    for p in sorted(topic_dir.glob("*.csv")) + _extra_topic_like_csvs():
         try:
             h = pd.read_csv(p, nrows=0)
         except Exception:
@@ -177,7 +192,7 @@ def build_verify_lookup(topic_dir: Path, user_info_csv: Path) -> Dict[str, str]:
 def build_mid_user_map() -> Dict[str, str]:
     parts = []
     # topic
-    for p in sorted((ROOT / "dataset/Topic_data").glob("*.csv")):
+    for p in sorted((ROOT / "dataset/Topic_data").glob("*.csv")) + _extra_topic_like_csvs():
         try:
             h = pd.read_csv(p, nrows=0)
         except Exception:
@@ -212,16 +227,6 @@ def build_mid_user_map() -> Dict[str, str]:
         d = d[(d["mid"] != "") & (d["user_name"] != "")]
         if len(d):
             parts.append(d)
-    # batch3 source
-    b3 = ROOT / "outputs/annotations/intermediate/to_annotate_batch3_clean.csv"
-    if b3.exists():
-        d = pd.read_csv(b3, usecols=["mid", "user_name"], dtype=str, low_memory=False)
-        d["mid"] = d["mid"].map(_norm_mid)
-        d["user_name"] = d["user_name"].map(_norm_text)
-        d = d[(d["mid"] != "") & (d["user_name"] != "")]
-        if len(d):
-            parts.append(d)
-
     full = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=["mid", "user_name"])
     voted = (
         full.groupby(["mid", "user_name"], as_index=False)
@@ -242,7 +247,7 @@ def _read_topic_csv(path: Path, usecols: List[str]) -> pd.DataFrame:
 
 def load_topic_posts(topic_dir: Path) -> pd.DataFrame:
     parts = []
-    for p in sorted(topic_dir.glob("*.csv")):
+    for p in sorted(topic_dir.glob("*.csv")) + _extra_topic_like_csvs():
         try:
             h = pd.read_csv(p, nrows=0)
         except Exception:
@@ -809,17 +814,73 @@ def compute_transition_group_table(df_user: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("n_users", ascending=False).reset_index(drop=True)
 
 
+def _build_media_post_lookup(timeline: pd.DataFrame) -> Dict[str, Dict[str, np.ndarray]]:
+    media = timeline[timeline["node_type_3class"].isin(["mainstream", "wemedia"])].copy()
+    media["publish_time"] = pd.to_datetime(media["publish_time"], errors="coerce")
+    media = media[media["publish_time"].notna()].copy()
+    media["is_risk"] = media["risk_class"].eq("risk").astype(np.int8)
+    media = media.sort_values(["user_name", "publish_time"])
+
+    lookup: Dict[str, Dict[str, np.ndarray]] = {}
+    for user_name, g in media.groupby("user_name", sort=False):
+        lookup[user_name] = {
+            "ts": g["publish_time"].to_numpy(dtype="datetime64[ns]"),
+            "risk": g["is_risk"].to_numpy(dtype=np.int16),
+        }
+    return lookup
+
+
+def _window_stats_for_targets(
+    media_lookup: Dict[str, Dict[str, np.ndarray]],
+    targets: Iterable[str],
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+) -> Tuple[int, int, int]:
+    start64 = np.datetime64(start.to_datetime64())
+    end64 = np.datetime64(end.to_datetime64())
+    n_posts = 0
+    n_risk_posts = 0
+    n_accounts_observed = 0
+    for t in targets:
+        rec = media_lookup.get(t)
+        if rec is None:
+            continue
+        ts = rec["ts"]
+        lo = int(np.searchsorted(ts, start64, side="right"))
+        hi = int(np.searchsorted(ts, end64, side="right"))
+        if hi <= lo:
+            continue
+        n_accounts_observed += 1
+        n_posts += int(hi - lo)
+        n_risk_posts += int(rec["risk"][lo:hi].sum())
+    return n_posts, n_risk_posts, n_accounts_observed
+
+
 def classify_transition_environment(
     timeline: pd.DataFrame,
     df_user: pd.DataFrame,
     target_m: Dict[str, set],
     target_w: Dict[str, set],
+    env_mode: str = "transition_window",
+    env_risk_threshold: float = 0.5,
 ) -> pd.DataFrame:
     # 每天每个媒体账号 risk 比例
     media = timeline[timeline["node_type_3class"].isin(["mainstream", "wemedia"])].copy()
     media["is_risk"] = media["risk_class"].eq("risk").astype(float)
-    day_user_risk = media.groupby(["date", "user_name"], as_index=False).agg(risk_ratio=("is_risk", "mean"), n_posts=("is_risk", "size"))
-    risk_lookup = {(r["date"], r["user_name"]): float(r["risk_ratio"]) for _, r in day_user_risk.iterrows()}
+    day_user_risk = media.groupby(["date", "user_name"], as_index=False).agg(
+        risk_ratio=("is_risk", "mean"),
+        n_posts=("is_risk", "size"),
+        n_risk_posts=("is_risk", "sum"),
+    )
+    risk_lookup = {
+        (r["date"], r["user_name"]): {
+            "risk_ratio": float(r["risk_ratio"]),
+            "n_posts": int(r["n_posts"]),
+            "n_risk_posts": int(round(float(r["n_risk_posts"]))),
+        }
+        for _, r in day_user_risk.iterrows()
+    }
+    media_lookup = _build_media_post_lookup(timeline)
 
     # 逐用户构建转移并标注环境
     rows = []
@@ -837,27 +898,50 @@ def classify_transition_environment(
         w_targets = target_w.get(u, set())
         targets = sorted(m_targets | w_targets)
         for i in range(1, len(emo)):
+            prev_t = pd.Timestamp(ts[i - 1])
+            curr_t = pd.Timestamp(ts[i])
             prev_day = dates[i - 1]
-            vals = []
-            for t in targets:
-                key = (prev_day, t)
-                if key in risk_lookup:
-                    vals.append(risk_lookup[key])
-            if len(vals) == 0:
-                env = "unknown"
-                env_ratio = np.nan
+
+            if env_mode == "point_prev_day":
+                vals = []
+                n_posts_obs = 0
+                n_risk_posts_obs = 0
+                n_accounts_obs = 0
+                for t in targets:
+                    rec = risk_lookup.get((prev_day, t))
+                    if rec is None:
+                        continue
+                    vals.append(float(rec["risk_ratio"]))
+                    n_posts_obs += int(rec["n_posts"])
+                    n_risk_posts_obs += int(rec["n_risk_posts"])
+                    n_accounts_obs += 1
+                if len(vals) == 0:
+                    env = "no_observed_media"
+                    env_ratio = np.nan
+                else:
+                    env_ratio = float(np.mean(vals))
+                    env = "risk" if env_ratio > float(env_risk_threshold) else "norisk"
             else:
-                env_ratio = float(np.mean(vals))
-                env = "risk" if env_ratio > 0.5 else "norisk"
+                n_posts_obs, n_risk_posts_obs, n_accounts_obs = _window_stats_for_targets(media_lookup, targets, prev_t, curr_t)
+                if n_posts_obs == 0:
+                    env = "no_observed_media"
+                    env_ratio = np.nan
+                else:
+                    env_ratio = float(n_risk_posts_obs / n_posts_obs)
+                    env = "risk" if env_ratio > float(env_risk_threshold) else "norisk"
             rows.append(
                 {
                     "user_name": u,
                     "exposure_group": user_group.get(u, ""),
-                    "prev_time": ts[i - 1],
-                    "curr_time": ts[i],
+                    "prev_time": prev_t,
+                    "curr_time": curr_t,
                     "transition": f"{emo[i-1]}->{emo[i]}",
                     "env_type": env,
                     "env_risk_ratio": env_ratio,
+                    "env_n_target_posts_observed": int(n_posts_obs),
+                    "env_n_risk_posts_observed": int(n_risk_posts_obs),
+                    "env_n_target_accounts_observed": int(n_accounts_obs),
+                    "env_mode": env_mode,
                 }
             )
     out = pd.DataFrame(rows)
@@ -1061,11 +1145,20 @@ def main() -> None:
         "min_posts": int(args.min_posts),
         "psm_ratio": int(args.psm_ratio),
         "psm_caliper_mult": float(args.psm_caliper_mult),
+        "transition_env_mode": args.env_mode,
+        "transition_env_risk_threshold": float(args.env_risk_threshold),
     }
     (out_dir / "main_results.json").write_text(json.dumps(main_results, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # 3) 机制：risk/norisk 环境
-    trans_env = classify_transition_environment(timeline, df_user, target_m, target_w)
+    trans_env = classify_transition_environment(
+        timeline,
+        df_user,
+        target_m,
+        target_w,
+        env_mode=args.env_mode,
+        env_risk_threshold=args.env_risk_threshold,
+    )
     trans_env.to_csv(out_dir / "transition_with_environment.csv", index=False, encoding="utf-8-sig")
     mech = summarize_mechanism(trans_env)
     mech.to_csv(out_dir / "mechanism_results.csv", index=False, encoding="utf-8-sig")
@@ -1212,6 +1305,7 @@ def main() -> None:
     print(f"- timeline(annotated): {len(timeline)} posts")
     print(f"- study window: {study_start} ~ {study_end}")
     print(f"- annotation sources: {len(ann_paths)} files")
+    print(f"- transition env mode: {args.env_mode}")
     print(f"- transition sample (all groups): {len(df_user)} users")
     print(f"- transition sample (PSM groups): {len(psm_pool)} users")
     print(f"- granger file: {out_dir / 'granger_results.json'}")

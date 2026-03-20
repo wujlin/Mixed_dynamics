@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 from pathlib import Path
+import shutil
 from typing import Dict, Iterable, Tuple
 
 import numpy as np
@@ -66,7 +67,7 @@ class NatureStyle:
 def nature_rcparams(style: NatureStyle | None = None) -> Dict[str, object]:
     style = style or NatureStyle()
     return {
-        "font.family": "DejaVu Sans",
+        "font.family": "sans-serif",
         "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans", "sans-serif"],
         "mathtext.fontset": "dejavusans",
         "axes.unicode_minus": False,
@@ -135,17 +136,17 @@ def save_figure(fig: plt.Figure, out_path: Path) -> None:
     fig.savefig(out_path)
 EMOTION_ORDER = ["H", "M", "L"]
 EMOTION_COLORS = {
-    "H": OKABE_ITO["vermillion"],
-    "M": OKABE_ITO["gray"],
-    "L": OKABE_ITO["bluish_green"],
+    "H": "#C98A72",
+    "M": "#8E8E8E",
+    "L": "#88A9C4",
 }
 MEDIA_COLORS = {
-    "mainstream": OKABE_ITO["blue"],
-    "wemedia": OKABE_ITO["vermillion"],
+    "mainstream": "#6E8CA6",
+    "wemedia": "#C98A72",
 }
 ENV_COLORS = {
-    "norisk": "#B3B3B3",
-    "risk": OKABE_ITO["vermillion"],
+    "norisk": "#B9B9B9",
+    "risk": "#C98A72",
 }
 GROUP_LABELS = {
     "mainstream": "Mainstream",
@@ -166,12 +167,12 @@ def parse_args() -> argparse.Namespace:
     )
     p.add_argument(
         "--content-dir",
-        default="outputs/v2_content_analysis",
+        default="outputs/v2_content_analysis_unified",
         help="内容分析输出目录",
     )
     p.add_argument(
         "--glmm-dir",
-        default="outputs/v2_content_analysis/glmm_maxgap7_fullwindow",
+        default="outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7",
         help="GLMM 输出目录",
     )
     p.add_argument("--seed", type=int, default=20260308, help="随机种子")
@@ -237,7 +238,7 @@ def plot_figure1_overview(fig_dir: Path) -> None:
             0.18,
             0.25,
             "Dataset and labels",
-            "17,604 Weibo posts\nMar 2020-Feb 2024\nLLM labels: arousal (H/M/L)\nand risk (risk/non-risk)",
+            "92,536 Weibo posts\nMar 2020-Jul 2025\nLLM labels: arousal (H/M/L)\nand risk (risk/non-risk)",
             "#F4F6F8",
             "#AAB4BE",
         )
@@ -248,7 +249,7 @@ def plot_figure1_overview(fig_dir: Path) -> None:
             0.20,
             0.28,
             "1. Content framing",
-            "Mainstream keeps risk posts\nin the moderate band.\nWe-media shifts risk posts\ntoward both high (13.2%)\nand low (21.1%) arousal.",
+            "Mainstream keeps risk posts\nin the moderate band.\nWe-media shifts risk posts\ntoward both high (19.7%)\nand low (27.2%) arousal.",
             "#EEF4FB",
             OKABE_ITO["blue"],
         )
@@ -259,7 +260,7 @@ def plot_figure1_overview(fig_dir: Path) -> None:
             0.20,
             0.28,
             "2. Temporal synchrony",
-            "The two streams move most\nstrongly on the same day\n(r = 0.97 at lag 0), but\nwe-media shows 5.5x more\nrisk-burst days.",
+            "The two streams align most\nstrongly on the same day\n(r = 0.72 at lag 0), while\nwe-media covers a broader\nset of risk bursts.",
             "#FBEFE8",
             OKABE_ITO["vermillion"],
         )
@@ -270,7 +271,7 @@ def plot_figure1_overview(fig_dir: Path) -> None:
             0.20,
             0.28,
             "3. Individual sensitivity",
-            "Under risk environments,\nwe-media-only users become\nmore likely to shift to high\narousal, whereas mainstream-\nonly users remain moderate.",
+            "Under risk environments,\nwe-media-only users become\nmore likely to shift to high\narousal and less likely to\nremain moderate.",
             "#EEF7F3",
             OKABE_ITO["bluish_green"],
         )
@@ -310,6 +311,18 @@ def plot_figure1_overview(fig_dir: Path) -> None:
         plt.close(fig)
 
 
+def sync_manual_framework(fig_dir: Path) -> None:
+    src_pdf = ROOT / "figures" / "framework_emotion.pdf"
+    src_png = ROOT / "figures" / "framework_emotion.png"
+    dst_pdf = fig_dir / "fig1_overview_framework.pdf"
+    dst_png = fig_dir / "fig1_overview_framework.png"
+    if src_pdf.exists() and src_png.exists():
+        shutil.copy2(src_pdf, dst_pdf)
+        shutil.copy2(src_png, dst_png)
+    else:
+        plot_figure1_overview(fig_dir)
+
+
 def plot_figure2_emotion_distribution(content_dir: Path, fig_dir: Path) -> None:
     d = pd.read_csv(content_dir / "emotion_frame" / "emotion_distribution_long.csv")
     d["group"] = d["group"].astype(str)
@@ -320,7 +333,14 @@ def plot_figure2_emotion_distribution(content_dir: Path, fig_dir: Path) -> None:
     risk_order = ["risk", "norisk"]
 
     with nature_style(NatureStyle()):
-        fig, axes = plt.subplots(1, 2, figsize=FIGSIZE_NATURE_FULL, sharex=True, sharey=True)
+        fig, axes = plt.subplots(
+            1,
+            2,
+            figsize=FIGSIZE_NATURE_FULL,
+            sharex=True,
+            sharey=True,
+            gridspec_kw={"width_ratios": [1.25, 0.95]},
+        )
 
         for ax, risk_class, panel in zip(axes, risk_order, ["a", "b"]):
             sub = d[d["risk_class"] == risk_class].copy()
@@ -342,11 +362,46 @@ def plot_figure2_emotion_distribution(content_dir: Path, fig_dir: Path) -> None:
                     linewidth=0.7,
                     label=emo,
                 )
-                for yi, width, x0 in zip(y, vals_arr, left):
+                for yi, width, x0, grp in zip(y, vals_arr, left, order):
                     if width >= 0.12:
                         x_text = x0 + width / 2.0
-                        text_color = "white" if emo in {"H", "L"} else "black"
-                        ax.text(x_text, yi, f"{width * 100:.1f}%", ha="center", va="center", fontsize=6.8, color=text_color)
+                        ax.text(
+                            x_text,
+                            yi,
+                            f"{width * 100:.1f}%",
+                            ha="center",
+                            va="center",
+                            fontsize=7.0,
+                            fontweight="bold",
+                            color="#222222",
+                            bbox=dict(boxstyle="round,pad=0.10", fc="#FAF9F7", ec="none", alpha=0.88),
+                        )
+                    elif risk_class == "risk" and grp in {"mainstream", "wemedia"} and width >= 0.01:
+                        label = f"{width * 100:.1f}%"
+                        if x0 < 1e-6:
+                            ax.text(
+                                x0 + width + 0.012,
+                                yi,
+                                label,
+                                ha="left",
+                                va="center",
+                                fontsize=6.8,
+                                fontweight="bold",
+                                color="#222222",
+                                bbox=dict(boxstyle="round,pad=0.12", fc="#FAF9F7", ec="none", alpha=0.96),
+                            )
+                        elif x0 + width > 0.999:
+                            ax.text(
+                                x0 - 0.012,
+                                yi,
+                                label,
+                                ha="right",
+                                va="center",
+                                fontsize=6.8,
+                                fontweight="bold",
+                                color="#222222",
+                                bbox=dict(boxstyle="round,pad=0.12", fc="#FAF9F7", ec="none", alpha=0.96),
+                            )
                 left += vals_arr
 
             ax.set_yticks(y, [GROUP_LABELS[g] for g in order])
@@ -354,11 +409,21 @@ def plot_figure2_emotion_distribution(content_dir: Path, fig_dir: Path) -> None:
             ax.set_xticks(np.linspace(0, 1, 6))
             ax.set_xticklabels([f"{int(v * 100)}%" for v in np.linspace(0, 1, 6)])
             ax.set_xlabel("Share of posts")
-            ax.set_title("Risk posts" if risk_class == "risk" else "Non-risk posts", pad=6)
+            ax.set_title(
+                "Risk posts" if risk_class == "risk" else "Non-risk posts",
+                pad=6,
+                color="#222222",
+                fontweight="bold",
+                fontsize=8.6,
+            )
             despine(ax)
-            add_panel_label(ax, panel, dx=-24, dy=2, fontsize=8.0)
+            add_panel_label(ax, panel, dx=-18, dy=2, fontsize=8.0)
 
-        axes[0].set_ylabel("Media type")
+            for tick_label in ax.get_yticklabels():
+                tick_label.set_fontweight("bold")
+                tick_label.set_color("#1F1F1F")
+
+        axes[0].set_ylabel("Media type", labelpad=12)
         legend_items = [
             Line2D([0], [0], color=EMOTION_COLORS["H"], lw=6, label="High arousal"),
             Line2D([0], [0], color=EMOTION_COLORS["M"], lw=6, label="Moderate arousal"),
@@ -367,11 +432,12 @@ def plot_figure2_emotion_distribution(content_dir: Path, fig_dir: Path) -> None:
         fig.legend(
             handles=legend_items,
             loc="upper center",
-            bbox_to_anchor=(0.5, 1.01),
+            bbox_to_anchor=(0.5, 0.985),
             ncol=3,
             frameon=False,
+            prop={"size": 7.6, "weight": "bold"},
         )
-        fig.subplots_adjust(left=0.12, right=0.98, top=0.82, bottom=0.16, wspace=0.18)
+        fig.subplots_adjust(left=0.15, right=0.98, top=0.82, bottom=0.16, wspace=0.16)
         save_png_pdf(fig, fig_dir / "fig2_emotion_distribution")
         plt.close(fig)
 
@@ -388,13 +454,17 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
         ax1 = fig.add_subplot(gs[0, :])
         ax2 = fig.add_subplot(gs[1, 0])
         ax3 = fig.add_subplot(gs[1, 1])
+        ccf_color = "#5F7283"
+        ccf_fill = "#DCE6ED"
+        pre_color = "#7A7A7A"
+        post_color = "#C98A72"
 
         # Panel a: full-sample CCF
         ax1.fill_between(
             ccf["lag"],
             ccf["ci_lower"],
             ccf["ci_upper"],
-            color=MEDIA_COLORS["mainstream"],
+            color=ccf_fill,
             alpha=0.16,
             linewidth=0,
         )
@@ -402,7 +472,7 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
         ax1.plot(
             ccf["lag"],
             ccf["ccf"],
-            color=MEDIA_COLORS["mainstream"],
+            color=ccf_color,
             marker="o",
             markersize=3,
             linewidth=1.2,
@@ -410,32 +480,46 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
         ax1.scatter(
             ccf.loc[sig, "lag"],
             ccf.loc[sig, "ccf"],
-            color=MEDIA_COLORS["mainstream"],
+            color=ccf_color,
             s=16,
             zorder=3,
         )
         ax1.axhline(0, color="#9A9A9A", linewidth=0.8)
         ax1.axvline(0, color="#9A9A9A", linewidth=0.8)
         ax1.set_xlim(ccf["lag"].min(), ccf["lag"].max())
+        ax1.set_xticks([-14, -7, 0, 7, 14])
         ax1.set_ylabel("Cross-correlation")
         ax1.set_xlabel("Lag (days; positive = mainstream leads)")
-        ax1.set_title("Full-sample synchrony", pad=5)
+        ax1.set_title("Full-sample CCF", pad=5)
         despine(ax1)
-        add_panel_label(ax1, "a", dx=-28, dy=2, fontsize=8.0)
+        add_panel_label(ax1, "a", dx=-18, dy=2, fontsize=8.0)
 
         # Panel b: segmented CCF
-        for segment, color, label in [
-            ("pre_spike", MEDIA_COLORS["mainstream"], "Pre-spike"),
-            ("post_spike", MEDIA_COLORS["wemedia"], "Post-spike"),
+        for segment, color, label, linestyle, markerface in [
+            ("pre_spike", pre_color, "Pre-spike", "--", "white"),
+            ("post_spike", post_color, "Post-spike", "-", post_color),
         ]:
             sub = seg[seg["segment"] == segment].copy()
-            ax2.plot(sub["lag"], sub["ccf"], color=color, linewidth=1.2, marker="o", markersize=2.5, label=label)
+            ax2.plot(
+                sub["lag"],
+                sub["ccf"],
+                color=color,
+                linewidth=1.2,
+                linestyle=linestyle,
+                marker="o",
+                markersize=2.5,
+                markerfacecolor=markerface,
+                markeredgecolor=color,
+                label=label,
+            )
         ax2.axhline(0, color="#9A9A9A", linewidth=0.8)
         ax2.axvline(0, color="#9A9A9A", linewidth=0.8)
+        ax2.set_xlim(-14.5, 14.5)
+        ax2.set_xticks([-14, -7, 0, 7, 14])
         ax2.set_xlabel("Lag (days)")
         ax2.set_ylabel("Cross-correlation")
-        ax2.set_title("By period", pad=5)
-        ax2.legend(loc="upper right", frameon=False, ncol=1)
+        ax2.set_title("Segmented CCF", pad=5)
+        ax2.legend(loc="upper right", frameon=False, ncol=1, handlelength=2.0)
         despine(ax2)
         add_panel_label(ax2, "b", dx=-28, dy=2, fontsize=8.0)
 
@@ -450,25 +534,25 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
             m2w["p_observed"],
             width=width,
             color=MEDIA_COLORS["mainstream"],
-            label="Mainstream burst -> We-media burst",
+            label="Mainstream → We-media",
         )
         ax3.bar(
             x + width / 2,
             w2m["p_observed"],
             width=width,
             color=MEDIA_COLORS["wemedia"],
-            label="We-media burst -> Mainstream burst",
+            label="We-media → Mainstream",
         )
         ax3.set_xticks(x, [f"{w}" for w in windows])
         ax3.set_xlabel("Window (days)")
         ax3.set_ylabel("Co-occurrence rate")
         ax3.set_ylim(0, 1.0)
         ax3.set_title("Burst co-occurrence", pad=5)
-        ax3.legend(loc="upper left", frameon=False)
+        ax3.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02), frameon=False, ncol=1)
         despine(ax3)
         add_panel_label(ax3, "c", dx=-28, dy=2, fontsize=8.0)
 
-        fig.subplots_adjust(left=0.10, right=0.98, top=0.94, bottom=0.13)
+        fig.subplots_adjust(left=0.13, right=0.98, top=0.94, bottom=0.13)
         save_png_pdf(fig, fig_dir / "fig3_temporal_synchrony")
         plt.close(fig)
 
@@ -510,10 +594,9 @@ def bootstrap_state_rates(
 
 def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> None:
     d = pd.read_csv(glmm_dir / "risk_interaction_glmm_input.csv")
-    interactions = pd.read_csv(glmm_dir / "risk_interaction_glmm_interactions.csv")
     rates = bootstrap_state_rates(d, n_boot=n_boot, seed=seed)
 
-    group_order = ["mainstream_only", "wemedia_only", "dual"]
+    group_order = ["mainstream_only", "dual", "wemedia_only"]
     env_order = ["norisk", "risk"]
     state_order = ["H", "M", "L"]
     ylims = {
@@ -523,7 +606,7 @@ def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> 
     }
 
     with nature_style(NatureStyle()):
-        fig, axes = plt.subplots(1, 3, figsize=FIGSIZE_NATURE_FULL, sharex=False)
+        fig, axes = plt.subplots(1, 3, figsize=(7.2, 4.8), sharex=False)
         offsets = {"norisk": -0.12, "risk": 0.12}
 
         for ax, state, panel in zip(axes, state_order, ["a", "b", "c"]):
@@ -535,8 +618,8 @@ def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> 
                 ax.plot(
                     [i + offsets["norisk"], i + offsets["risk"]],
                     [row_nr["rate"], row_r["rate"]],
-                    color="#B0B0B0",
-                    linewidth=0.8,
+                    color="#B3B3B3",
+                    linewidth=1.1,
                     zorder=1,
                 )
                 for env, row in [("norisk", row_nr), ("risk", row_r)]:
@@ -548,59 +631,37 @@ def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> 
                         fmt="o",
                         color=ENV_COLORS[env],
                         ecolor=ENV_COLORS[env],
-                        elinewidth=0.9,
-                        capsize=2.2,
-                        markersize=4.2,
+                        elinewidth=1.2,
+                        capsize=3.0,
+                        capthick=1.2,
+                        markersize=5.4,
                         zorder=3,
                     )
 
             ax.set_xticks(np.arange(len(group_order)), [GROUP_LABELS[g] for g in group_order])
             ax.set_ylim(*ylims[state])
-            ax.set_title(f"Next state = {state}", pad=5)
             ax.set_ylabel("Observed transition rate" if state == "H" else "")
+            ax.tick_params(axis="both", labelsize=8.2, width=1.0, length=4.2)
+            if state == "H":
+                ax.yaxis.label.set_size(9.2)
             despine(ax)
-            add_panel_label(ax, panel, dx=2, dy=-2, fontsize=8.0)
-
-        # 显著交互注释
-        ann_h = interactions[
-            (interactions["state"] == "H")
-            & (interactions["interaction_group"] == "wemedia_only")
-            & (interactions["interaction_env"] == "risk")
-        ]
-        if len(ann_h):
-            r = ann_h.iloc[0]
-            axes[0].text(
-                1.05,
-                0.245,
-                f"OR = {r['odds_ratio']:.2f}\nP < 0.001",
-                ha="left",
-                va="top",
-                fontsize=6.8,
-                color=OKABE_ITO["vermillion"],
-            )
-        ann_m = interactions[
-            (interactions["state"] == "M")
-            & (interactions["interaction_group"] == "mainstream_only")
-            & (interactions["interaction_env"] == "risk")
-        ]
-        if len(ann_m):
-            r = ann_m.iloc[0]
-            axes[1].text(
-                -0.10,
-                0.982,
-                f"OR = {r['odds_ratio']:.2f}\nP = {r['p_value']:.3f}",
-                ha="left",
-                va="top",
-                fontsize=6.8,
-                color=MEDIA_COLORS["mainstream"],
-            )
+            ax.spines["left"].set_linewidth(1.1)
+            ax.spines["bottom"].set_linewidth(1.1)
+            add_panel_label(ax, panel, dx=-6, dy=2, fontsize=9.0)
 
         legend_items = [
-            Line2D([0], [0], marker="o", color=ENV_COLORS["norisk"], lw=0, markersize=4.5, label="Non-risk environment"),
-            Line2D([0], [0], marker="o", color=ENV_COLORS["risk"], lw=0, markersize=4.5, label="Risk environment"),
+            Line2D([0], [0], marker="o", color=ENV_COLORS["norisk"], lw=0, markersize=5.6, label="Non-risk environment"),
+            Line2D([0], [0], marker="o", color=ENV_COLORS["risk"], lw=0, markersize=5.6, label="Risk environment"),
         ]
-        fig.legend(handles=legend_items, loc="upper center", bbox_to_anchor=(0.5, 1.02), ncol=2, frameon=False)
-        fig.subplots_adjust(left=0.10, right=0.98, top=0.80, bottom=0.20, wspace=0.32)
+        fig.legend(
+            handles=legend_items,
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.01),
+            ncol=2,
+            frameon=False,
+            prop={"size": 8.4, "weight": "bold"},
+        )
+        fig.subplots_adjust(left=0.11, right=0.985, top=0.82, bottom=0.20, wspace=0.36)
         save_png_pdf(fig, fig_dir / "fig4_glmm_transition_rates")
         plt.close(fig)
 
@@ -613,7 +674,7 @@ def main() -> None:
     content_dir = ROOT / args.content_dir
     glmm_dir = ROOT / args.glmm_dir
 
-    plot_figure1_overview(fig_dir)
+    sync_manual_framework(fig_dir)
     plot_figure2_emotion_distribution(content_dir, fig_dir)
     plot_figure3_temporal(content_dir, fig_dir)
     plot_figure4_glmm(glmm_dir, fig_dir, n_boot=int(args.bootstrap), seed=int(args.seed))

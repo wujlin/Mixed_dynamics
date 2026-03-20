@@ -1,0 +1,48 @@
+{
+  "multipliers": [
+    1.0,
+    1.5,
+    2.0
+  ],
+  "rows": [
+    {
+      "burst_multiplier": 1.0,
+      "mainstream_threshold": 4.0878612716763,
+      "wemedia_threshold": 4.928571428571429,
+      "mainstream_rule": ">1*mean_nonzero",
+      "wemedia_rule": ">1*mean_nonzero",
+      "mainstream_mean_nonzero": 4.0878612716763,
+      "wemedia_mean_nonzero": 4.928571428571429,
+      "mainstream_n_burst_days": 166,
+      "wemedia_n_burst_days": 322,
+      "mainstream_to_wemedia_window3_p_observed": 0.7650602409638554,
+      "wemedia_to_mainstream_window3_p_observed": 0.546583850931677
+    },
+    {
+      "burst_multiplier": 1.5,
+      "mainstream_threshold": 6.131791907514451,
+      "wemedia_threshold": 7.392857142857143,
+      "mainstream_rule": ">1.5*mean_nonzero",
+      "wemedia_rule": ">1.5*mean_nonzero",
+      "mainstream_mean_nonzero": 4.0878612716763,
+      "wemedia_mean_nonzero": 4.928571428571429,
+      "mainstream_n_burst_days": 118,
+      "wemedia_n_burst_days": 161,
+      "mainstream_to_wemedia_window3_p_observed": 0.7033898305084746,
+      "wemedia_to_mainstream_window3_p_observed": 0.6583850931677019
+    },
+    {
+      "burst_multiplier": 2.0,
+      "mainstream_threshold": 8.1757225433526,
+      "wemedia_threshold": 9.857142857142858,
+      "mainstream_rule": ">2*mean_nonzero",
+      "wemedia_rule": ">2*mean_nonzero",
+      "mainstream_mean_nonzero": 4.0878612716763,
+      "wemedia_mean_nonzero": 4.928571428571429,
+      "mainstream_n_burst_days": 86,
+      "wemedia_n_burst_days": 115,
+      "mainstream_to_wemedia_window3_p_observed": 0.6744186046511628,
+      "wemedia_to_mainstream_window3_p_observed": 0.6608695652173913
+    }
+  ]
+}

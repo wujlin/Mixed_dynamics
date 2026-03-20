@@ -1,0 +1,201 @@
+{
+  "inputs": {
+    "analysis_dir": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified",
+    "groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "states": [
+      "H",
+      "M",
+      "L"
+    ],
+    "min_user_transitions": 1,
+    "max_gap_days": 0.0,
+    "time_fe": "quarter",
+    "alpha": 0.05,
+    "group_override": {
+      "enabled": false
+    }
+  },
+  "data_info": {
+    "n_rows": 2002,
+    "n_users": 398,
+    "group_counts": {
+      "wemedia_only": 1032,
+      "dual": 516,
+      "mainstream_only": 454
+    },
+    "env_counts": {
+      "norisk": 1041,
+      "risk": 961
+    },
+    "group_env_counts": {
+      "dual|norisk": 253,
+      "dual|risk": 263,
+      "mainstream_only|norisk": 316,
+      "mainstream_only|risk": 138,
+      "wemedia_only|norisk": 472,
+      "wemedia_only|risk": 560
+    },
+    "next_state_counts": {
+      "M": 1623,
+      "H": 250,
+      "L": 129
+    },
+    "gap_days": {
+      "mean": 46.90164988946239,
+      "median": 4.038541666666667,
+      "p90": 119.99645833333341,
+      "max": 1272.1840277777778
+    }
+  },
+  "model_info": [
+    {
+      "state": "H",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 2002,
+      "n_users": 398,
+      "prevalence": 0.12487512487512488,
+      "n_fixed_effects": 31,
+      "n_random_effects": 398
+    },
+    {
+      "state": "M",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 2002,
+      "n_users": 398,
+      "prevalence": 0.8106893106893107,
+      "n_fixed_effects": 31,
+      "n_random_effects": 398
+    },
+    {
+      "state": "L",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+      "n_obs": 2002,
+      "n_users": 398,
+      "prevalence": 0.06443556443556443,
+      "n_fixed_effects": 31,
+      "n_random_effects": 398
+    }
+  ],
+  "interaction_terms_total": 6,
+  "interaction_terms_significant": 2,
+  "significant_interactions": [
+    {
+      "state": "M",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": -0.29766437780197297,
+      "odds_ratio": 0.7425505143669466,
+      "z_value": -2.7754372827090603,
+      "p_value": 0.005512753080088695
+    },
+    {
+      "state": "L",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": 0.5621109056873683,
+      "odds_ratio": 1.7543719080103979,
+      "z_value": 3.9156211418070663,
+      "p_value": 9.017175321912596e-05
+    }
+  ],
+  "dual_side_check": {
+    "status": "ok",
+    "availability": {
+      "rows_total": 1568,
+      "users_total": 78,
+      "rows_mainstream_ratio_known": 451,
+      "rows_wemedia_ratio_known": 101,
+      "rows_both_ratio_known": 36
+    },
+    "effects": [
+      {
+        "state": "H",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 451,
+        "n_users": 41,
+        "coef": 0.4864335422829198,
+        "odds_ratio": 1.6265050020671514,
+        "z_value": 2.2251321609792742,
+        "p_value": 0.026072367304015298
+      },
+      {
+        "state": "M",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 451,
+        "n_users": 41,
+        "coef": -0.2752856329222531,
+        "odds_ratio": 0.7593551954020886,
+        "z_value": -1.4434738271278778,
+        "p_value": 0.1488870401877882
+      },
+      {
+        "state": "L",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 451,
+        "n_users": 41,
+        "coef": -0.1827463271757857,
+        "odds_ratio": 0.8329794331836128,
+        "z_value": -0.6774890092200334,
+        "p_value": 0.4980957411281717
+      },
+      {
+        "state": "H",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 101,
+        "n_users": 21,
+        "coef": 0.12192212475874482,
+        "odds_ratio": 1.1296661253327216,
+        "z_value": 0.383247024595295,
+        "p_value": 0.7015366142142965
+      },
+      {
+        "state": "M",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 101,
+        "n_users": 21,
+        "coef": -0.14413752615025155,
+        "odds_ratio": 0.8657686740387479,
+        "z_value": -0.47607523006141916,
+        "p_value": 0.634020783017454
+      },
+      {
+        "state": "L",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe)",
+        "n_obs": 101,
+        "n_users": 21,
+        "coef": -0.6425602870423053,
+        "odds_ratio": 0.5259441308276027,
+        "z_value": -1.0740628972696578,
+        "p_value": 0.2827944923307222
+      }
+    ]
+  },
+  "outputs": {
+    "input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_input.csv",
+    "observed_rates_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_observed_rates.csv",
+    "coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_coefficients.csv",
+    "interactions_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_interactions.csv",
+    "dual_side_input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_dual_side_input.csv",
+    "dual_side_coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_dual_side_coefficients.csv",
+    "dual_side_effects_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_dual_side_effects.csv",
+    "summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified/risk_interaction_glmm/risk_interaction_glmm_summary.json"
+  }
+}

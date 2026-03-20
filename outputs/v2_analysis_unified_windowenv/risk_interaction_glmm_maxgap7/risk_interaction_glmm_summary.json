@@ -1,0 +1,281 @@
+{
+  "inputs": {
+    "analysis_dir": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv",
+    "groups": [
+      "mainstream_only",
+      "wemedia_only",
+      "dual"
+    ],
+    "states": [
+      "H",
+      "M",
+      "L"
+    ],
+    "min_user_transitions": 1,
+    "max_gap_days": 7.0,
+    "time_fe": "quarter",
+    "alpha": 0.05,
+    "group_override": {
+      "enabled": false
+    },
+    "controls": [
+      "z_n_total_interactions",
+      "z_active_days",
+      "z_n_posts",
+      "z_gap_days",
+      "z_env_n_target_posts_observed"
+    ]
+  },
+  "data_info": {
+    "n_rows": 1180,
+    "n_users": 193,
+    "group_counts": {
+      "wemedia_only": 599,
+      "dual": 391,
+      "mainstream_only": 190
+    },
+    "env_counts": {
+      "risk": 591,
+      "norisk": 589
+    },
+    "group_env_counts": {
+      "dual|norisk": 183,
+      "dual|risk": 208,
+      "mainstream_only|norisk": 141,
+      "mainstream_only|risk": 49,
+      "wemedia_only|norisk": 265,
+      "wemedia_only|risk": 334
+    },
+    "next_state_counts": {
+      "M": 976,
+      "H": 136,
+      "L": 68
+    },
+    "gap_days": {
+      "mean": 2.1997280681104834,
+      "median": 1.6065972222222222,
+      "p90": 5.409027777777782,
+      "max": 6.995833333333334
+    }
+  },
+  "model_info": [
+    {
+      "state": "H",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + z_env_n_target_posts_observed + C(time_fe)",
+      "n_obs": 1180,
+      "n_users": 193,
+      "prevalence": 0.1152542372881356,
+      "n_fixed_effects": 30,
+      "n_random_effects": 193,
+      "controls": [
+        "z_n_total_interactions",
+        "z_active_days",
+        "z_n_posts",
+        "z_gap_days",
+        "z_env_n_target_posts_observed"
+      ]
+    },
+    {
+      "state": "M",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + z_env_n_target_posts_observed + C(time_fe)",
+      "n_obs": 1180,
+      "n_users": 193,
+      "prevalence": 0.8271186440677966,
+      "n_fixed_effects": 30,
+      "n_random_effects": 193,
+      "controls": [
+        "z_n_total_interactions",
+        "z_active_days",
+        "z_n_posts",
+        "z_gap_days",
+        "z_env_n_target_posts_observed"
+      ]
+    },
+    {
+      "state": "L",
+      "formula": "y ~ C(exposure_group, Treatment(reference='dual')) * C(env_type, Treatment(reference='norisk')) + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + z_env_n_target_posts_observed + C(time_fe)",
+      "n_obs": 1180,
+      "n_users": 193,
+      "prevalence": 0.0576271186440678,
+      "n_fixed_effects": 30,
+      "n_random_effects": 193,
+      "controls": [
+        "z_n_total_interactions",
+        "z_active_days",
+        "z_n_posts",
+        "z_gap_days",
+        "z_env_n_target_posts_observed"
+      ]
+    }
+  ],
+  "interaction_terms_total": 6,
+  "interaction_terms_significant": 3,
+  "significant_interactions": [
+    {
+      "state": "H",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": 1.9743458792414383,
+      "odds_ratio": 7.201907195732203,
+      "z_value": 11.485919402549303,
+      "p_value": 0.0
+    },
+    {
+      "state": "M",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": -1.8825098318489515,
+      "odds_ratio": 0.15220761044985848,
+      "z_value": -13.332648595036856,
+      "p_value": 0.0
+    },
+    {
+      "state": "L",
+      "term": "C(exposure_group, Treatment(reference='dual'))[T.wemedia_only]:C(env_type, Treatment(reference='norisk'))[T.risk]",
+      "interaction_group": "wemedia_only",
+      "interaction_env": "risk",
+      "coef": 1.164868974467412,
+      "odds_ratio": 3.205502852967551,
+      "z_value": 6.0945965690852,
+      "p_value": 1.0971379360569244e-09
+    }
+  ],
+  "dual_side_check": {
+    "status": "ok",
+    "availability": {
+      "rows_total": 1058,
+      "users_total": 41,
+      "rows_mainstream_ratio_known": 342,
+      "rows_wemedia_ratio_known": 84,
+      "rows_both_ratio_known": 35
+    },
+    "controls": [
+      "z_n_total_interactions",
+      "z_active_days",
+      "z_n_posts",
+      "z_gap_days"
+    ],
+    "effects": [
+      {
+        "state": "H",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 342,
+        "n_users": 22,
+        "coef": 0.001973840727736009,
+        "odds_ratio": 1.001975790033674,
+        "z_value": 0.007060882675247725,
+        "p_value": 0.9943662775403563,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      },
+      {
+        "state": "M",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 342,
+        "n_users": 22,
+        "coef": -0.37562639497611205,
+        "odds_ratio": 0.6868588990475287,
+        "z_value": -1.6278529997710882,
+        "p_value": 0.1035560593349405,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      },
+      {
+        "state": "L",
+        "side_col": "mainstream_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 342,
+        "n_users": 22,
+        "coef": 0.7839478596443425,
+        "odds_ratio": 2.190101433985874,
+        "z_value": 2.52631162843569,
+        "p_value": 0.011526718493239274,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      },
+      {
+        "state": "H",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 84,
+        "n_users": 12,
+        "coef": -0.0529492814778868,
+        "odds_ratio": 0.948428114134745,
+        "z_value": -0.13102419655579883,
+        "p_value": 0.8957561663239266,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      },
+      {
+        "state": "M",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 84,
+        "n_users": 12,
+        "coef": 0.3710601116088764,
+        "odds_ratio": 1.4492701887310377,
+        "z_value": 0.9469402786235043,
+        "p_value": 0.3436692117791651,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      },
+      {
+        "state": "L",
+        "side_col": "wemedia_risk_ratio",
+        "status": "ok",
+        "formula": "y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + z_gap_days + C(time_fe)",
+        "n_obs": 84,
+        "n_users": 12,
+        "coef": -1.507844219807164,
+        "odds_ratio": 0.22138672501055212,
+        "z_value": -1.6364332881140493,
+        "p_value": 0.10174893710898258,
+        "controls": [
+          "z_n_total_interactions",
+          "z_active_days",
+          "z_n_posts",
+          "z_gap_days"
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_input.csv",
+    "observed_rates_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_observed_rates.csv",
+    "coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_coefficients.csv",
+    "interactions_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_interactions.csv",
+    "dual_side_input_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_dual_side_input.csv",
+    "dual_side_coefficients_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_dual_side_coefficients.csv",
+    "dual_side_effects_csv": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_dual_side_effects.csv",
+    "summary_json": "/mnt/e/newdesktop/emotion_dynamics/outputs/v2_analysis_unified_windowenv/risk_interaction_glmm_maxgap7/risk_interaction_glmm_summary.json"
+  }
+}

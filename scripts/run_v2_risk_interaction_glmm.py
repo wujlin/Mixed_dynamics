@@ -73,6 +73,44 @@ def _standardize(x: pd.Series) -> pd.Series:
     return (v - m) / sd
 
 
+def _add_control_columns(d: pd.DataFrame, specs: List[Tuple[str, str]]) -> Tuple[pd.DataFrame, List[str]]:
+    x = d.copy()
+    control_cols: List[str] = []
+    for raw_c, z_c in specs:
+        if raw_c not in x.columns:
+            continue
+        x[raw_c] = pd.to_numeric(x[raw_c], errors="coerce").fillna(0.0)
+        x[z_c] = _standardize(x[raw_c])
+        control_cols.append(z_c)
+    return x, control_cols
+
+
+def _window_stats_for_targets(
+    media_lookup: Dict[str, Dict[str, np.ndarray]],
+    targets: List[str],
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+) -> Tuple[int, int, int]:
+    start64 = np.datetime64(start.to_datetime64())
+    end64 = np.datetime64(end.to_datetime64())
+    n_posts = 0
+    n_risk_posts = 0
+    n_accounts_observed = 0
+    for t in targets:
+        rec = media_lookup.get(t)
+        if rec is None:
+            continue
+        ts = rec["ts"]
+        lo = int(np.searchsorted(ts, start64, side="right"))
+        hi = int(np.searchsorted(ts, end64, side="right"))
+        if hi <= lo:
+            continue
+        n_accounts_observed += 1
+        n_posts += int(hi - lo)
+        n_risk_posts += int(rec["risk"][lo:hi].sum())
+    return n_posts, n_risk_posts, n_accounts_observed
+
+
 def _add_time_fe_columns(d: pd.DataFrame, ts_col: str, mode: str) -> Tuple[pd.DataFrame, str]:
     x = d.copy()
     if mode == "quarter":
@@ -119,7 +157,7 @@ def prepare_data(
     time_fe_mode: str,
     max_gap_days: float,
     group_override_map: Optional[Dict[str, str]],
-) -> Tuple[pd.DataFrame, str]:
+) -> Tuple[pd.DataFrame, str, List[str]]:
     trans_path = analysis_dir / "transition_with_environment.csv"
     user_path = analysis_dir / "transition_by_user.csv"
 
@@ -155,9 +193,16 @@ def prepare_data(
 
     user["user_name"] = user["user_name"].map(_norm_text)
     d = d.merge(user, on="user_name", how="left", validate="many_to_one")
-    for c in ["n_total_interactions", "active_days", "n_posts"]:
-        d[c] = pd.to_numeric(d[c], errors="coerce").fillna(0.0)
-        d[f"z_{c}"] = _standardize(d[c])
+    d, control_cols = _add_control_columns(
+        d,
+        [
+            ("n_total_interactions", "z_n_total_interactions"),
+            ("active_days", "z_active_days"),
+            ("n_posts", "z_n_posts"),
+            ("gap_days", "z_gap_days"),
+            ("env_n_target_posts_observed", "z_env_n_target_posts_observed"),
+        ],
+    )
 
     if min_user_transitions > 1:
         cnt = d.groupby("user_name", as_index=False).size().rename(columns={"size": "n_t"})
@@ -165,10 +210,10 @@ def prepare_data(
         d = d[d["user_name"].isin(keep)].copy()
 
     d = d[d["exposure_group"].isin(groups)].copy()
-    return d.reset_index(drop=True), fe_term
+    return d.reset_index(drop=True), fe_term, control_cols
 
 
-def fit_one_state(d: pd.DataFrame, state: str, fe_term: str) -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, object]]:
+def fit_one_state(d: pd.DataFrame, state: str, fe_term: str, control_cols: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame, Dict[str, object]]:
     if state not in STATES:
         raise ValueError(f"不支持的状态: {state}")
     x = d.copy()
@@ -177,10 +222,11 @@ def fit_one_state(d: pd.DataFrame, state: str, fe_term: str) -> Tuple[pd.DataFra
     formula = (
         "y ~ "
         "C(exposure_group, Treatment(reference='dual')) * "
-        "C(env_type, Treatment(reference='norisk')) + "
-        "z_n_total_interactions + z_active_days + z_n_posts + "
-        f"{fe_term}"
+        "C(env_type, Treatment(reference='norisk'))"
     )
+    if control_cols:
+        formula += " + " + " + ".join(control_cols)
+    formula += " + " + fe_term
     random = {"user_re": "0 + C(user_name)"}
     model = sm.BinomialBayesMixedGLM.from_formula(formula, random, x)
     res = model.fit_vb()
@@ -220,6 +266,7 @@ def fit_one_state(d: pd.DataFrame, state: str, fe_term: str) -> Tuple[pd.DataFra
         "prevalence": float(x["y"].mean()) if len(x) else np.nan,
         "n_fixed_effects": int(len(model.exog_names)),
         "n_random_effects": int(len(model.vc_names)),
+        "controls": control_cols,
     }
     return coef, inter, model_info
 
@@ -254,7 +301,7 @@ def prepare_dual_side_data(
     min_user_transitions: int,
     time_fe_mode: str,
     max_gap_days: float,
-) -> Tuple[pd.DataFrame, str, Dict[str, int]]:
+) -> Tuple[pd.DataFrame, str, List[str], Dict[str, int]]:
     trans = pd.read_csv(analysis_dir / "transition_with_environment.csv", dtype=str, low_memory=False)
     expo = pd.read_csv(
         analysis_dir / "user_exposure.csv",
@@ -287,8 +334,6 @@ def prepare_dual_side_data(
     trans = trans[trans["gap_days"] >= 0].copy()
     if float(max_gap_days) > 0:
         trans = trans[trans["gap_days"] <= float(max_gap_days)].copy()
-    trans["prev_date"] = trans["prev_time"].dt.floor("D")
-
     expo["user_name"] = expo["user_name"].map(_norm_text)
     expo = expo.drop_duplicates(subset=["user_name"], keep="first")
     target_m = {u: _split_targets(ms) for u, ms in zip(expo["user_name"], expo["targets_mainstream"])}
@@ -297,44 +342,59 @@ def prepare_dual_side_data(
     timeline["user_name"] = timeline["user_name"].map(_norm_text)
     timeline["publish_time"] = pd.to_datetime(timeline["publish_time"], errors="coerce")
     timeline = timeline[timeline["publish_time"].notna()].copy()
-    timeline["date"] = timeline["publish_time"].dt.floor("D")
     media = timeline[timeline["node_type_3class"].isin(["mainstream", "wemedia"])].copy()
-    media["is_risk"] = media["risk_class"].eq("risk").astype(float)
-    day_user_risk = media.groupby(["date", "user_name"], as_index=False).agg(risk_ratio=("is_risk", "mean"))
-    risk_lookup = {(r["date"], r["user_name"]): float(r["risk_ratio"]) for _, r in day_user_risk.iterrows()}
+    media["is_risk"] = media["risk_class"].eq("risk").astype(np.int8)
+    media = media.sort_values(["user_name", "publish_time"])
+    media_lookup = {
+        user_name: {
+            "ts": g["publish_time"].to_numpy(dtype="datetime64[ns]"),
+            "risk": g["is_risk"].to_numpy(dtype=np.int16),
+        }
+        for user_name, g in media.groupby("user_name", sort=False)
+    }
 
     rows = []
     for r in trans.itertuples(index=False):
         u = r.user_name
-        day = r.prev_date
+        prev_t = pd.Timestamp(r.prev_time)
+        curr_t = pd.Timestamp(r.curr_time)
         ms_targets = target_m.get(u, [])
         wm_targets = target_w.get(u, [])
-        vals_m = [risk_lookup[(day, t)] for t in ms_targets if (day, t) in risk_lookup]
-        vals_w = [risk_lookup[(day, t)] for t in wm_targets if (day, t) in risk_lookup]
+        n_m_posts, n_m_risk, n_m_accounts = _window_stats_for_targets(media_lookup, ms_targets, prev_t, curr_t)
+        n_w_posts, n_w_risk, n_w_accounts = _window_stats_for_targets(media_lookup, wm_targets, prev_t, curr_t)
         rows.append(
             {
                 "user_name": u,
-                "prev_time": r.prev_time,
-                "curr_time": r.curr_time,
+                "prev_time": prev_t,
+                "curr_time": curr_t,
                 "transition": r.transition,
                 "next_state": r.next_state,
-                "mainstream_risk_ratio": float(np.mean(vals_m)) if vals_m else np.nan,
-                "wemedia_risk_ratio": float(np.mean(vals_w)) if vals_w else np.nan,
-                "n_mainstream_targets_observed": int(len(vals_m)),
-                "n_wemedia_targets_observed": int(len(vals_w)),
+                "mainstream_risk_ratio": float(n_m_risk / n_m_posts) if n_m_posts else np.nan,
+                "wemedia_risk_ratio": float(n_w_risk / n_w_posts) if n_w_posts else np.nan,
+                "n_mainstream_target_posts_observed": int(n_m_posts),
+                "n_wemedia_target_posts_observed": int(n_w_posts),
+                "n_mainstream_targets_observed": int(n_m_accounts),
+                "n_wemedia_targets_observed": int(n_w_accounts),
+                "gap_days": float(r.gap_days),
             }
         )
     d = pd.DataFrame(rows)
     if len(d) == 0:
-        return d, "C(time_fe)", {}
+        return d, "C(time_fe)", [], {}
 
     d, fe_term = _add_time_fe_columns(d, "curr_time", time_fe_mode)
 
     user["user_name"] = user["user_name"].map(_norm_text)
     d = d.merge(user, on="user_name", how="left", validate="many_to_one")
-    for c in ["n_total_interactions", "active_days", "n_posts"]:
-        d[c] = pd.to_numeric(d[c], errors="coerce").fillna(0.0)
-        d[f"z_{c}"] = _standardize(d[c])
+    d, control_cols = _add_control_columns(
+        d,
+        [
+            ("n_total_interactions", "z_n_total_interactions"),
+            ("active_days", "z_active_days"),
+            ("n_posts", "z_n_posts"),
+            ("gap_days", "z_gap_days"),
+        ],
+    )
 
     if min_user_transitions > 1:
         cnt = d.groupby("user_name", as_index=False).size().rename(columns={"size": "n_t"})
@@ -348,10 +408,10 @@ def prepare_dual_side_data(
         "rows_wemedia_ratio_known": int(d["wemedia_risk_ratio"].notna().sum()) if len(d) else 0,
         "rows_both_ratio_known": int((d["mainstream_risk_ratio"].notna() & d["wemedia_risk_ratio"].notna()).sum()) if len(d) else 0,
     }
-    return d.reset_index(drop=True), fe_term, avail
+    return d.reset_index(drop=True), fe_term, control_cols, avail
 
 
-def fit_dual_side_one_state(d_dual: pd.DataFrame, state: str, side_col: str, fe_term: str) -> Tuple[pd.DataFrame, Dict[str, object]]:
+def fit_dual_side_one_state(d_dual: pd.DataFrame, state: str, side_col: str, fe_term: str, control_cols: List[str]) -> Tuple[pd.DataFrame, Dict[str, object]]:
     x = d_dual[d_dual[side_col].notna()].copy()
     if len(x) == 0:
         return pd.DataFrame(), {"state": state, "side_col": side_col, "status": "no_data"}
@@ -366,12 +426,10 @@ def fit_dual_side_one_state(d_dual: pd.DataFrame, state: str, side_col: str, fe_
             "n_users": int(x["user_name"].nunique()),
         }
 
-    formula = (
-        "y ~ "
-        f"{side_col} + "
-        "z_n_total_interactions + z_active_days + z_n_posts + "
-        f"{fe_term}"
-    )
+    formula = "y ~ " + f"{side_col}"
+    if control_cols:
+        formula += " + " + " + ".join(control_cols)
+    formula += " + " + fe_term
     random = {"user_re": "0 + C(user_name)"}
     try:
         model = sm.BinomialBayesMixedGLM.from_formula(formula, random, x)
@@ -419,6 +477,7 @@ def fit_dual_side_one_state(d_dual: pd.DataFrame, state: str, side_col: str, fe_
             "odds_ratio": float(r["odds_ratio"]),
             "z_value": float(r["z_value"]) if pd.notna(r["z_value"]) else np.nan,
             "p_value": float(r["p_value"]) if pd.notna(r["p_value"]) else np.nan,
+            "controls": control_cols,
         }
     else:
         info = {
@@ -432,12 +491,12 @@ def fit_dual_side_one_state(d_dual: pd.DataFrame, state: str, side_col: str, fe_
     return coef, info
 
 
-def run_dual_side_models(d_dual: pd.DataFrame, fe_term: str, states: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def run_dual_side_models(d_dual: pd.DataFrame, fe_term: str, states: List[str], control_cols: List[str]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     coef_parts = []
     infos = []
     for side_col in ["mainstream_risk_ratio", "wemedia_risk_ratio"]:
         for s in states:
-            c, info = fit_dual_side_one_state(d_dual, s, side_col, fe_term)
+            c, info = fit_dual_side_one_state(d_dual, s, side_col, fe_term, control_cols)
             if len(c):
                 coef_parts.append(c)
             infos.append(info)
@@ -475,7 +534,7 @@ def main() -> None:
         }
 
     # 主交互模型
-    d, fe_term = prepare_data(
+    d, fe_term, control_cols = prepare_data(
         analysis_dir=analysis_dir,
         groups=args.groups,
         min_user_transitions=args.min_user_transitions,
@@ -498,7 +557,7 @@ def main() -> None:
     inter_parts = []
     model_infos = []
     for s in args.states:
-        c, i, info = fit_one_state(d, s, fe_term=fe_term)
+        c, i, info = fit_one_state(d, s, fe_term=fe_term, control_cols=control_cols)
         coef_parts.append(c)
         inter_parts.append(i)
         model_infos.append(info)
@@ -512,19 +571,20 @@ def main() -> None:
     if group_override_map:
         dual_summary = {"status": "skipped_due_group_override"}
     elif not args.skip_dual_side_check:
-        d_dual, fe_term_dual, avail = prepare_dual_side_data(
+        d_dual, fe_term_dual, dual_control_cols, avail = prepare_dual_side_data(
             analysis_dir=analysis_dir,
             min_user_transitions=args.min_user_transitions,
             time_fe_mode=args.time_fe,
             max_gap_days=args.max_gap_days,
         )
         d_dual.to_csv(out_dir / "risk_interaction_glmm_dual_side_input.csv", index=False, encoding="utf-8-sig")
-        coef_dual, info_dual = run_dual_side_models(d_dual, fe_term_dual, args.states)
+        coef_dual, info_dual = run_dual_side_models(d_dual, fe_term_dual, args.states, dual_control_cols)
         coef_dual.to_csv(out_dir / "risk_interaction_glmm_dual_side_coefficients.csv", index=False, encoding="utf-8-sig")
         info_dual.to_csv(out_dir / "risk_interaction_glmm_dual_side_effects.csv", index=False, encoding="utf-8-sig")
         dual_summary = {
             "status": "ok",
             "availability": avail,
+            "controls": dual_control_cols,
             "effects": info_dual.to_dict(orient="records"),
         }
 
@@ -540,6 +600,7 @@ def main() -> None:
             "time_fe": args.time_fe,
             "alpha": alpha,
             "group_override": group_override_info,
+            "controls": control_cols,
         },
         "data_info": {
             "n_rows": int(len(d)),

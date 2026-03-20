@@ -1,0 +1,7 @@
+﻿state,side_col,status,formula,n_obs,n_users,coef,odds_ratio,z_value,p_value
+H,mainstream_risk_ratio,ok,y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),359,18,0.2846590520599738,1.329308725777902,1.1410423553296332,0.2538522976448896
+M,mainstream_risk_ratio,ok,y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),359,18,-0.20818061597310197,0.8120603523948071,-0.9907055105538574,0.321829399506238
+L,mainstream_risk_ratio,ok,y ~ mainstream_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),359,18,0.019187403543211152,1.0193726647675274,0.06843469569795906,0.9454396033858896
+H,wemedia_risk_ratio,ok,y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),54,9,0.259879361972587,1.2967736370155023,0.5309370647756344,0.5954623919720341
+M,wemedia_risk_ratio,ok,y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),54,9,0.260104388854903,1.297065478778999,0.544678697460746,0.585974518529647
+L,wemedia_risk_ratio,ok,y ~ wemedia_risk_ratio + z_n_total_interactions + z_active_days + z_n_posts + C(time_fe),54,9,-2.5015243244655996,0.0819599697687185,-2.4175786342933496,0.015624157734888788

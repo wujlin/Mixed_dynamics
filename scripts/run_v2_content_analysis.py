@@ -88,6 +88,9 @@ def _map_group_from_verify(verify_typ: str) -> str:
 def load_merged(topic_csv: Path, ann_jsonl: Path) -> pd.DataFrame:
     topic = pd.read_csv(topic_csv, dtype=str, low_memory=False)
     topic = topic.rename(columns={c: c.lstrip("\ufeff") for c in topic.columns})
+    for c in ["emotion_class", "risk_class", "group", "date"]:
+        if c in topic.columns:
+            topic = topic.drop(columns=[c])
     for c in ["mid", "verify_typ", "publish_time", "content"]:
         if c not in topic.columns:
             topic[c] = ""
