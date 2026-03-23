@@ -489,10 +489,9 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
         ax1.set_xlim(ccf["lag"].min(), ccf["lag"].max())
         ax1.set_xticks([-14, -7, 0, 7, 14])
         ax1.set_ylabel("Cross-correlation")
-        ax1.set_xlabel("Lag (days; positive = mainstream leads)")
-        ax1.set_title("Full-sample CCF", pad=5)
+        ax1.set_xlabel("Lag (days)", fontsize=10.4)
         despine(ax1)
-        add_panel_label(ax1, "a", dx=-18, dy=2, fontsize=8.0)
+        add_panel_label(ax1, "a", dx=-18, dy=8, fontsize=8.0)
 
         # Panel b: segmented CCF
         for segment, color, label, linestyle, markerface in [
@@ -516,12 +515,11 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
         ax2.axvline(0, color="#9A9A9A", linewidth=0.8)
         ax2.set_xlim(-14.5, 14.5)
         ax2.set_xticks([-14, -7, 0, 7, 14])
-        ax2.set_xlabel("Lag (days)")
+        ax2.set_xlabel("Lag (days)", fontsize=10.4)
         ax2.set_ylabel("Cross-correlation")
-        ax2.set_title("Segmented CCF", pad=5)
-        ax2.legend(loc="upper right", frameon=False, ncol=1, handlelength=2.0)
+        ax2.legend(loc="upper right", frameon=False, ncol=1, handlelength=2.0, prop={"size": 7.6})
         despine(ax2)
-        add_panel_label(ax2, "b", dx=-28, dy=2, fontsize=8.0)
+        add_panel_label(ax2, "b", dx=-28, dy=8, fontsize=8.0)
 
         # Panel c: event coincidence
         windows = sorted(eca["window"].unique().tolist())
@@ -544,13 +542,18 @@ def plot_figure3_temporal(content_dir: Path, fig_dir: Path) -> None:
             label="We-media → Mainstream",
         )
         ax3.set_xticks(x, [f"{w}" for w in windows])
-        ax3.set_xlabel("Window (days)")
+        ax3.set_xlabel("Window (days)", fontsize=10.4)
         ax3.set_ylabel("Co-occurrence rate")
         ax3.set_ylim(0, 1.0)
-        ax3.set_title("Burst co-occurrence", pad=5)
-        ax3.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02), frameon=False, ncol=1)
+        ax3.legend(
+            loc="upper center",
+            bbox_to_anchor=(0.5, 1.02),
+            frameon=False,
+            ncol=1,
+            prop={"size": 7.6},
+        )
         despine(ax3)
-        add_panel_label(ax3, "c", dx=-28, dy=2, fontsize=8.0)
+        add_panel_label(ax3, "c", dx=-28, dy=8, fontsize=8.0)
 
         fig.subplots_adjust(left=0.13, right=0.98, top=0.94, bottom=0.13)
         save_png_pdf(fig, fig_dir / "fig3_temporal_synchrony")
@@ -647,7 +650,7 @@ def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> 
             despine(ax)
             ax.spines["left"].set_linewidth(1.1)
             ax.spines["bottom"].set_linewidth(1.1)
-            add_panel_label(ax, panel, dx=-6, dy=2, fontsize=9.0)
+            add_panel_label(ax, panel, dx=-6, dy=12, fontsize=9.0)
 
         legend_items = [
             Line2D([0], [0], marker="o", color=ENV_COLORS["norisk"], lw=0, markersize=5.6, label="Non-risk environment"),
@@ -656,7 +659,7 @@ def plot_figure4_glmm(glmm_dir: Path, fig_dir: Path, n_boot: int, seed: int) -> 
         fig.legend(
             handles=legend_items,
             loc="upper center",
-            bbox_to_anchor=(0.5, 1.01),
+            bbox_to_anchor=(0.5, 0.98),
             ncol=2,
             frameon=False,
             prop={"size": 8.4, "weight": "bold"},
