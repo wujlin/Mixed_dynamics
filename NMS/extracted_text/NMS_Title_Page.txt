@@ -1,0 +1,58 @@
+Title Page
+Article title
+Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou
+Article type
+Original Article
+Running head
+Platformed belonging on short-video apps
+Main document word count (including abstract, references, tables, figure captions, and notes)
+8,080 words
+Abstract length
+150 words
+Number of tables in review manuscript
+7
+Number of figures in review manuscript
+4
+Keywords
+short-video platforms; platform regimes; issue visibility; affective evaluation; identity-boundary orientation; platformed belonging; Douyin; Kuaishou
+Authors
+JUAN LI, School of Journalism and Communication, Lanzhou University, Lanzhou, China
+JINLIN WU, Urban Governance and Design, The Hong Kong University of Science and Technology (Guangzhou), Guangzhou, China
+Corresponding author
+JUAN LI
+School of Journalism and Communication, Lanzhou University
+No. 222 South Tianshui Road, Lanzhou 730000, Gansu Province, P.R. China
+juanli@lzu.edu.cn
++86 13993167061
+
+JINLIN WU
+Urban Governance and Design, The Hong Kong University of Science and Technology (Guangzhou)
+No. 1 Duxue Road, Nansha District, Guangzhou 511453, Guangdong, China.
+jwu@conncet.hkust-gz.edu.cn
++86 13367073600
+ORCID
+JUAN LI: 0009-0002-7156-1545
+JINLIN WU: 0009-0002-3743-0250
+Acknowledgements
+The authors thank the editor and anonymous reviewers for their constructive comments. Language polishing and formatting support were used only to improve presentation; all substantive arguments, analyses, and interpretations were verified by the authors, who take full responsibility for the manuscript.
+Author Contributions
+JUAN LI conceived the study, developed the theoretical framework, interpreted the findings, and drafted the manuscript. JINLIN WU conducted data processing, model estimation, and statistical analysis. Both authors approved the submitted version.
+Statements and Declarations
+Ethical considerations
+This study analyzed publicly accessible textual comments and associated metadata from short-video platforms. No direct interaction with human participants occurred, and no personally identifiable information is reproduced in the manuscript. Under the institutional practice governing analysis of fully public, non-interventional textual data, formal ethics review was not required.
+Consent to participate
+Not applicable because the study did not recruit participants or intervene in user behavior.
+Consent for publication
+Not applicable because the manuscript does not reproduce identifiable personal images, videos, or private individual data.
+Previous dissemination / preprint
+No preprint DOI is associated with this submission, and no version has been posted or updated on a public preprint server during peer review.
+Permissions note
+All figures and tables are original, redrawn from the authors' own data, or based on the authors' own analyses. No third-party permissions are required.
+Declaration of conflicting interests
+The authors declare no potential conflicts of interest with respect to the research, authorship, and publication of this article.
+Funding
+This study was supported by the National Social Science Fund of China (Key Project), Research on Telling the Story of the Chinese Nation from the Perspective of Fostering a Strong Sense of Community for the Chinese Nation (Grant No. 24AXW005).
+Data availability
+Raw platform comments cannot be openly shared where platform governance rules, privacy safeguards, or contractual restrictions apply. De-identified aggregation tables, coding instruments, and analysis scripts can be made available from the corresponding author upon reasonable request and where platform terms permit.
+Author note
+The main manuscript file has been anonymized for double-blind peer review. All identifying information has been moved to this title page in line with New Media & Society submission guidance.

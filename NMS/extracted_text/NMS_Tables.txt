@@ -1,0 +1,267 @@
+Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou
+Table 1. Research hypotheses.
+Code
+Hypothesis
+H1
+Douyin and Kuaishou exhibit significantly different issue structures and discursive visibility regimes.
+H2
+Issue structure significantly predicts affective evaluation on both platforms.
+H3
+Affective evaluation significantly predicts identity-boundary orientation on both platforms.
+H4
+Affective evaluation mediates the relationship between issue structure and identity-boundary orientation.
+H5
+Cross-platform differences are stronger in upstream issue ecology than in the downstream affective mediation mechanism.
+
+Table 2. Corpus overview and sampling design.
+Platform
+Full cleaned corpus
+Stratified clustering sample
+Coverage period
+Analytical role
+Douyin
+634,289 comments
+63,429 comments
+October 2019-May 2025
+Topic clustering, supervised inference, model estimation
+Kuaishou
+518,763 comments
+51,876 comments
+December 2018-December 2024
+Topic clustering, supervised inference, model estimation
+Annotated subset
+10,000 comments
+7:2:1 train/validation/test split
+Cross-platform balanced
+Supervised coding of affective evaluation and boundary orientation
+
+Note. Monthly stratified random sampling with a fixed seed was used for clustering to preserve temporal balance while reducing computational burden.
+Table 3. Platform-specific issue structures and interpretive emphases.
+Platform
+Issue cluster
+Share (%)
+Dominant keywords
+Interpretive emphasis
+Douyin
+Stigma and respect
+32.79
+stigma, customs, integration, prejudice, respect
+Anti-stigma claims, equality, and interpersonal recognition
+Douyin
+Tradition and cultural distinctiveness
+29.81
+tradition, customs, fusion, modernity, heritage
+Cultural display, heritage, and tradition-modernity articulation
+Douyin
+Commonality and shared belonging
+19.62
+one family, fifty-six groups, solidarity, common
+Superordinate belonging and commonality narratives
+Douyin
+Identity and pride
+17.77
+pride, identity, happiness, culture
+Group pride and affective ownership
+Kuaishou
+Performance and revival
+68.40
+revival, culture, tradition, hanfu, display
+Performative revival and visualized cultural expression
+Kuaishou
+Han identity and race
+18.70
+Han, bloodline, awakening, genes, race
+Essentialized identity, bloodline, and identity intensification
+Kuaishou
+Conflict and confrontation
+12.90
+opposition, incitement, emotion, politics
+Conflict cues, antagonism, and politically charged confrontation
+
+Table 4. Observed identity-boundary orientation by issue cluster.
+Platform
+Issue cluster
+Integrative (%)
+Neutral (%)
+Conflictual (%)
+Douyin
+Commonality and shared belonging
+71.9
+23.7
+4.4
+Douyin
+Tradition and cultural distinctiveness
+35.2
+52.6
+12.2
+Douyin
+Identity and pride
+13.6
+78.9
+7.5
+Douyin
+Stigma and respect
+42.8
+43.0
+14.2
+Kuaishou
+Performance and revival
+59.9
+16.9
+23.1
+Kuaishou
+Han identity and race
+63.2
+27.6
+9.2
+Kuaishou
+Conflict and confrontation
+79.3
+5.0
+15.7
+
+Note. Percentages are reproduced from the source cross-tabulations in editable form for submission and review.
+Table 5. Core semantic-network metrics and cross-network correlations.
+Metric
+Douyin
+Kuaishou
+Evidence of significance
+Interpretation
+Core network nodes
+90
+471
+Descriptive
+Kuaishou comment discourse is markedly larger and more segmented
+Core network edges
+192
+602
+Descriptive
+Kuaishou exhibits more extensive lexical interconnection
+Average path length (comment network)
+3.41
+5.63
+Descriptive
+Longer paths on Kuaishou indicate more complex and dispersed semantic travel
+Clustering coefficient (comment network)
+0.360
+0.280
+Descriptive
+Lower clustering on Kuaishou indicates weaker local modular cohesion
+Eigenvector centrality correlation across creator/comment networks
+Pearson = 0.495; Spearman = 0.562
+Pearson = 0.205; Spearman = 0.425
+Douyin p = 0.009/0.002; Kuaishou p = 0.049/<0.001
+Cross-network semantic alignment is weaker on Kuaishou
+Degree centrality correlation across creator/comment networks
+Pearson = 0.646; Spearman = 0.425
+Pearson = 0.652; Spearman = 0.317
+Douyin p < 0.001/0.027; Kuaishou p < 0.001/0.002
+High degree overlap but weaker rank-order stability on Kuaishou
+Betweenness centrality correlation across creator/comment networks
+Pearson = 0.770; Spearman = 0.409
+Pearson = 0.615; Spearman = 0.509
+Douyin p < 0.001/0.034; Kuaishou p < 0.001/<0.001
+Different brokerage structures across platforms
+
+Table 6. Verified model-fit statistics for multinomial logit and mediation comparison.
+Platform
+Model
+Log likelihood
+ΔLL vs full
+LR statistic
+Reporting note
+Douyin
+Cognition-only model
+-13249.32
+2773.14
+5546.28
+Verified from retained model log
+Douyin
+Affect-only model
+-10963.73
+487.55
+975.10
+Verified from retained model log
+Douyin
+Full mediation model
+-10476.18
+0.00
+Reference
+Best verified fit (R²=.2867; AIC=20972.35; BIC=21049.04)
+Kuaishou
+Cognition-only model
+-8415.45
+1371.21
+2742.42
+LL retained; exact R²/AIC/BIC not preserved
+Kuaishou
+Affect-only model
+-7096.18
+51.94
+103.88
+LL retained; exact R²/AIC/BIC not preserved
+Kuaishou
+Full mediation model
+-7044.24
+0.00
+Reference
+Best verified fit; source reports the lowest AIC/BIC
+
+Note. Lower AIC/BIC and higher McFadden's R² indicate superior fit. Table entries reproduce verifiable values retained in the original model-output logs. Where full information-criterion matrices were not recoverable, the reporting note states the limitation explicitly.
+Table 7. Selected coefficient-level odds ratios retained in the verified model output.
+Platform
+Predictor / contrast
+Outcome comparison
+OR
+Significance reporting
+Substantive meaning
+Douyin
+Affective evaluation (1-unit increase)
+Integrative vs neutral
+6.47
+Significant (verified in retained output)
+Affect strongly increases integrative orientation
+Douyin
+Affective evaluation (1-unit increase)
+Conflictual vs neutral
+0.29
+Significant (verified in retained output)
+Affect suppresses conflictual orientation
+Kuaishou
+Affective evaluation (1-unit increase)
+Integrative vs neutral
+6.68
+Significant (verified in retained output)
+Pro-integrative affect effect mirrors Douyin
+Kuaishou
+Affective evaluation (1-unit increase)
+Conflictual vs neutral
+0.30
+Significant (verified in retained output)
+Affect similarly suppresses conflict
+Kuaishou
+Han identity and race cluster (vs performance and revival)
+Integrative vs neutral
+0.64
+Significant (verified in retained output)
+Essentializing discourse lowers integration odds by ~36%
+Kuaishou
+Conflict and confrontation cluster (vs performance and revival)
+Conflictual vs neutral
+2.20
+Significant (verified in retained output)
+Conflict-laden issues more than double conflict odds
+Douyin (exploratory subanalysis)
+Didactic commonality rhetoric
+Integrative vs neutral
+3.24
+Verified OR; exact p not retained
+Didactic commonality still supports integration, but more weakly
+Douyin (exploratory subanalysis)
+Aesthetic commonality rhetoric
+Integrative vs neutral
+5.91
+p < .001
+Aestheticized commonality elicits stronger integrative odds
+
+Note. Table 7 reports only those odds ratios that can be verified directly against retained model output. Where the surviving export logs preserve significance direction but not a reportable exact p value, the table states that limitation directly.

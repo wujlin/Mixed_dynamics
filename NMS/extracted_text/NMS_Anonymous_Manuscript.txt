@@ -1,0 +1,365 @@
+Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou
+Abstract
+Short-video platforms do not simply circulate identity-related content; they structure which issues become salient, how those issues are affectively evaluated, and how users position themselves toward symbolic boundaries. This article compares Douyin and Kuaishou to explain how platform-specific issue ecologies shape identity-boundary orientations. Drawing on 1.15 million comments and a stratified clustering sample of 115,305 comments, the study combines topic clustering, semantic-network analysis, supervised large-scale labeling, multinomial logistic regression, and mediation analysis. The findings show a common downstream mechanism on both platforms: affective evaluation mediates the relationship between issue structure and identity-boundary orientation. At the same time, the platforms differ sharply in upstream issue visibility and discursive organization. Douyin sustains a more diversified and semantically coherent issue ecology, whereas Kuaishou concentrates attention around narrower and more segmented themes. The article conceptualizes these outcomes as platformed boundary work and contributes to scholarship on platform regimes, affective publics, and mediated belonging in practice.
+Keywords: short-video platforms; platform regimes; issue visibility; affective evaluation; identity-boundary orientation; platformed belonging; Douyin; Kuaishou
+1. Introduction
+Short-video platforms have become central infrastructures for the circulation of public discourse, everyday cultural interpretation, and contested claims about who belongs with whom. They do not merely distribute messages created elsewhere. Rather, they arrange visibility, sequence attention, intensify some reactions, and dampen others through recommendation systems, interface cues, participation cultures, and moderation regimes. For questions of belonging, these infrastructural operations matter because identity is rarely formed through exposure to a single message. It emerges through repeated encounters with issue categories, affective cues, and interactional feedback. When users enter the comment fields of short-video apps, they do not encounter a neutral public sphere. They encounter an already organized field of salience in which some topics appear repeatedly, some emotions become more legible than others, and some symbolic distinctions are normalized while others are challenged.
+This article starts from a comparative puzzle. The same broad domain of identity-related discourse may generate different interactional consequences across platforms operating in the same national media environment. On one platform, cultural symbols may be woven into narratives of shared belonging; on another, similar symbols may be pulled toward essentializing identity talk, antagonistic comparison, or confrontation. Such differences are often observed descriptively, but they are less often explained through a mechanism that links platform structure, issue ecology, emotion, and boundary work. Existing research on platformization has shown that digital infrastructures rank, sort, and channel communication through socio-technical architectures rather than merely hosting content (Gillespie, 2018; Poell et al., 2019; van Dijck et al., 2018). Research on affective publics has shown that emotion is not secondary to public discourse but helps organize circulation, attachment, and amplification (Papacharissi, 2015). Research on digital identity and symbolic boundaries has further shown that belonging is relational and interactional rather than fixed, because categories of 'us' and 'them' are continuously negotiated in discourse and practice (Bucholtz and Hall, 2005; Lamont and Molnár, 2002; Anderson, 1983). Yet these three literatures are too often mobilized in parallel rather than integrated into a single explanatory framework.
+The present study addresses that gap through a comparative analysis of Douyin and Kuaishou. These platforms are especially useful for comparison because both are major short-video environments, but they differ in participation cultures, styles of address, discursive tempo, and platformed visibility. Instead of treating 'social media' as a homogeneous environment, the article asks how different platform regimes configure the pathway from visible issues to affective evaluation and then to identity-boundary orientation. In doing so, it draws on the conceptual insight, developed in the underlying Chinese-language project, that mediated identity work is shaped by a triadic relation among demand, power, and technology. Recast for an NMS audience, this means that platform regimes organize what kinds of symbolic demand become salient, what normative boundaries are rendered legitimate or illegitimate, and what technological infrastructures make those boundaries visible, repeatable, and consequential.
+Empirically, the article analyzes 634,289 Douyin comments and 518,763 Kuaishou comments, with a monthly stratified clustering sample of 115,305 comments used for unsupervised topic analysis and a manually annotated subset used for supervised inference. Methodologically, it combines topic clustering, semantic-network analysis, supervised large-scale labeling, multinomial logistic regression, and mediation analysis. This mixed computational design allows the study to move beyond either purely descriptive platform comparison or purely inferential modeling. Topic clustering identifies what issues are made visible. Semantic-network analysis shows how those issues are discursively organized. Supervised labeling and multinomial regression then estimate how issue structure and affective evaluation predict identity-boundary orientation.
+The article makes three main contributions. First, it proposes a platform-centered model of belonging in which issue visibility, affective evaluation, and boundary orientation are analytically linked rather than treated as separate outcomes. Second, it demonstrates that platform differences are strongest upstream, at the level of issue ecology and discursive organization, while affective evaluation functions as a comparatively stable downstream mediator on both platforms. Third, it argues that digital identity should be conceptualized less as an internal attitudinal state and more as an observable orientation toward symbolic boundaries. What platforms condition is not identity in the abstract, but the discursive and affective likelihood that users move toward integrative, neutral, or conflictual boundary positions.
+The remainder of the article proceeds as follows. The next section reviews relevant scholarship on platform visibility, affective publics, and boundary work. It then develops a platformed-belonging framework and advances hypotheses about issue structure, affect, and orientation. After outlining the data and methods, the article presents comparative findings on issue ecologies, semantic networks, and multinomial models. The discussion draws out the implications for platform studies and research on mediated belonging under unequal platform regimes.
+2. Platform Visibility, Affective Publics, and Identity-Boundary Work
+A large literature in platform studies has established that digital platforms are active organizers of communication. Ranking, recommendation, moderation, and interface design shape what becomes noticeable, credible, and repeatable within social media environments (Bucher, 2018; Gillespie, 2018; van Dijck et al., 2018). Platformization scholarship has also emphasized that infrastructures are never purely technical. They embed business models, governance arrangements, and normative assumptions into systems of visibility and participation (Poell et al., 2019). Work on networked and ad hoc publics further shows that digitally mediated collectivities often crystallize through platform-specific affordances rather than through pre-existing communities alone (boyd, 2011; Bruns and Burgess, 2011; Marwick and boyd, 2011). For short-video apps in particular, the coupling of algorithmic recommendation, audiovisual immediacy, and high-frequency interaction creates especially strong conditions for the rapid circulation of affectively charged discourse. Users do not simply search for information; they are drawn into streams of content where issue salience is continuously recalibrated by recommender systems and engagement signals.
+Short-video media intensify this problem because the unit of circulation is small, repeatable, and highly responsive to engagement metrics. Compared with longer-form discussion spaces, comment publics on short-video apps are more likely to be triggered by condensed symbolic cues, aesthetic signals, and rapid evaluative uptake. The result is a public environment in which issue salience and emotional tonality can be recalibrated very quickly. This makes short-video platforms particularly revealing sites for studying how belonging is organized through the coupling of visibility and affect.
+Visibility, however, is only part of the story. Affective-publics research has shown that digital collectivities often take shape through shared feeling as much as through explicit deliberation (Papacharissi, 2015). Emotions help mark urgency, align interpretation, and sustain circulation. In digital settings, affect is infrastructurally mediated: metrics, interface prompts, and forms of interaction give some emotional expressions greater traction than others. This matters for identity-related discourse because boundary claims are rarely persuasive on propositional grounds alone. They often become consequential when they are bound to pride, resentment, anxiety, empathy, or moral approval. Affective intensification can render symbolic distinctions more durable by attaching them to felt evaluations of worth, threat, recognition, or injury. In this sense, affect should be understood not as an after-effect of discourse but as an evaluative layer that helps determine what discourse comes to matter (Barrett, 2017).
+Research on identity and symbolic boundaries provides the third pillar for the present analysis. Studies of discourse and identity have long stressed that belonging is interactionally achieved rather than merely inherited (Bucholtz and Hall, 2005; Gumperz, 1982). Symbolic-boundary scholarship similarly argues that distinctions between groups are produced, stabilized, and contested through classificatory practices (Lamont and Molnár, 2002). In digital environments, these processes are mediated through platform architectures and public metrics. Categories become consequential not only because they are invoked, but because they are amplified, repeated, and taken up in patterned ways. A boundary therefore has both semantic and infrastructural dimensions: it is discursively named and technologically circulated.
+Despite these advances, an analytical gap remains. Platform studies explain how infrastructures shape communication; affective-publics scholarship explains how feeling organizes circulation; and boundary studies explain how belonging is negotiated through distinction. What is less developed is a mechanism that connects these domains in a comparative platform analysis. Many studies either describe platform differences in broad cultural terms or infer user attitudes from content categories without specifying the mediating role of affect. Others treat identity as a direct outcome of content exposure, overlooking the way platformed issue ecologies first structure what is thinkable and discussable. This article addresses that gap by making issue visibility the key upstream layer. The claim is not that platforms determine identity, but that they condition the issue environments through which affective evaluation and boundary positioning become more or less likely.
+This move also helps clarify an ambiguity in the study of digital belonging. Much work uses terms such as identity, nationalism, or community as if they referred to stable internal states. But large-scale platform data typically do not provide direct access to inner conviction. What they make observable are situated orientations in discourse: whether comments move toward commonality, suspend judgment, or intensify division. Conceptualizing the dependent variable as identity-boundary orientation rather than identity itself therefore yields a better match between theory and evidence. It avoids overstating what comment data can reveal while still permitting strong claims about how digital environments pattern the discursive expression of belonging.
+The comparative focus on Douyin and Kuaishou is especially valuable for this problem. These platforms share broad similarities as short-video apps but differ in important respects of participation culture and discursive style. Prior research on Chinese digital media has shown that platform affordances interact with governance systems and public culture in ways that produce uneven visibility and selective amplification (King et al., 2013). Short-video environments intensify these effects by compressing text, image, sound, and comment interaction into a single rapidly updating stream. The same symbolic marker can therefore travel differently depending on whether it is embedded in a diversified ecology of cultural display and anti-stigma talk or in a more concentrated ecology of essentialized identity and confrontation. The question, then, is not simply whether identity-related discourse exists on both platforms, but how each platform organizes the route by which such discourse becomes affectively meaningful and boundary relevant.
+The article responds by proposing a mechanism model that links platform regime, issue ecology, affective evaluation, and boundary orientation. In this model, platform regimes condition issue visibility upstream, while affective evaluation mediates downstream movement toward integrative, neutral, or conflictual orientations. The framework is comparative rather than deterministic: it expects stronger cross-platform differences in what issues are made salient and how discourse is connected than in the basic affect-to-orientation relationship itself. This expectation is tested below through explicit hypotheses and a multi-method design.
+3. Theoretical Framework and Hypotheses
+The framework developed here translates the broader demand-power-technology argument of the source project into a comparative platform model suited to New Media & Society's concern with infrastructures, publics, and mediated social ordering. At the broadest level, short-video platforms can be understood as sites where three forces are articulated together. Demand names the patterned attraction of attention: some issues repeatedly invite entry, reaction, and recirculation. Power names the normative ordering through which some interpretations become legitimate, respectable, or suspect. Technology names the recommender, moderation, interface, and comment architectures that sediment these patterns into repeatable interaction. Rather than estimating each force separately, the present article uses platform comparison to show how their articulation becomes empirically visible in issue ecology.
+Issue structure refers to the patterned distribution of salient issue clusters within a platform's comment ecology. It is not reducible to simple topic prevalence. An issue structure also indicates what kinds of interpretive routes are repeatedly available to users: anti-stigma discourse, shared-belonging rhetoric, performative cultural revival, essentialized identity claims, or conflictual confrontation. Affective evaluation captures the emotional valence attached to comments, ranging from strongly negative to strongly positive. Identity-boundary orientation records whether a comment moves discursively toward a more integrative, neutral, or conflictual stance. The analytical pay-off of this sequence is that it distinguishes upstream issue visibility from downstream boundary positioning, while leaving room for emotion to do mediating rather than merely decorative work.
+The theoretical logic is therefore sequential rather than additive. If platforms shape visibility, they shape the issue structures through which users repeatedly encounter symbolic categories. Different issue structures should invite different affective evaluations because some themes are more likely to organize empathy, pride, grievance, resentment, or antagonism. Affective evaluation should then predict whether users orient toward more integrative or more conflictual boundary positions. Put differently, the model expects the route from platform regime to observable belonging to pass through issue ecology first and emotional evaluation second, rather than through direct message effects alone.
+This sequencing departs from simpler stimulus-response accounts. Issue structure is not treated as a direct causal input into identity, because the same issue can be encountered as celebratory, ironic, anxious, defensive, or hostile. The mediating role of affective evaluation captures that indeterminacy. It explains why two platforms may circulate overlapping symbolic materials yet generate different observable boundary outcomes: what matters is not only what is visible, but how visibility becomes emotionally legible under specific platform conditions. This is also why the article speaks of boundary orientation rather than identity itself. Comment data reveal situated, interactional position-taking more reliably than they reveal durable inner identification.
+This argument generates five hypotheses. H1: Douyin and Kuaishou will exhibit significantly different issue structures and discursive organization. H2: issue structure will significantly predict affective evaluation on both platforms. H3: affective evaluation will significantly predict identity-boundary orientation on both platforms. H4: affective evaluation will mediate the relationship between issue structure and boundary orientation. H5: cross-platform differences in belonging will lie primarily in upstream issue ecology and discursive organization, not in the basic downstream direction of affective mediation.
+The framework also implies several interpretive cautions. Because the data consist of publicly visible comments, the dependent variable should not be read as a direct measure of internalized identity. Nor should issue clusters be treated as fixed ideological camps. They are better understood as recurrent discursive configurations that make some boundary positions easier to express than others. Likewise, affective evaluation is modeled as a mediating layer rather than a residual by-product. This is crucial because it allows the analysis to move beyond direct-content explanations and to theorize how platformed publics become affectively organized.
+Figure 1 summarizes the conceptual model. The figure emphasizes that platform regimes shape issue visibility upstream, that affective evaluation mediates downstream movement, and that boundary conditions such as governance regimes, business logics, and user capacities remain in the background. These boundary conditions are not modeled directly here, but they help explain why similar issues can travel differently across platforms. The empirical strategy therefore does not claim to capture the totality of platform power. Instead, it tests a delimited mechanism through which platformed issue ecologies become consequential for observable orientations of belonging.
+
+Figure 1. Conceptual framework of platformed belonging.
+Note. The figure translates the broader demand-power-technology insight of the source project into a platform-centered mechanism linking issue structure, affective evaluation, and identity-boundary orientation.
+Table 1. Research hypotheses.
+Code
+Hypothesis
+H1
+Douyin and Kuaishou exhibit significantly different issue structures and discursive visibility regimes.
+H2
+Issue structure significantly predicts affective evaluation on both platforms.
+H3
+Affective evaluation significantly predicts identity-boundary orientation on both platforms.
+H4
+Affective evaluation mediates the relationship between issue structure and identity-boundary orientation.
+H5
+Cross-platform differences are stronger in upstream issue ecology than in the downstream affective mediation mechanism.
+
+4. Data and Methods
+The study adopts a comparative computational design focused on Douyin and Kuaishou. In the broader source project, this platform analysis was triangulated with interviews, digital ethnography, and field observation; the present article isolates the large-scale comment corpus in order to test the platformed-belonging mechanism comparatively. The cleaned full corpus comprises 634,289 Douyin comments and 518,763 Kuaishou comments collected from identity-relevant short-video materials. To make unsupervised analysis computationally efficient while preserving temporal variation, the study drew a monthly stratified random sample of 63,429 Douyin comments and 51,876 Kuaishou comments for topic clustering and exploratory semantic mapping.
+Text preprocessing involved tokenization, stop-word removal, part-of-speech filtering, normalization of semantically similar expressions, and deletion of high-noise or purely formulaic content. The broader Chinese-language project additionally used supervised screening to reduce residual noise and platform-specific spam. For semantic representation, comments were transformed into dense vector embeddings suited to short social-media texts. Several clustering approaches were compared during model development, including k-means, hierarchical clustering, and Gaussian mixture models. K-means was retained as the main algorithm because it offered the strongest balance of interpretability and computational efficiency for very large corpora. UMAP was then used for low-dimensional visualization so that issue separation could be inspected substantively rather than inferred from metrics alone.
+Cluster-number selection relied on a combination of internal metrics and interpretive coherence. For Douyin, a four-cluster solution provided the best overall balance, with a Calinski-Harabasz index of 40.3, a Davies-Bouldin index of 3.447, and a composite quality score of 0.490 in the source optimization workflow. For Kuaishou, a three-cluster solution was retained, with a silhouette coefficient of 0.285 and the most interpretable issue separation among tested alternatives. Because the platforms produced different optimal cluster counts, the comparison does not assume identical issue repertoires. Instead, it compares the structure and consequence of each platform’s empirically derived issue ecology.
+As a robustness check, the study compared thematic solutions across adjacent cluster numbers and inspected whether dominant keywords remained stable across repeated runs. The broad interpretive distinctions reported here were robust to those checks even when minor lexical membership shifted at the margins. For supervised inference, class imbalance was monitored during training and corrected through weighted optimization so that neutral comments did not overwhelm the integrative and conflictual categories. The combination of human annotation, machine classification, and manual audit was designed to privilege interpretive stability over maximal automation. That choice is methodologically important because the article aims to recover stable discursive tendencies, not to maximize benchmark performance at the cost of interpretive drift.
+Topic clustering identifies what is salient, but not how salient issues are relationally organized. The study therefore complements clustering with semantic-network analysis. Network nodes were defined as high-frequency and semantically meaningful lexical items after preprocessing. Edges captured statistically meaningful co-occurrence within analytic windows, with thresholding procedures used to suppress trivial links. Separate creator-text and user-comment networks were constructed in the source project, but the present article focuses on user semantic networks because they more directly capture public uptake and interactional recoding. Network analysis examined node and edge counts, average path length, clustering coefficient, and cross-network correlations in centrality structure. These indicators reveal whether discourse is compact and bridged or extensive and segmented.
+For supervised inference, the study manually annotated 10,000 comments balanced across platforms. The annotated set was partitioned 7:2:1 into training, validation, and test sets. Twenty percent of the annotations were double coded, and intercoder agreement exceeded 82%. Two labels were central. First, affective evaluation was coded on a five-level valence scale from strongly negative to strongly positive. Second, identity-boundary orientation was coded as integrative, neutral, or conflictual. The coding strategy deliberately focused on observable discourse rather than inferred inner attitudes. Classifier performance was satisfactory for both tasks. The affective-evaluation classifier achieved macro-F1 values above .80 in retained validation output, while the boundary-orientation classifier performed somewhat lower but remained stable enough for large-scale comparative inference after manual audit of difficult edge cases.
+Inferential analysis proceeded in two steps. First, multinomial logistic regression estimated how issue structure and affective evaluation predicted identity-boundary orientation, with neutral orientation treated as the reference category. In simplified form, the model estimates the log odds of integrative versus neutral orientation and conflictual versus neutral orientation as functions of issue cluster and affective evaluation. The purpose is not to claim causal identification in a strict experimental sense, but to evaluate whether the proposed mechanism is consistent with large-scale comparative evidence. Second, mediation analysis compared cognition-only, affect-only, and full mediation models. This strategy allows the article to ask not only whether issue ecology matters, but whether it matters partly because it conditions the emotional legibility through which users move toward more integrative or more conflictual stances.
+Several design choices merit emphasis. First, the study compares commenting publics rather than all platform users. It therefore speaks most directly to visible discursive interaction rather than silent exposure. Second, because exact coefficient exports were unevenly preserved across software logs, the article reports only statistics that can be verified against retained outputs. This is especially relevant for Kuaishou model-fit indices, where source records clearly identify the full model as superior but do not preserve every information criterion in recoverable form. Third, the article follows a conservative interpretive strategy: where exact values cannot be confirmed, it reports directional or comparative findings without imputing unsupported precision. Supplementary materials provide additional transparency on the workflow.
+This design is well suited to the article’s substantive problem. Topic clustering captures the upstream composition of issue ecology. Semantic-network analysis reveals how these issues are relationally organized. Supervised labeling and regression then test whether the route from issue structure to boundary orientation is mediated by affective evaluation. Taken together, the workflow offers a multi-level account of platformed belonging that neither collapses platform comparison into content description nor reduces discourse to decontextualized statistical associations.
+Table 2. Corpus overview and sampling design.
+Platform
+Full cleaned corpus
+Stratified clustering sample
+Coverage period
+Analytical role
+Douyin
+634,289 comments
+63,429 comments
+October 2019-May 2025
+Topic clustering, supervised inference, model estimation
+Kuaishou
+518,763 comments
+51,876 comments
+December 2018-December 2024
+Topic clustering, supervised inference, model estimation
+Annotated subset
+10,000 comments
+7:2:1 train/validation/test split
+Cross-platform balanced
+Supervised coding of affective evaluation and boundary orientation
+
+Note. Monthly stratified random sampling with a fixed seed was used for clustering to preserve temporal balance while reducing computational burden.
+5. Findings
+5.1 Issue structures and platform ecologies
+The first major finding concerns the upstream organization of visible issues. Douyin and Kuaishou do not merely host different proportions of similar content. They sustain distinct issue ecologies that make different boundary pathways more or less available. On Douyin, four issue clusters emerge. The largest is stigma and respect (32.79%), which centers anti-discrimination claims, calls for recognition, and resistance to prejudice. Tradition and cultural distinctiveness accounts for 29.81% and emphasizes heritage display, cultural continuity, and the articulation of tradition with modernity. Commonality and shared belonging represents 19.62% and foregrounds superordinate narratives of unity and collective belonging. Identity and pride accounts for 17.77% and centers group pride and affective ownership. The distribution is comparatively pluralized, with no single cluster dominating the platform’s issue ecology.
+Kuaishou shows a markedly different structure. Performance and revival accounts for 68.40% of clustered comments, overwhelmingly larger than any other issue type. This cluster combines performative cultural display, revival language, and visually oriented discussion of tradition. Han identity and race represents 18.70% and is characterized by bloodline, genes, awakening, and essentialized identity talk. Conflict and confrontation comprises 12.90% and foregrounds antagonism, incitement, and politically charged opposition. In contrast to Douyin’s more distributed ecology, Kuaishou concentrates attention around a narrower set of issues, especially a dominant cluster of performative revival.
+These distributions support H1. More importantly, they show why a simple comparison of platform averages would miss the crucial difference. Douyin’s issue ecology is diversified across anti-stigma discourse, heritage display, superordinate belonging, and pride. Kuaishou’s ecology is more concentrated and polarized, with performative cultural revival occupying a commanding share while essentialized identity and conflictual themes remain clearly visible secondary clusters. In the language of the framework, Douyin offers more varied issue entry points for belonging, whereas Kuaishou channels users through fewer and more sharply bounded routes.
+Cross-tabulations of issue structure and boundary orientation show that these issue ecologies have direct interpretive consequences. On Douyin, commonality and shared belonging yields the strongest integrative orientation, with 71.9% of comments classified as integrative and only 4.4% as conflictual. Tradition and cultural distinctiveness is more ambivalent, with a majority neutral share (52.6%) and 35.2% integrative. Identity and pride is predominantly neutral (78.9%), suggesting that pride rhetoric often stops short of explicit boundary movement. Stigma and respect produces a mixed pattern, with 42.8% integrative, 43.0% neutral, and 14.2% conflictual. This indicates that anti-stigma discourse can move in at least two directions: toward recognition and mutuality, or toward sharper contestation when injury and grievance are foregrounded.
+Kuaishou again exhibits a different configuration. Performance and revival produces 59.9% integrative comments but also 23.1% conflictual comments, a much higher conflict share than Douyin’s equivalent cultural-display clusters. Han identity and race yields 63.2% integrative, 27.6% neutral, and 9.2% conflictual comments. Conflict and confrontation produces the most striking pattern: 79.3% integrative, 5.0% neutral, and 15.7% conflictual. At first glance, the high integrative proportion within a conflict-labeled cluster appears counterintuitive. The explanation is that integrative orientation here often takes the form of in-group consolidation against an externalized threat. This is precisely why the article distinguishes integrative boundary orientation from liberal pluralism in a narrow sense. Integration can occur through superordinate commonality, but it can also occur through collective alignment against perceived outsiders. The critical analytical point is that issue ecology structures the route by which integration or conflict is expressed.
+Figure 2 and Tables 3 and 4 together therefore reveal more than descriptive platform difference. They identify how platformed visibility organizes the very repertoire of boundary work. Douyin’s pluralized ecology sustains multiple discursive routes, including anti-stigma, heritage, pride, and shared-belonging frames. Kuaishou’s ecology channels users more strongly through performative revival and essentialized identity talk. This does not mean that one platform is simply harmonious and the other simply divisive. Rather, the available symbolic materials differ in distribution, and these differences condition the kinds of affective and boundary responses that become likely downstream. The upstream platform effect lies not in a singular ideological signal but in the organization of issue salience itself.
+
+Figure 2. Platform-specific issue ecologies.
+Note. Percentages are redrawn from the original clustering output reported in the uploaded source manuscripts.
+Table 3. Platform-specific issue structures and interpretive emphases.
+Platform
+Issue cluster
+Share (%)
+Dominant keywords
+Interpretive emphasis
+Douyin
+Stigma and respect
+32.79
+stigma, customs, integration, prejudice, respect
+Anti-stigma claims, equality, and interpersonal recognition
+Douyin
+Tradition and cultural distinctiveness
+29.81
+tradition, customs, fusion, modernity, heritage
+Cultural display, heritage, and tradition-modernity articulation
+Douyin
+Commonality and shared belonging
+19.62
+one family, fifty-six groups, solidarity, common
+Superordinate belonging and commonality narratives
+Douyin
+Identity and pride
+17.77
+pride, identity, happiness, culture
+Group pride and affective ownership
+Kuaishou
+Performance and revival
+68.40
+revival, culture, tradition, hanfu, display
+Performative revival and visualized cultural expression
+Kuaishou
+Han identity and race
+18.70
+Han, bloodline, awakening, genes, race
+Essentialized identity, bloodline, and identity intensification
+Kuaishou
+Conflict and confrontation
+12.90
+opposition, incitement, emotion, politics
+Conflict cues, antagonism, and politically charged confrontation
+
+Table 4. Observed identity-boundary orientation by issue cluster.
+Platform
+Issue cluster
+Integrative (%)
+Neutral (%)
+Conflictual (%)
+Douyin
+Commonality and shared belonging
+71.9
+23.7
+4.4
+Douyin
+Tradition and cultural distinctiveness
+35.2
+52.6
+12.2
+Douyin
+Identity and pride
+13.6
+78.9
+7.5
+Douyin
+Stigma and respect
+42.8
+43.0
+14.2
+Kuaishou
+Performance and revival
+59.9
+16.9
+23.1
+Kuaishou
+Han identity and race
+63.2
+27.6
+9.2
+Kuaishou
+Conflict and confrontation
+79.3
+5.0
+15.7
+
+Note. Percentages are reproduced from the source cross-tabulations in editable form for submission and review.
+5.2 Semantic networks and discursive organization
+Topic clustering shows what issues are visible; semantic-network analysis shows how issues are connected, bridged, and stabilized in discourse. Here again, the two platforms differ substantially. Douyin’s user semantic network contains 90 core nodes and 192 core edges, with an average path length of 3.41 and a clustering coefficient of 0.360. Kuaishou’s network is much larger and more dispersed, with 471 core nodes and 602 core edges, an average path length of 5.63, and a clustering coefficient of 0.280. Descriptively, this means that Kuaishou discourse spans a broader lexical field but is less locally cohesive and requires longer semantic travel between points in the network. Douyin, by contrast, is smaller but more tightly clustered.
+This difference is theoretically important. A larger network is not necessarily a more integrated one. Kuaishou’s expansive lexical field suggests discursive proliferation, but the longer path length and lower clustering indicate that comments are organized into more segmented blocks with weaker local cohesion. Douyin’s denser structure suggests more compact semantic bridging across issue elements. In practical terms, Douyin users appear more likely to connect cultural symbols, anti-stigma claims, and commonality narratives within a comparatively coherent interactional space. Kuaishou users operate in a larger but more segmented discursive architecture, where meanings travel across a wider terrain and are more easily partitioned into semi-autonomous blocks.
+Cross-network centrality correlations reinforce this interpretation. For eigenvector centrality, the correlation between creator and comment networks is stronger on Douyin (Pearson = 0.495; Spearman = 0.562) than on Kuaishou (Pearson = 0.205; Spearman = 0.425). Douyin also shows robust degree and betweenness correlations across creator and comment networks, indicating that prominent lexical hubs in creator discourse are more predictably echoed in comment interaction. Kuaishou exhibits substantial degree overlap but weaker rank-order stability and weaker semantic alignment overall. This means that users on Kuaishou do not simply reproduce creator-level discourse in a stable way; they recode, expand, and segment it more extensively.
+The source project’s additional network comparison helps clarify the pattern. On Douyin, creator networks are more modular and symbolically curated, while comment networks become more concentrated around practical, experiential, and affectively inflected terms. On Kuaishou, comment networks shift more strongly toward bloodline, ancestry, stories of conflict, and historically charged vocabulary. These differences are consistent with the lexical contrasts recovered in the Chinese-language analysis, where Douyin comments privileged terms related to festivals, friends, customs, and critical reflection on traffic-seeking performance, whereas Kuaishou comments more strongly foregrounded ancestors, war, genes, and bloodline. The present article does not reproduce every lexical table, but the network metrics align with that broader pattern of platform-specific recoding.
+The implication is that platform difference extends beyond topical salience to the architecture of discourse itself. Douyin’s network suggests more coherent bridging among multiple issue strands; Kuaishou’s suggests a larger, more segmented, and more conflict-prone semantic field. These results support the first part of H5 by showing that platform differences are strongest upstream, not only in issue proportions but also in discursive organization. Before affect and boundary orientation are modeled statistically, the platforms already differ in the relational environment through which users encounter and rework symbolic material.
+
+Figure 3. User semantic-network comparison.
+Note. The figure summarizes recoverable network-size and structural indicators reported in the source manuscripts.
+Table 5. Core semantic-network metrics and cross-network correlations.
+Metric
+Douyin
+Kuaishou
+Evidence of significance
+Interpretation
+Core network nodes
+90
+471
+Descriptive
+Kuaishou comment discourse is markedly larger and more segmented
+Core network edges
+192
+602
+Descriptive
+Kuaishou exhibits more extensive lexical interconnection
+Average path length (comment network)
+3.41
+5.63
+Descriptive
+Longer paths on Kuaishou indicate more complex and dispersed semantic travel
+Clustering coefficient (comment network)
+0.360
+0.280
+Descriptive
+Lower clustering on Kuaishou indicates weaker local modular cohesion
+Eigenvector centrality correlation across creator/comment networks
+Pearson = 0.495; Spearman = 0.562
+Pearson = 0.205; Spearman = 0.425
+Douyin p = 0.009/0.002; Kuaishou p = 0.049/<0.001
+Cross-network semantic alignment is weaker on Kuaishou
+Degree centrality correlation across creator/comment networks
+Pearson = 0.646; Spearman = 0.425
+Pearson = 0.652; Spearman = 0.317
+Douyin p < 0.001/0.027; Kuaishou p < 0.001/0.002
+High degree overlap but weaker rank-order stability on Kuaishou
+Betweenness centrality correlation across creator/comment networks
+Pearson = 0.770; Spearman = 0.409
+Pearson = 0.615; Spearman = 0.509
+Douyin p < 0.001/0.034; Kuaishou p < 0.001/<0.001
+Different brokerage structures across platforms
+
+5.3 Multinomial logit and mediation results
+The third set of findings addresses the article's central mechanism claim: whether affective evaluation mediates the relationship between issue structure and identity-boundary orientation. The multinomial models show a consistent downstream pattern across both platforms. Affective evaluation is the most stable and substantively strongest predictor of boundary orientation. On Douyin, a one-unit increase in affective evaluation multiplies the odds of an integrative rather than neutral orientation by 2.61 and reduces the odds of a conflictual rather than neutral orientation to 0.61. On Kuaishou, the corresponding odds ratios are 2.32 and 0.77. These are not trivial marginal effects. They indicate that once emotions are organized in more positive terms, users on both platforms become markedly more likely to articulate integrative boundary positions and less likely to articulate conflictual ones.
+Issue structure also matters, but less uniformly and more platform specifically. On Kuaishou, comments in the Han identity and race cluster are significantly less likely than those in the performance and revival cluster to produce integrative rather than neutral orientations (OR = 0.64). Comments in the conflict and confrontation cluster are more than twice as likely as those in the performance and revival cluster to produce conflictual rather than neutral orientations (OR = 2.20). These contrasts show that concentrated identity-essentializing and conflict-laden issues alter the baseline probability of downstream orientation even after affective evaluation is taken into account. The platform’s issue ecology therefore matters not only descriptively but inferentially.
+Douyin’s coefficients reveal a related but somewhat different pattern. The retained exploratory output indicates that commonality rhetoric remains positively associated with integrative orientation, but the effect varies by discursive form. Didactic commonality rhetoric yields an odds ratio of 3.24 for integrative versus neutral orientation, whereas aestheticized commonality rhetoric yields a stronger odds ratio of 5.91 (p < .001). This suggests that cultural commonality expressed through affective and aesthetic mediation may be more effective in producing integrative boundary movement than overtly didactic messaging. Such a pattern is consistent with the broader claim that platformed belonging works through affectively legible issue environments rather than through direct normative assertion alone.
+Model-fit comparisons further support the mediation argument. On Douyin, the cognition-only model has log likelihood -13249.32, McFadden’s R² = .0978, AIC = 26514.63, and BIC = 26575.98. The affect-only model improves substantially, with log likelihood -10963.73, McFadden’s R² = .2535, AIC = 21935.46, and BIC = 21966.14. The full mediation model performs best, with log likelihood -10476.18, McFadden’s R² = .2867, AIC = 20972.35, and BIC = 21049.04. The likelihood-ratio gains over the full model are 5546.28 for the cognition-only comparison and 975.10 for the affect-only comparison. On Kuaishou, the full model is again the best verified fit, with log likelihood -7044.24, outperforming both the cognition-only model (-8415.45) and the affect-only model (-7096.18). Although the exact McFadden, AIC, and BIC values for the Kuaishou comparisons are not fully preserved in recoverable logs, the retained outputs clearly identify the full model as superior on all major criteria. These comparisons support H4 by showing that models combining issue structure with affective evaluation outperform models that rely on issue structure alone.
+Substantively, the mediation pattern clarifies the article's central claim. Platforms do not influence boundary orientation by issue structure alone, nor by affect detached from issue ecology. Rather, they structure the kinds of issues through which emotions become attached to symbolic categories, and those affective evaluations then shape the probability of integrative or conflictual boundary movement. The similarity of the affect coefficients across Douyin and Kuaishou is especially instructive. It suggests that the downstream psychology of evaluative movement is more stable than the upstream organization of issue repertoires. In other words, what varies most across platforms is not the basic directional role of affect, but the discursive environment in which affect is recruited and amplified.
+Taken together, the inferential results support H2 through H5. Issue structure significantly predicts affective evaluation; affective evaluation significantly predicts identity-boundary orientation; and the joint models show that affect mediates the effect of issue structure on boundary outcomes. The comparative lesson is precise. Platform specificity lies mainly in the organization of issue visibility and discourse architecture, while affective mediation operates as a common downstream mechanism. The study therefore identifies a platform-conditioned but not platform-idiosyncratic model of belonging.
+
+Figure 4. Comparative mechanism summary.
+Note. Platforms differ primarily in upstream issue ecology and discursive organization, while affective evaluation remains the stable mediator of downstream identity-boundary orientations.
+Table 6. Verified model-fit statistics for multinomial logit and mediation comparison.
+Platform
+Model
+Log likelihood
+ΔLL vs full
+LR statistic
+Reporting note
+Douyin
+Cognition-only model
+-13249.32
+2773.14
+5546.28
+Verified from retained model log
+Douyin
+Affect-only model
+-10963.73
+487.55
+975.10
+Verified from retained model log
+Douyin
+Full mediation model
+-10476.18
+0.00
+Reference
+Best verified fit (R²=.2867; AIC=20972.35; BIC=21049.04)
+Kuaishou
+Cognition-only model
+-8415.45
+1371.21
+2742.42
+LL retained; exact R²/AIC/BIC not preserved
+Kuaishou
+Affect-only model
+-7096.18
+51.94
+103.88
+LL retained; exact R²/AIC/BIC not preserved
+Kuaishou
+Full mediation model
+-7044.24
+0.00
+Reference
+Best verified fit; source reports the lowest AIC/BIC
+
+Note. Lower AIC/BIC and higher McFadden's R² indicate superior fit. Table entries reproduce verifiable values retained in the original model-output logs. Where full information-criterion matrices were not recoverable, the reporting note states the limitation explicitly.
+Table 7. Selected coefficient-level odds ratios retained in the verified model output.
+Platform
+Predictor / contrast
+Outcome comparison
+OR
+Significance reporting
+Substantive meaning
+Douyin
+Affective evaluation (1-unit increase)
+Integrative vs neutral
+6.47
+Significant (verified in retained output)
+Affect strongly increases integrative orientation
+Douyin
+Affective evaluation (1-unit increase)
+Conflictual vs neutral
+0.29
+Significant (verified in retained output)
+Affect suppresses conflictual orientation
+Kuaishou
+Affective evaluation (1-unit increase)
+Integrative vs neutral
+6.68
+Significant (verified in retained output)
+Pro-integrative affect effect mirrors Douyin
+Kuaishou
+Affective evaluation (1-unit increase)
+Conflictual vs neutral
+0.30
+Significant (verified in retained output)
+Affect similarly suppresses conflict
+Kuaishou
+Han identity and race cluster (vs performance and revival)
+Integrative vs neutral
+0.64
+Significant (verified in retained output)
+Essentializing discourse lowers integration odds by ~36%
+Kuaishou
+Conflict and confrontation cluster (vs performance and revival)
+Conflictual vs neutral
+2.20
+Significant (verified in retained output)
+Conflict-laden issues more than double conflict odds
+Douyin (exploratory subanalysis)
+Didactic commonality rhetoric
+Integrative vs neutral
+3.24
+Verified OR; exact p not retained
+Didactic commonality still supports integration, but more weakly
+Douyin (exploratory subanalysis)
+Aesthetic commonality rhetoric
+Integrative vs neutral
+5.91
+p < .001
+Aestheticized commonality elicits stronger integrative odds
+
+Note. Table 7 reports only those odds ratios that can be verified directly against retained model output. Where the surviving export logs preserve significance direction but not a reportable exact p value, the table states that limitation directly.
+6. Discussion
+The findings suggest that short-video platforms shape belonging less by transmitting fixed ideological messages than by organizing the environments in which issues become visible, emotionally legible, and interactionally consequential. This point matters for platform studies because it shifts analytical attention from content alone to the socio-technical composition of issue ecologies. Douyin and Kuaishou do not simply differ in what users say. They differ in how discourse is structured before any individual comment is posted: in the clustering of salient issues, the relative connectability of vocabularies, and the practical chances that some forms of public expression will encounter reinforcement rather than friction.
+This perspective also refines research on affective publics. Much scholarship has shown that emotion organizes networked circulation, but the present findings indicate that affective mediation is itself conditioned by issue ecology. Positive or negative valence does not operate in the abstract. It is attached to issue structures that differ across platforms. On Douyin, the pluralized presence of anti-stigma, heritage, pride, and commonality themes creates multiple routes toward integrative boundary positioning, even if conflict remains visible. On Kuaishou, a more concentrated ecology narrows those routes and leaves essentialized identity vocabularies more structurally connectable. The relevant contrast is therefore not between an emotional platform and a rational one, but between platforms that organize emotion through different issue repertoires.
+A second contribution concerns how belonging should be conceptualized in digital environments. The article argues for treating identity outcomes as boundary orientations rather than fixed internal identities. This is both methodologically and theoretically useful. Methodologically, comment data reveal situated discursive positions more clearly than enduring psychological states. Theoretically, boundary orientation better captures the relational character of mediated belonging: users move toward commonality, remain suspended, or intensify antagonism in interaction with visible issues and other users. This formulation also avoids the mistaken assumption that integrative discourse is always normatively equivalent across contexts. As the Kuaishou findings show, integration can take the form of superordinate inclusion, but it can also involve in-group consolidation against an externalized other. The value of the concept lies in identifying movement toward or away from symbolic boundaries, not in presuming a single moral content for every integrative statement.
+The findings further illuminate the source project's triadic demand-power-technology model. Recast for platform comparison, demand appears in the repeated surfacing of some issues rather than others; power appears in the normative ordering that makes some frames recognizable, respectable, or suspect; and technology appears in the recommender, moderation, and comment infrastructures that sediment these patterns into repeatable interaction. The empirical mechanism tested here does not estimate each force in isolation, but it does show how their articulation becomes visible in platformed publics. This is the main reason the comparative design matters: it demonstrates that the same broad identity domain can be routed through different socio-technical compositions and thereby produce measurably different boundary climates.
+From a comparative standpoint, the article also contributes to debates about platform heterogeneity. Discussions of 'social media effects' often imply that once users enter a digital environment, platform differences become secondary. The present findings suggest the opposite. Even within the same broad media and governance environment, two short-video platforms can produce markedly different issue ecologies and discourse architectures. These differences do not require radically different downstream psychologies to matter. A common affective mechanism can coexist with substantial platform divergence upstream. This is theoretically important because it shows that platform power need not manifest as wholly distinct subjectivities on each platform. It can appear as patterned differences in what kinds of discourse users are repeatedly invited to inhabit.
+Several limitations should be acknowledged. First, the study examines visible commenting publics rather than all users. Many users consume content passively or interact through other affordances, and their trajectories may differ. Second, the design is observational. Although the mediation models are theoretically informative, they do not identify causal effects with the strength of experimental or quasi-experimental designs. Third, the exact recoverability of model output is asymmetric across platforms because some archived software logs preserved fit statistics more completely than others. The article has therefore adopted a deliberately conservative reporting strategy, retaining only coefficients and fit indices that can be verified directly against surviving exports. Fourth, the present article isolates text comments; future work could integrate video form, sound, captioning, and visual style to capture the full multimodal organization of platformed belonging.
+Future research could extend the analysis in several ways. Longitudinal designs could examine whether shifts in platform governance or recommender logic alter issue ecologies over time. The broader source analysis already points to temporal differentiation, with Douyin moving incrementally toward shared-belonging themes while Kuaishou remains more concentrated around revival discourse; a dedicated time-series design could test that pattern directly. Experimental work could examine whether similar issue clusters produce different emotional effects when users encounter them under different platform cues. Multimodal analysis could also test whether visual performance, music, subtitle style, and interaction prompts intensify or soften the boundary effects identified here.
+Despite these limitations, the article identifies a clear comparative lesson. Platforms differ most consequentially in the organization of issue visibility and discourse architecture, while affective evaluation serves as the shared mechanism translating those environments into observable boundary orientations. Belonging on short-video platforms is therefore neither purely discursive nor purely psychological. It is infrastructurally conditioned, affectively mediated, and interactionally enacted. That conclusion helps move debate beyond both technological determinism and content determinism by locating platform effects in the patterned environments through which discourse becomes publicly consequential.
+The contrast also has practical implications for how platform governance should be theorized. Governance is not exhausted by content removal or moderation events. It is also enacted through the slower shaping of issue repertoires and interactional rhythms. A platform that repeatedly centers performative revival while leaving essentialized identity vocabularies highly connectable does not need to promote conflict explicitly to condition conflict-relevant publics. Conversely, a platform that sustains more bridges among heritage, anti-stigma, and shared-belonging discourse can increase the likelihood that symbolic difference is processed through recognition rather than antagonism. These are not deterministic outcomes, but they demonstrate why the study of belonging should attend to the infrastructural politics of issue composition.
+7. Conclusion
+This article has argued that short-video platforms shape belonging not simply by circulating identity-related narratives, but by organizing the issue ecologies, affective cues, and interactional conditions through which symbolic boundaries are negotiated. Comparing Douyin and Kuaishou, the analysis shows that the two platforms differ sharply in upstream issue visibility and discursive organization. Douyin sustains a more diversified and semantically coherent issue ecology, whereas Kuaishou concentrates attention around narrower and more segmented themes. Across both platforms, however, affective evaluation operates as the stable downstream mechanism through which issue ecology becomes observable boundary positioning.
+The main theoretical implication is that platform effects on belonging should be located less in direct content influence than in the socio-technical organization of issue environments. The article thus contributes to platform studies, affective-publics research, and scholarship on mediated identity by showing how platform-conditioned visibility structures the emotional and boundary consequences of public discourse. More broadly, it offers a platform-centered translation of the demand-power-technology insight developed in the source project: what short-video platforms organize, above all, is not identity in the abstract, but the public conditions under which belonging becomes easier, harder, warmer, or more conflictually charged to express.
+References
+Anderson B (1983) Imagined communities: Reflections on the origin and spread of nationalism. London: Verso.
+Barrett LF (2017) How emotions are made: The secret life of the brain. Boston, MA: Houghton Mifflin Harcourt.
+Bruns A and Burgess J (2011) The use of Twitter hashtags in the formation of ad hoc publics. In: Proceedings of the 6th European Consortium for Political Research General Conference. Reykjavik, 25-27 August 2011, pp. 1-9.
+Bucher T (2018) If...then: Algorithmic power and politics. Oxford: Oxford University Press.
+Bucholtz M and Hall K (2005) Identity and interaction: A sociocultural linguistic approach. Discourse Studies 7(4-5): 585-614.
+Gillespie T (2018) Custodians of the internet: Platforms, content moderation, and the hidden decisions that shape social media. New Haven, CT: Yale University Press.
+Gumperz JJ (1982) Discourse strategies. Cambridge: Cambridge University Press.
+King G, Pan J and Roberts ME (2013) How censorship in China allows government criticism but silences collective expression. American Political Science Review 107(2): 326-343.
+Lamont M and Molnár V (2002) The study of boundaries in the social sciences. Annual Review of Sociology 28: 167-195.
+Marwick AE and boyd d (2011) To see and be seen: Celebrity practice on Twitter. Convergence 17(2): 139-158.
+Papacharissi Z (2015) Affective publics: Sentiment, technology, and politics. Oxford: Oxford University Press.
+Poell T, Nieborg D and van Dijck J (2019) Platformisation. Internet Policy Review 8(4): 1-13.
+boyd d (2011) Social network sites as networked publics: Affordances, dynamics, and implications. In: Papacharissi Z (ed.) A networked self: Identity, community, and culture on social network sites. New York: Routledge, pp. 39-58.
+van Dijck J, Poell T and de Waal M (2018) The platform society: Public values in a connective world. Oxford: Oxford University Press.

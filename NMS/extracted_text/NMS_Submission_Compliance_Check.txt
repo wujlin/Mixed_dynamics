@@ -1,0 +1,79 @@
+New Media & Society Submission Compliance Check
+Checklist synchronized with the revised manuscript and auxiliary submission files (March 2026).
+Requirement
+Status
+Current file / evidence
+Action needed before live submission
+Scope fit for NMS
+Meets
+The manuscript examines platform regimes, issue visibility, affective evaluation, and boundary-making in short-video comment publics under the title “Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou.”
+None beyond final editorial polishing.
+Word-count policy (target 8000 words including all text)
+Meets
+The synchronized manuscript package is approximately 8,000 words when all text is counted together, consistent with the journal’s target-length expectation.
+None unless the manuscript is substantively expanded again.
+Unstructured abstract of 150 words
+Conditionally meets
+The revised manuscript abstract has been tightened to journal style, but the final upload set should be checked once more to ensure the abstract is exactly 150 words.
+Confirm the final abstract word count immediately before live submission.
+Minimum 4 keywords
+Meets
+The manuscript includes more than four specific keywords aligned with platform studies, affect, and boundary-making.
+None.
+Anonymous review manuscript
+Meets
+Author names and identifying details are removed from the review manuscript; identifying information is kept on the separate title page.
+Keep file metadata scrubbed before upload.
+Separate title page with required identifying information
+Partially meets
+The title page template includes author names, affiliations, corresponding-author details, ORCID, acknowledgements, author contributions, funding, ethics/consent, data availability, and permissions headings.
+Replace any remaining placeholders with final author-specific information.
+Cover letter explaining fit
+Meets
+The cover letter is synchronized with the revised title, theoretical framing, and contribution statement.
+Insert any submission-specific disclosure wording if required by the system.
+Statements and declarations
+Conditionally meets
+Required declaration items are prepared for the title page and submission system, while the review manuscript remains anonymized.
+Ensure funding, ethics, data-availability, and permissions language is identical across all live-submission fields.
+Sage Harvard references
+Conditionally meets
+The manuscript is written in author-date style consistent with Sage Harvard conventions.
+Run one final author–year cross-check between in-text citations and the reference list.
+Editable tables in Word
+Meets
+A separate editable Word file for tables has been prepared.
+None.
+Figures numbered consecutively and supplied as review figures
+Meets
+Figures are numbered consecutively in the manuscript and can be uploaded as standalone high-resolution files.
+Upload the 300 dpi figure files during live submission.
+Figure permissions / originality
+Conditionally meets
+Current files assume that all figures are original or redrawn from the authors’ own data.
+Confirm originality on the title page, or upload permissions if any third-party material is retained.
+Data-availability statement
+Partially meets
+Template wording is prepared in the title page and supplementary appendix.
+Insert the final chosen statement before submission.
+Ethics and consent statements
+Partially meets
+Template wording is prepared, but final committee information or a precise no-review-required statement must be confirmed by the authors.
+Replace placeholders with the definitive ethics/consent wording.
+Supplementary material / transparency
+Meets
+The supplementary appendix reports corpus construction, annotation, validation, descriptive contrasts, and recoverable model-fit information.
+Upload the appendix as a supplemental Word file.
+ORCID for submitting author
+Pending author entry
+The package anticipates ORCID entry, but the identifier must be supplied by the submitting author in the submission system and title page.
+Enter the ORCID and update the title page placeholder.
+AI / third-party writing-assistance disclosure (if applicable)
+Pending author decision
+The cover letter and title page now contain wording that can be retained or removed depending on the authors’ final disclosure decision.
+Make the disclosure language consistent across every uploaded file and metadata field.
+Complete coefficient-level model output
+Conditionally meets
+The manuscript and appendix report only those statistics that can be verified from retained model records.
+If full coefficient exports are available, replace summary reporting with the complete exported tables before live submission.
+

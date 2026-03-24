@@ -1,0 +1,16 @@
+20 March 2026
+Editor-in-Chief
+New Media & Society
+Re: Submission of “Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou”
+Dear Editor,
+Please consider our manuscript, “Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou”, for publication as an Original Article in New Media & Society. The article examines how short-video platforms structure recognition by shaping which issues become visible, how these issues are affectively evaluated, and how such evaluations inform boundary-making in comment publics. Drawing on a comparative corpus from Douyin and Kuaishou, the study combines topic clustering, semantic-network analysis, supervised large-scale classification, multinomial logistic regression, and mediation analysis to explain why broadly similar identity-related issues generate different discursive outcomes across platform regimes.
+The manuscript speaks directly to the journal’s interest in theoretically informed and empirically grounded analyses of media change. It makes three contributions. First, it develops a platformed-recognition framework that links upstream issue visibility to downstream affective evaluation and boundary-making. Second, it offers a comparative computational analysis of two short-video platform regimes rather than treating social media as a homogeneous environment. Third, it shows that cross-platform divergence is concentrated in issue ecology and discursive organization, whereas affective evaluation operates as a comparatively stable mediating mechanism across platforms.
+This submission is original, has not been published previously, and is not under consideration elsewhere. All authors have approved the submission and agree to the journal’s policies. The review manuscript has been anonymized for peer review, and identifying information has been moved to the separate title page. Tables are supplied in editable Word format for review, and figures are embedded in the manuscript and can also be uploaded as standalone 300 dpi files.
+The submission package includes an anonymized main manuscript, a separate title page, this cover letter, an editable tables file, a supplementary appendix, and figure files. Any acknowledgements, funding information, ethics or consent statements, data-availability information, and author-identifying details are kept off the review manuscript and reported on the title page and in the submission system.
+The authors used generative-AI or professional editorial assistance only for language support and formatting; all substantive claims, analyses, references, and interpretations were verified by the authors, who take full responsibility for the manuscript.
+Thank you for your consideration. We believe the manuscript will be of interest to scholars working on platform studies, affective publics, short-video media, and digital boundary-making, and we would be grateful for the opportunity to have it reviewed.
+Sincerely,
+Juan Li and Jinlin Wu
+Lanzhou University
+Correspondence: juanli@lzu.edu.cn | +86 13993167061
+                            Jwu923@connect.hkust-gz.edu.cn | +86 13367073600

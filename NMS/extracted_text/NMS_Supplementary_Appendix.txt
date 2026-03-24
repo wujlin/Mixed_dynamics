@@ -1,0 +1,72 @@
+Supplementary Appendix
+For the manuscript “Platformed Recognition: Issue Visibility, Affective Evaluation, and Boundary-Making across Douyin and Kuaishou”
+S1. Transparency and replication note
+This appendix consolidates methodological detail and recoverable model information from the underlying project files. It is designed to strengthen transparency at submission while remaining consistent with the anonymized review format. Where the surviving exports preserve exact statistics, those values are reproduced below. Where retained records preserve only directional or comparative results, no unsupported precision is imputed. In the revised manuscript, these materials support the article’s platformed-recognition framework by clarifying how issue visibility, affective evaluation, and boundary-making are operationalized and tested across platforms.
+S2. Corpus construction and sampling
+The cleaned full corpus comprises 634,289 Douyin comments and 518,763 Kuaishou comments. For unsupervised clustering, the study drew a monthly stratified random sample of 63,429 Douyin comments and 51,876 Kuaishou comments (N = 115,305) using a fixed seed. The Douyin corpus covers October 2019 to May 2025, and the Kuaishou corpus covers December 2018 to December 2024. The monthly-stratified design was used to preserve temporal balance while reducing computational load for clustering and downstream modeling.
+S3. Annotation workflow and classifier validation
+A manually annotated subset of 10,000 comments (5,000 per platform) was split 7:2:1 into training, validation, and test sets. Twenty percent of the annotated sample was double-coded, and intercoder agreement exceeded 82%. The affective-evaluation classifier achieved 83.62% test accuracy and weighted F1 = .8303. The boundary-making classifier achieved 83.26% test accuracy and weighted F1 = .8317. Platform-specific performance also remained strong: Douyin 84.1% / 83.8% and Kuaishou 82.9% / 82.6% for the affective and boundary models, respectively.
+S4. Variable coding summary
+Issue structure was derived from platform-specific topic clusters identified through RoBERTa embeddings, UMAP projection, and K-means clustering. Affective evaluation was coded on a five-point scale from strongly negative to strongly positive evaluative-emotional stance. Boundary-making was coded into three classes: integrative, neutral, and conflictual. In the manuscript, the three variables are treated as analytically linked but not collapsible into a single attitudinal dimension: issue visibility captures the upstream organization of salience, affective evaluation captures the intermediate evaluative layer, and boundary-making captures the downstream orientation of discursive positioning.
+S5. Recoverable cross-platform descriptive contrasts
+Contrast
+Douyin
+Kuaishou
+Interpretation
+Issue concentration
+Largest cluster = 32.79%
+Largest cluster = 68.4%
+Kuaishou displays a substantially more concentrated issue ecology.
+Integrative effect of commonality-oriented cluster
+71.9% integrative in commonality and shared belonging
+23.1% conflict share in performance and revival
+Shared-belonging rhetoric on Douyin is more directly associated with integrative boundary-making, whereas Kuaishou’s dominant cultural-display cluster carries a higher conflict share.
+Highly neutral cluster
+Identity and pride = 78.9% neutral
+Conflict and confrontation = 79.3% integrative, 5.0% neutral
+Neutrality and integration take platform-specific forms; identical labels should not be interpreted as identical discursive effects.
+Boundary-sharpening contrast
+Stigma and respect = 14.2% conflictual
+Han identity and race = 27.6% neutral, 9.2% conflictual
+Essentializing discourse on Kuaishou is more structurally linked to sharper boundary work than Douyin’s anti-stigma discourse.
+S6. Recoverable model-fit information
+Platform
+Model
+Log likelihood
+McFadden’s R² / IC information
+Comment
+Douyin
+Cognition-only
+-13249.32
+R² = .0978
+Inferior fit to models with affective evaluation.
+Douyin
+Affect-only
+-10963.73
+R² = .2535
+Improves substantially over cognition-only.
+Douyin
+Full mediation
+-10476.18
+R² = .2867; AIC = 20972.35; BIC = 21049.04
+Best verified fit.
+Kuaishou
+Cognition-only
+-8415.45
+IC values not preserved
+Inferior fit to full mediation model.
+Kuaishou
+Affect-only
+-7096.18
+IC values not preserved
+Substantial improvement over cognition-only.
+Kuaishou
+Full mediation
+-7044.24
+Lowest reported AIC/BIC in surviving output
+Best verified fit.
+S7. Data-availability wording options
+Option A (restricted raw data): Raw platform comments cannot be publicly shared because platform terms of service, privacy safeguards, and/or contractual restrictions limit redistribution of user-generated content. De-identified aggregation tables, codebooks, and analysis scripts are available from the corresponding author on reasonable request.
+Option B (repository release): De-identified aggregation tables, codebooks, and analysis scripts are available in [repository name, DOI/link]. Raw platform comments are not publicly released because redistribution is restricted by platform terms and privacy protections.
+S8. Submission-facing checklist
+Before live submission, replace all bracketed placeholders on the title page and cover letter; verify the final author list, funding wording, ethics/consent statement, and ORCID details; upload standalone 300 dpi figure files; and, if available, replace the retained subset of coefficient-level statistics with the full exported model-output tables.
